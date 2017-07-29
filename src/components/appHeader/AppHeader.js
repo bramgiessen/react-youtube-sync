@@ -1,12 +1,14 @@
+// Libs & utils
 import React, { Component } from 'react'
-import './AppHeader.css'
 import PropTypes from 'prop-types'
 
-export default class AppHeader extends Component {
+// CSS
+import './AppHeader.css'
 
-	static propTypes = {
-		loading: PropTypes.bool
-	}
+// Assets
+import logo from '../../assets/logo_white.svg'
+
+export default class AppHeader extends Component {
 
 	render () {
 		return (
@@ -17,7 +19,8 @@ export default class AppHeader extends Component {
 					<div className="g-col">
 
 						<div className="header-title-wrapper">
-							<span>Youtube Video Party • React & Redux</span>
+							<img src={logo} className="content logo" alt="bramgiessen.com logo"/>
+							<span className="content">Youtube Video Party • React & Redux</span>
 						</div>
 
 						<ul className="header-actions">
@@ -25,12 +28,12 @@ export default class AppHeader extends Component {
 								<span className="btn btn-icon fa fa-search"/>
 							</li>
 							<li>
-								<a href="http://bramgiessen.com" target="_blank" rel="noopener noreferrer">
+								<a title="Visit my portfolio site" href="http://bramgiessen.com" target="_blank" rel="noopener noreferrer">
 									<span className="btn btn-icon fa fa-globe"/>
 								</a>
 							</li>
 							<li>
-								<a href="https://github.com/brambo48/react-youtube-sync" target="_blank" rel="noopener noreferrer">
+								<a title="Open this project on Github" href="https://github.com/brambo48/react-youtube-sync" target="_blank" rel="noopener noreferrer">
 									<span className="btn btn-icon fa fa-github"/>
 								</a>
 							</li>
