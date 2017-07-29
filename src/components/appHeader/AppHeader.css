@@ -1,0 +1,48 @@
+.app-header{
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 60px;
+    width: 100%;
+    background: #141414;
+}
+
+.app-header .header-title-wrapper{
+    float: left;
+    padding-top: 20px;
+    height: 60px;
+}
+
+.app-header .header-title-wrapper span{
+    font-size: .95rem;
+}
+
+.app-header .header-actions{
+    float: right;
+    margin: 0;
+    padding-top: 20px;
+    height: 60px;
+}
+
+.app-header .header-actions li:first-of-type {
+    margin-left: 0;
+    border: none;
+    padding-left: 0;
+}
+
+.app-header .header-actions li{
+    float: left;
+    margin-left: 12px;
+    border-left: 1px solid #38393a;
+    padding-left: 12px;
+    height: 24px;
+    list-style: none
+}
+
+.app-header .header-actions .btn{
+    cursor: pointer;
+}
+
+.app-header .header-actions .btn-icon{
+    font-size: 1.4rem;
+}

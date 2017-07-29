@@ -1,8 +1,25 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import registerServiceWorker from './registerServiceWorker';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { createStore, applyMiddleware } from 'redux'
+import ReduxThunk from 'redux-thunk'
+import { Provider } from 'react-redux'
 
-ReactDOM.render(<App />, document.getElementById('root'));
-registerServiceWorker();
+// CSS
+import './index.css'
+
+// Components
+import App from './components/app/App'
+
+// Functions
+import combineReducers from './reducers'
+
+// Apply middlewares and initialize store
+const createStoreWithMiddlewares = applyMiddleware ( ReduxThunk ) ( createStore )
+const store = createStoreWithMiddlewares ( combineReducers )
+
+ReactDOM.render (
+	<Provider store={store}>
+		<App />
+	</Provider>,
+	document.getElementById ( 'root' )
+)
