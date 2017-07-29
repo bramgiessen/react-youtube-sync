@@ -7,7 +7,6 @@ import './App.css'
 import 'font-awesome/css/font-awesome.min.css'
 
 // Components
-import LoadingIndicator from '../loadingIndicator/LoadingIndicator'
 import AppHeader from '../appHeader/AppHeader'
 
 // Actions
@@ -15,20 +14,21 @@ import { searchBarActions as searchActions } from "../searchBar/redux/searchBarA
 
 class App extends Component {
 	render () {
-		const isFetching = this.props.app.isFetching
 
 		console.log ( this.props )
 		return (
 			<div className="App grid">
-				<LoadingIndicator
-					loading={isFetching}
-				/>
 
 				<AppHeader
 					searchBar={this.props.searchBar}
 					toggleSearch={this.props.toggleSearch}
 					handleSearch={this.props.handleSearch}
 				/>
+
+				<main className="main">
+					{/* Render the childen component passed by react-router: */}
+					{this.props.children}
+				</main>
 
 			</div>
 		)
