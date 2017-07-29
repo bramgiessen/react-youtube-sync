@@ -1,37 +1,38 @@
-.app-header{
+.app-header {
     position: fixed;
     left: 0;
     top: 0;
-    height: 60px;
+    min-height: 60px;
     width: 100%;
-    background: #141414;
+    overflow: hidden;
+    background: #1d1e1f;
 }
 
-.app-header .header-title-wrapper{
+.app-header .header-title-wrapper {
     float: left;
-    height: 60px;
+    height: 70px;
 }
 
-.app-header .header-title-wrapper .content{
+.app-header .header-title-wrapper .content {
     float: left;
     margin-right: 15px;
 }
 
-.app-header .header-title-wrapper .logo{
+.app-header .header-title-wrapper .logo {
     height: 50px;
     margin-top: 5px;
 }
 
-.app-header .header-title-wrapper span{
+.app-header .header-title-wrapper span {
     font-size: .95rem;
     margin-top: 21px;
 }
 
-.app-header .header-actions{
+.app-header .header-actions {
     float: right;
     margin: 0;
     padding-top: 20px;
-    height: 60px;
+    height: 70px;
 }
 
 .app-header .header-actions li:first-of-type {
@@ -40,7 +41,7 @@
     padding-left: 0;
 }
 
-.app-header .header-actions li{
+.app-header .header-actions li {
     float: left;
     margin-left: 12px;
     border-left: 1px solid #38393a;
@@ -49,14 +50,24 @@
     list-style: none
 }
 
-.app-header .header-actions li a{
-   color: inherit;
+.app-header .header-actions li a {
+    color: inherit;
 }
 
-.app-header .header-actions .btn{
+.app-header .header-actions .btn {
     cursor: pointer;
 }
 
-.app-header .header-actions .btn-icon{
+.app-header .header-actions .btn-icon {
     font-size: 1.4rem;
+}
+
+.app-header .search-bar {
+    height: 0;
+    overflow: hidden;
+    transition: height .16s ease-in-out;
+}
+
+.app-header .search-bar.open {
+    height: 90px;
 }

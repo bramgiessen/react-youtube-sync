@@ -3,7 +3,6 @@ import './LoadingIndicator.css'
 import PropTypes from 'prop-types'
 
 export default class LoadingIndicator extends Component {
-
 	static propTypes = {
 		loading: PropTypes.bool
 	}
