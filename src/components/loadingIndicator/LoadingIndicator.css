@@ -14,27 +14,22 @@
     height: 100%;
     opacity: .4;
     background-color: #28959a;
-    -webkit-animation: loadingIndicator 2.25s infinite ease-in-out;
     animation: loadingIndicator 2.25s infinite ease-in-out;
 }
 
 .loading-indicator .circle-2 {
-    -webkit-animation-delay: -.75s;
     animation-delay: -.75s;
 }
 
 .loading-indicator .circle-3 {
-    -webkit-animation-delay: -1.5s;
     animation-delay: -1.5s;
 }
 
 @keyframes loadingIndicator {
     0%, 100% {
-        -webkit-transform: scale(0);
         transform: scale(0);
     }
     75% {
-        -webkit-transform: scale(1);
         transform: scale(1);
     }
 }

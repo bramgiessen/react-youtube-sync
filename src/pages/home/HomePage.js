@@ -52,7 +52,7 @@ export default class HomePage extends Component {
 				<div className="g-row">
 					<div className="g-col">
 						<div className={descriptionBlockCssClasses}>
-							<span className="welcome-header">Welcome to Youtube Video Party !</span>
+							<div className="welcome-header">Welcome to Youtube Video Party !</div>
 
 							<div className="infographic">
 								<img src={screenImg} className="infographic-screen left" alt="Screen illustration"/>
@@ -63,6 +63,16 @@ export default class HomePage extends Component {
 							<span className="tagline">The easiest way to watch Youtube videos together in <i>perfect sync</i>,
 								across multiple browsers / devices !</span>
 
+							<div className="tutorial">
+								<span className="tutorial-header">How? It's easy! Just follow these steps:</span>
+
+								<ol className="tutorial-steps">
+									<li>Choose a username</li>
+									<li>Choose a video</li>
+									<li>Share the special generated url with your friends and start watching together!</li>
+								</ol>
+							</div>
+
 							<div className="start-button" onClick={this.startPartyButtonClickHandler}>Start watching !</div>
 						</div>
 
@@ -72,15 +82,15 @@ export default class HomePage extends Component {
 
 							<div className="party-details">
 
-									<input
-										ref={e => this.input = e}
-										autoComplete="off"
-										className="input user-name"
-										maxLength="60"
-										placeholder="Username / display name"
-										tabIndex="0"
-										type="text"
-									/>
+								<input
+									ref={e => this.input = e}
+									autoComplete="off"
+									className="input user-name"
+									maxLength="60"
+									placeholder="Username / display name"
+									tabIndex="0"
+									type="text"
+								/>
 							</div>
 
 							<div className="create-party button">Continue</div>
