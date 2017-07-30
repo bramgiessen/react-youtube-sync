@@ -1,21 +1,38 @@
+// Libs & utils
 import React, { Component } from 'react'
-import './HomePage.css'
 import PropTypes from 'prop-types'
 
-export default class HomePage extends Component {
-	static propTypes = {
-	}
+// Assets
+import screenImg from '../../assets/media_screen.svg'
+import syncImg from '../../assets/sync_icon.svg'
 
-	render() {
+// CSS
+import './HomePage.css'
+
+export default class HomePage extends Component {
+	static propTypes = {}
+
+	render () {
 		return (
 			<div className="home-page">
-				HOME PAGE <br/>
-				HOME PAGE <br/>
-				HOME PAGE <br/>
-				HOME PAGE <br/>
-				HOME PAGE <br/>
-				HOME PAGE <br/>
-				HOME PAGE <br/>
+				<div className="g-row">
+					<div className="g-col">
+						<div className="app-description">
+							<span className="welcome-header">Welcome to Youtube Video Party !</span>
+
+							<div className="infographic">
+								<img src={screenImg} className="infographic-screen left" alt="Screen illustration"/>
+								<img src={syncImg} className="infographic-sync rotating" alt="Synchronization icon"/>
+								<img src={screenImg} className="infographic-screen right" alt="Screen illustration"/>
+							</div>
+
+							<span className="tagline">The easiest way to watch Youtube videos together in <i>perfect sync</i>,
+								across multiple browsers / devices !</span>
+
+							<div className="start-button">Start a Youtube Video Party !</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		)
 	}

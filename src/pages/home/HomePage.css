@@ -1,0 +1,92 @@
+.home-page{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-page .app-description{
+    width: 100%;
+    text-align: center;
+}
+
+.home-page .app-description .welcome-header{
+    width: 100%;
+    display: block;
+    text-align: center;
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 2.5vw;
+    font-weight: 300;
+}
+
+.home-page .app-description .tagline{
+    width: 80%;
+    display: inline-block;
+    text-align: center;
+    font-size: 1.4vw;
+    margin-top: 25px;
+}
+
+.home-page .app-description .start-button{
+    opacity: 0.7;
+    display: table;
+    padding: 10px;
+    color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+    margin: 80px auto 0 auto;
+    font-size: 1.3vw;
+}
+.home-page .app-description .start-button:hover{
+    opacity: 1;
+    cursor: pointer;
+}
+
+.home-page .app-description .infographic{
+    margin-top: 40px;
+    -webkit-box-align:center;
+    -webkit-box-pack:center;
+    display:-webkit-box;
+}
+
+.home-page .app-description .infographic .infographic-screen{
+    float: left;
+    width: 14vw;
+    min-width: 100px;
+    margin-top: 30px;
+}
+
+.home-page .app-description .infographic .infographic-screen.left{
+    transform: skew(-10deg);
+}
+
+.home-page .app-description .infographic .infographic-screen.right{
+    transform: skew(10deg);
+}
+
+.home-page .app-description .infographic .infographic-sync{
+    width: 8vw;
+    margin: 0 2vw;
+    float: left;
+}
+
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 800px){
+    .home-page .app-description .welcome-header{
+        font-size: 30px;
+    }
+
+    .home-page .app-description .tagline{
+        font-size: 15px;
+    }
+
+    .home-page .app-description .start-button{
+        font-size: 15px;
+    }
+}

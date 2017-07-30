@@ -6,6 +6,8 @@
     width: 100%;
     overflow: hidden;
     background: #1d1e1f;
+    box-shadow: 0 3px 0 0 rgba(0,0,0,.08);
+    z-index: 1;
 }
 
 .app-header .header-title-wrapper {

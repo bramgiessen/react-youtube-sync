@@ -14,10 +14,8 @@ import { searchBarActions as searchActions } from "../searchBar/redux/searchBarA
 
 class App extends Component {
 	render () {
-
-		console.log ( this.props )
 		return (
-			<div className="App grid">
+			<div className="app grid">
 
 				<AppHeader
 					searchBar={this.props.searchBar}
