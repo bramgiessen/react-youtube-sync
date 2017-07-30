@@ -6,14 +6,12 @@
 
 .home-page .app-description-block{
     width: 100%;
-    position: absolute;
     margin-top: 120px;
     display: flex;
     flex-direction: column;
     transition: margin-top 0.4s ease, opacity 0.25s ease;
 }
 .home-page .app-description-block.hidden{
-    position: absolute;
     margin-top: -150%;
     opacity: 0;
 }
@@ -92,6 +90,7 @@
 }
 
 .home-page .create-party-block{
+    position: absolute;
     visibility: visible;
     opacity: 1;
     top: 0;
