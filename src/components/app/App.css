@@ -5,7 +5,7 @@
     top: 0;
     left: 0;
     background: #262728;
-    /*background: #1d1e1f;*/
+    overflow-x: hidden;
 }
 
 .main {  }

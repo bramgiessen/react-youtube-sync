@@ -7,12 +7,18 @@
     justify-content: center;
 }
 
-.home-page .app-description{
+.home-page .app-description-block{
     width: 100%;
     text-align: center;
+    transition: margin-top 0.4s ease, opacity 0.25s ease;
+}
+.home-page .app-description-block.hidden{
+    position: absolute;
+    margin-top: -150%;
+    opacity: 0;
 }
 
-.home-page .app-description .welcome-header{
+.home-page .app-description-block .welcome-header{
     width: 100%;
     display: block;
     text-align: center;
@@ -22,7 +28,7 @@
     font-weight: 300;
 }
 
-.home-page .app-description .tagline{
+.home-page .app-description-block .tagline{
     width: 80%;
     display: inline-block;
     text-align: center;
@@ -30,7 +36,7 @@
     margin-top: 25px;
 }
 
-.home-page .app-description .start-button{
+.home-page .app-description-block .start-button{
     opacity: 0.7;
     display: table;
     padding: 10px;
@@ -39,37 +45,118 @@
     margin: 80px auto 0 auto;
     font-size: 1.3vw;
 }
-.home-page .app-description .start-button:hover{
+.home-page .app-description-block .start-button:hover{
     opacity: 1;
     cursor: pointer;
 }
 
-.home-page .app-description .infographic{
+.home-page .app-description-block .infographic{
     margin-top: 40px;
     -webkit-box-align:center;
     -webkit-box-pack:center;
     display:-webkit-box;
 }
 
-.home-page .app-description .infographic .infographic-screen{
+.home-page .app-description-block .infographic .infographic-screen{
     float: left;
     width: 14vw;
     min-width: 100px;
     margin-top: 30px;
 }
 
-.home-page .app-description .infographic .infographic-screen.left{
+.home-page .app-description-block .infographic .infographic-screen.left{
     transform: skew(-10deg);
 }
 
-.home-page .app-description .infographic .infographic-screen.right{
+.home-page .app-description-block .infographic .infographic-screen.right{
     transform: skew(10deg);
 }
 
-.home-page .app-description .infographic .infographic-sync{
+.home-page .app-description-block .infographic .infographic-sync{
     width: 8vw;
     margin: 0 2vw;
     float: left;
+}
+
+.home-page .create-party-block{
+    visibility: visible;
+    opacity: 1;
+    top: 0;
+    width: 50%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    -webkit-transition: opacity 0.5s ease;
+    -moz-transition: opacity 0.5s ease;
+    -ms-transition: opacity 0.5s ease;
+    -o-transition: opacity 0.5s ease;
+    transition: opacity 0.5s ease;
+    transition-delay: 0.3s;
+}
+.home-page .create-party-block.hidden{
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+}
+
+.home-page .create-party-block .create-party-header{
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 2.5vw;
+    font-weight: 300;
+    display: block;
+}
+
+.home-page .create-party-block .create-party-description{
+    font-size: 1.2vw;
+    margin-top: 25px;
+}
+
+.home-page .create-party-block .party-details{
+    width: 100%;
+    border-top: 1px solid hsla(0, 0%, 100%, .05);
+    border-bottom: 1px solid hsla(0, 0%, 100%, .05);
+    padding: 10px 0;
+    margin: 10px 0;
+}
+
+.home-page .create-party-block .input{
+    width: 100%;
+    height: 2em;
+    background: #666;
+    border: 1px solid transparent;
+    padding: .2em .6em;
+    color: #fff;
+    font-size: 1.3vw;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 5px 0;
+}
+
+.home-page .create-party-block .button{
+    float: left;
+    opacity: 0.7;
+    display: table;
+    padding: 10px;
+    color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+    margin-top: 5px;
+    font-size: 1.3vw;
+}
+
+.home-page .create-party-block .button.create-party{
+    color: #262728;
+    background: #ffffff;
+}
+
+.home-page .create-party-block .button.cancel-party{
+    margin-left: 5px;
+}
+
+.home-page .create-party-block .button:hover{
+    opacity: 1;
+    cursor: pointer;
 }
 
 
@@ -78,15 +165,15 @@
 /*----------------------------------*/
 
 @media screen and (max-width: 800px){
-    .home-page .app-description .welcome-header{
+    .home-page .app-description-block .welcome-header{
         font-size: 30px;
     }
 
-    .home-page .app-description .tagline{
+    .home-page .app-description-block .tagline{
         font-size: 15px;
     }
 
-    .home-page .app-description .start-button{
+    .home-page .app-description-block .start-button{
         font-size: 15px;
     }
 }
