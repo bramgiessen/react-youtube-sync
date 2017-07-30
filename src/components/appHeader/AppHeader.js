@@ -2,14 +2,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+// Assets
+import logo from '../../assets/logo_white.svg'
+
 // CSS
 import './AppHeader.css'
 
 // Components
 import SearchBar from '../searchBar/SearchBar'
-
-// Assets
-import logo from '../../assets/logo_white.svg'
 
 export default class AppHeader extends Component {
 	static propTypes = {

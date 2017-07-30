@@ -1,0 +1,75 @@
+.create-party-block{
+    position: absolute;
+    visibility: visible;
+    opacity: 1;
+    top: 0;
+    width: 50%;
+    margin: 120px auto;
+    left: 0;
+    right: 0;
+    transition: opacity 0.5s ease;
+    transition-delay: 0.3s;
+}
+.create-party-block.hidden{
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+}
+
+.create-party-block .create-party-header{
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 2.5vw;
+    font-weight: 300;
+    display: block;
+}
+
+.create-party-block .create-party-description{
+    font-size: 1.2vw;
+    margin-top: 25px;
+}
+
+.create-party-block .party-details{
+    width: 100%;
+    border-top: 1px solid hsla(0, 0%, 100%, .05);
+    border-bottom: 1px solid hsla(0, 0%, 100%, .05);
+    padding: 10px 0;
+    margin: 10px 0;
+}
+
+.create-party-block .input{
+    width: 100%;
+    height: 2em;
+    background: #666;
+    border: 1px solid transparent;
+    padding: .2em .6em;
+    color: #fff;
+    font-size: 1.3vw;
+    box-sizing: border-box;
+    margin: 5px 0;
+}
+
+.create-party-block .button{
+    float: left;
+    opacity: 0.7;
+    display: table;
+    padding: 10px;
+    color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+    margin-top: 5px;
+    font-size: 1.3vw;
+}
+
+.create-party-block .button.create-party{
+    color: #262728;
+    background: #ffffff;
+}
+
+.create-party-block .button.cancel-party{
+    margin-left: 5px;
+}
+
+.create-party-block .button:hover{
+    opacity: 1;
+    cursor: pointer;
+}
