@@ -18,13 +18,20 @@ export default class AppHeader extends Component {
 		handleSearch: PropTypes.func.isRequired,
 	}
 
+	/**
+	 * Navigate to the homepage using react-router
+	 */
+	navigateToHomePage = () => {
+		this.props.router.push ( '/' )
+	}
+
 	render () {
 		return (
 			<div className="app-header">
 				<div className="g-row">
 					<div className="g-col">
 
-						<div className="header-title-wrapper">
+						<div className="header-title-wrapper" onClick={this.navigateToHomePage}>
 							<img src={logo} className="content logo" alt="bramgiessen.com logo"/>
 							<span className="content">Youtube Video Party • React & Redux</span>
 						</div>

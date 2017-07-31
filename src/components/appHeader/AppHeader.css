@@ -15,6 +15,11 @@
     height: 70px;
 }
 
+.app-header .header-title-wrapper:hover{
+    cursor: pointer;
+    color: #ffffff;
+}
+
 .app-header .header-title-wrapper .content {
     float: left;
     margin-right: 15px;

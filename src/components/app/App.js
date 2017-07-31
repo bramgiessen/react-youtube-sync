@@ -21,6 +21,7 @@ class App extends Component {
 					searchBar={this.props.searchBar}
 					toggleSearch={this.props.toggleSearch}
 					handleSearch={this.props.handleSearch}
+					router={this.props.router}
 				/>
 
 				<main className="main">
@@ -33,8 +34,14 @@ class App extends Component {
 	}
 }
 
+//=====================================
+//  CONNECT
+//-------------------------------------
+
 const mapStateToProps = ( state ) => {
-	return state
+	return {
+		searchBar : state.searchBar
+	}
 }
 
 const mapDispatchToProps = {
