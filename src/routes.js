@@ -1,6 +1,7 @@
 import App from './components/app/App'
 import HomePage from './pages/home/HomePage'
 import BrowsePage from './pages/browse/BrowsePage'
+import PartyPage from './pages/party/PartyPage'
 
 
 export const routes = {
@@ -16,9 +17,9 @@ export const routes = {
 			path: '/browse',
 			component: BrowsePage
 		},
-		// {
-		// 	path: '/users/:id/:resource',
-		// 	component: UserPage
-		// }
+		{
+			path: '/party/:id',
+			component: PartyPage
+		}
 	]
 };
