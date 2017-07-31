@@ -33,7 +33,7 @@ export default class SearchBar extends Component {
 	render () {
 		const cssClasses = classNames ( 'search-bar', {
 			'open': this.props.searchBar.expanded
-		} );
+		} )
 
 		return (
 			<div className={cssClasses} ref={e => this.searchBar = e}>

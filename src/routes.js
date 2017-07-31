@@ -1,5 +1,6 @@
-import App from './components/app/App';
-import HomePage from './pages/home/HomePage';
+import App from './components/app/App'
+import HomePage from './pages/home/HomePage'
+import BrowsePage from './pages/browse/BrowsePage'
 
 
 export const routes = {
@@ -11,10 +12,10 @@ export const routes = {
 				component: HomePage
 			}
 		},
-		// {
-		// 	path: '/search',
-		// 	component: SearchPage
-		// },
+		{
+			path: '/browse',
+			component: BrowsePage
+		},
 		// {
 		// 	path: '/users/:id/:resource',
 		// 	component: UserPage

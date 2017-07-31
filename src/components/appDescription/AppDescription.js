@@ -12,16 +12,17 @@ import './AppDescription.css'
 
 export default class AppDescription extends Component {
 	static propTypes = {
-		creatingParty: PropTypes.bool.isRequired,
-		startPartyButtonClickHandler: PropTypes.func.isRequired,
+		creatingUserName: PropTypes.bool.isRequired,
+		startButtonClickHandler: PropTypes.func.isRequired,
 	}
 
 	render () {
-		const creatingParty = this.props.creatingParty
+		const { creatingUserName, startButtonClickHandler } = this.props
 
+		// Hide the app description if the user is in the process of creating a party
 		const descriptionBlockCssClasses = classNames ( 'app-description-block', {
-			'hidden': creatingParty
-		} );
+			'hidden': creatingUserName
+		} )
 
 		return (
 			<div className={descriptionBlockCssClasses}>
@@ -46,7 +47,7 @@ export default class AppDescription extends Component {
 					</ol>
 				</div>
 
-				<div className="start-button" onClick={this.props.startPartyButtonClickHandler}>Start watching !</div>
+				<div className="start-button" onClick={startButtonClickHandler}>Start watching !</div>
 			</div>
 		)
 	}

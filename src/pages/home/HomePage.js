@@ -1,40 +1,60 @@
 // Libs & utils
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
 // CSS
 import './HomePage.css'
 
 // Components
 import AppDescription from '../../components/appDescription/AppDescription'
-import CreatePartyForm from '../../components/createPartyForm/CreatePartyForm'
+import SetUserNameForm from '../../components/setUserNameForm/SetUserNameForm'
 
-export default class HomePage extends Component {
-	static propTypes = {}
+// Actions
+import { appActions } from "../../components/app/redux/appActions"
+
+class HomePage extends Component {
 
 	constructor ( props ) {
 		super ( props )
 		this.state = {
-			creatingParty: false
+			creatingUserName: false
 		}
 	}
 
 	/**
-	 * When the user presses the 'Start a Youtube Party' button
+	 * When the user presses the 'Start watching' button
 	 */
-	startPartyButtonClickHandler = () => {
-		this.setState ( { creatingParty: true } )
+	startButtonClickHandler = () => {
+		this.setState ( { creatingUserName: true } )
 	}
 
 	/**
-	 * When the user cancels the creation of a party
+	 * When the user cancels the creation of a username
 	 */
-	cancelPartyButtonClickHandler = () => {
-		this.setState ( { creatingParty: false } )
+	cancelButtonClickHandler = () => {
+		this.setState ( { creatingUserName: false } )
+	}
+
+	/**
+	 * Set the given username in store
+	 */
+	handleSetUserName = (userName) => {
+		const { setUserName } = this.props
+		if ( userName.length ) {
+			setUserName(userName)
+			this.navigateToBrowsePage()
+		}
+	}
+
+	/**
+	 * Navigate to the browse page using react-router
+	 */
+	navigateToBrowsePage = () => {
+		this.props.router.push('/browse')
 	}
 
 	render () {
-		const creatingParty = this.state.creatingParty
+		const { creatingUserName } = this.state
 
 		return (
 			<div className="home-page">
@@ -42,13 +62,14 @@ export default class HomePage extends Component {
 					<div className="g-col">
 
 						<AppDescription
-							creatingParty={creatingParty}
-							startPartyButtonClickHandler={this.startPartyButtonClickHandler}
+							creatingUserName={creatingUserName}
+							startButtonClickHandler={this.startButtonClickHandler}
 						/>
 
-						<CreatePartyForm
-							creatingParty={creatingParty}
-							cancelPartyButtonClickHandler={this.cancelPartyButtonClickHandler}
+						<SetUserNameForm
+							creatingUserName={creatingUserName}
+							cancelButtonClickHandler={this.cancelButtonClickHandler}
+							handleSetUserName={this.handleSetUserName}
 						/>
 
 					</div>
@@ -57,3 +78,19 @@ export default class HomePage extends Component {
 		)
 	}
 }
+
+
+//=====================================
+//  CONNECT
+//-------------------------------------
+
+const mapDispatchToProps = {
+	setUserName: appActions.setUserName
+}
+
+HomePage = connect (
+	null,
+	mapDispatchToProps
+) ( HomePage )
+
+export default HomePage

@@ -1,4 +1,4 @@
-.create-party-block{
+.create-username-block{
     position: absolute;
     visibility: visible;
     opacity: 1;
@@ -10,13 +10,13 @@
     transition: opacity 0.5s ease;
     transition-delay: 0.3s;
 }
-.create-party-block.hidden{
+.create-username-block.hidden{
     visibility: hidden;
     opacity: 0;
     position: absolute;
 }
 
-.create-party-block .create-party-header{
+.create-username-block .create-username-header{
     color: #f0f0f0;
     font-family: inherit;
     font-size: 2.5vw;
@@ -24,12 +24,12 @@
     display: block;
 }
 
-.create-party-block .create-party-description{
+.create-username-block .create-username-description{
     font-size: 1.2vw;
     margin-top: 25px;
 }
 
-.create-party-block .party-details{
+.create-username-block .username-details{
     width: 100%;
     border-top: 1px solid hsla(0, 0%, 100%, .05);
     border-bottom: 1px solid hsla(0, 0%, 100%, .05);
@@ -37,7 +37,7 @@
     margin: 10px 0;
 }
 
-.create-party-block .input{
+.create-username-block .input{
     width: 100%;
     height: 2em;
     background: #666;
@@ -49,7 +49,7 @@
     margin: 5px 0;
 }
 
-.create-party-block .button{
+.create-username-block .button{
     float: left;
     opacity: 0.7;
     display: table;
@@ -60,16 +60,16 @@
     font-size: 1.3vw;
 }
 
-.create-party-block .button.create-party{
+.create-username-block .button.create-username{
     color: #262728;
     background: #ffffff;
 }
 
-.create-party-block .button.cancel-party{
+.create-username-block .button.cancel-username{
     margin-left: 5px;
 }
 
-.create-party-block .button:hover{
+.create-username-block .button:hover{
     opacity: 1;
     cursor: pointer;
 }

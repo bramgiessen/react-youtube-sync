@@ -12,4 +12,4 @@ export const searchBarActions = {
 	toggleSearchField: () => ({
 		type: searchBarActions.TOGGLE_SEARCH_FIELD
 	})
-};
+}
