@@ -8,31 +8,30 @@ import './SearchBar.css'
 
 export default class SearchBar extends Component {
 	static propTypes = {
-		searchBar: PropTypes.object.isRequired,
+		search: PropTypes.object.isRequired,
 		handleSearch: PropTypes.func.isRequired,
 	}
 
 	componentDidMount () {
 		this.searchBar.addEventListener ( 'transitionend', () => {
-			if ( this.props.searchBar.expanded ) this.input.focus ()
+			if ( this.props.search.expanded ) this.input.focus ()
 		}, false )
 	}
 
 	componentWillUpdate ( nextProps ) {
-		if ( nextProps.searchBar.expanded ) this.input.value = ''
+		if ( nextProps.search.expanded ) this.input.value = ''
 	}
 
 	handleSubmit = ( event ) => {
 		event.preventDefault ()
 
 		const inputValue = this.input.value.trim ()
-		console.log ( inputValue )
 		this.props.handleSearch ( inputValue )
 	}
 
 	render () {
 		const cssClasses = classNames ( 'search-bar', {
-			'open': this.props.searchBar.expanded
+			'open': this.props.search.expanded
 		} )
 
 		return (

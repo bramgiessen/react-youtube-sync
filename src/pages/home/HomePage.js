@@ -10,7 +10,7 @@ import AppDescription from '../../components/appDescription/AppDescription'
 import SetUserNameForm from '../../components/setUserNameForm/SetUserNameForm'
 
 // Actions
-import { appActions } from "../../components/app/redux/appActions"
+import { userActions } from "../../core/user/index"
 
 class HomePage extends Component {
 
@@ -85,7 +85,7 @@ class HomePage extends Component {
 //-------------------------------------
 
 const mapDispatchToProps = {
-	setUserName: appActions.setUserName
+	setUserName: userActions.setUserName
 }
 
 HomePage = connect (

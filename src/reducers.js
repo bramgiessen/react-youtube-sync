@@ -2,10 +2,12 @@
 import { combineReducers } from 'redux'
 
 // Reducers
-import { appReducer } from './components/app/redux/appReducer'
-import { searchBarReducer } from './components/searchBar/redux/searchBarReducer'
+import { searchReducer } from './core/search/index'
+import { videoListReducer } from './core/videoList/index'
+import { userReducer } from './core/user/index'
 
 export default combineReducers ( {
-	app: appReducer,
-	searchBar: searchBarReducer
+	videoList: videoListReducer,
+	user: userReducer,
+	search: searchReducer
 } )

@@ -1,16 +1,15 @@
 // Libs & utils
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { loadProperty } from "../../utils/persist"
 
 // CSS
 import './BrowsePage.css'
 
+// Actions
+import { videoListActions } from "../../core/videoList/index"
+
 // Components
 import VideoList from '../../components/videoList/VideoList'
-
-// Actions
-import { appActions } from "../../components/app/redux/appActions"
 
 class BrowsePage extends Component {
 
@@ -22,7 +21,7 @@ class BrowsePage extends Component {
 	componentDidMount () {
 		// Read userName from localStorage, if it doesn't exist -> redirect to the home page
 		// so the user can set a username from here
-		const userName = loadProperty ( 'userName', null )
+		const userName = this.props.user.userName
 		if ( !userName ) {
 			this.props.router.push ( '/' )
 		}
@@ -32,14 +31,14 @@ class BrowsePage extends Component {
 	}
 
 	render () {
-		console.log(this.props)
 
+		console.log(this.props)
 		return (
 			<div className="browse-page">
 				<div className="g-row">
 					<div className="g-col">
 
-						<VideoList />
+						<VideoList youtubeVideos={this.props.youtubeVideos}/>
 
 					</div>
 				</div>
@@ -55,12 +54,13 @@ class BrowsePage extends Component {
 
 const mapStateToProps = ( state ) => {
 	return {
-		youtubeVideos : state.app.youtubeVideos
+		youtubeVideos : state.videoList.youtubeVideos,
+		user : state.user,
 	}
 }
 
 const mapDispatchToProps = {
-	loadInitialYoutubeMovies : appActions.loadInitialYoutubeMovies
+	loadInitialYoutubeMovies : videoListActions.loadInitialYoutubeMovies
 }
 
 BrowsePage = connect (

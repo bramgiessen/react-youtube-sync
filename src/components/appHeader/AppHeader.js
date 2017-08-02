@@ -13,7 +13,7 @@ import SearchBar from '../searchBar/SearchBar'
 
 export default class AppHeader extends Component {
 	static propTypes = {
-		searchBar: PropTypes.object.isRequired,
+		search: PropTypes.object.isRequired,
 		toggleSearch: PropTypes.func.isRequired,
 		handleSearch: PropTypes.func.isRequired,
 	}
@@ -60,7 +60,7 @@ export default class AppHeader extends Component {
 				<div className="g-row">
 					<div className="g-col">
 						<SearchBar
-							searchBar={this.props.searchBar}
+							search={this.props.search}
 							handleSearch={this.props.handleSearch}
 						/>
 					</div>

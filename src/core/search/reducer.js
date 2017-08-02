@@ -2,16 +2,16 @@
 import Immutable from 'seamless-immutable'
 
 // Actions
-import { searchBarActions } from './searchBarActions'
+import { searchActions } from './index'
 
 const initialState = Immutable({
 	expanded: false,
 	currentQuery : null
 })
 
-export const searchBarReducer = ( state = initialState, action ) => {
+export const searchReducer = ( state = initialState, action ) => {
 	switch ( action.type ) {
-		case searchBarActions.TOGGLE_SEARCH_FIELD:
+		case searchActions.TOGGLE_SEARCH_FIELD:
 			return Immutable.set(state, 'expanded', !state.expanded)
 
 		default:

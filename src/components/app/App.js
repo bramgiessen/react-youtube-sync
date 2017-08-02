@@ -10,7 +10,7 @@ import 'font-awesome/css/font-awesome.min.css'
 import AppHeader from '../appHeader/AppHeader'
 
 // Actions
-import { searchBarActions as searchActions } from "../searchBar/redux/searchBarActions"
+import { searchActions } from "../../core/search/index"
 
 class App extends Component {
 	render () {
@@ -18,7 +18,7 @@ class App extends Component {
 			<div className="app grid">
 
 				<AppHeader
-					searchBar={this.props.searchBar}
+					search={this.props.search}
 					toggleSearch={this.props.toggleSearch}
 					handleSearch={this.props.handleSearch}
 					router={this.props.router}
@@ -40,7 +40,7 @@ class App extends Component {
 
 const mapStateToProps = ( state ) => {
 	return {
-		searchBar : state.searchBar
+		search : state.search
 	}
 }
 
