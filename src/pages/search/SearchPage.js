@@ -41,6 +41,7 @@ class SearchPage extends Component {
 
 	render () {
 		const currentQuery = this.props.params.query
+		const { handleVideoSelection } = this.props
 
 		return (
 			<div className="browse-page">
@@ -54,6 +55,7 @@ class SearchPage extends Component {
 					<VideoList
 						showLoadingAnimation={this.props.isFetchingVideos}
 						youtubeVideos={this.props.youtubeVideos}
+						handleVideoSelection={handleVideoSelection}
 					/>
 
 				</div>
@@ -76,7 +78,8 @@ const mapStateToProps = ( state ) => {
 }
 
 const mapDispatchToProps = {
-	loadYoutubeVideos: videoListActions.loadYoutubeVideos
+	loadYoutubeVideos: videoListActions.loadYoutubeVideos,
+	handleVideoSelection: videoListActions.handleVideoSelection
 }
 
 SearchPage = connect (

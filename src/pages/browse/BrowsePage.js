@@ -32,7 +32,7 @@ class BrowsePage extends Component {
 		}
 
 		// Load an initial set of movies from Youtube into Redux store
-		this.props.loadYoutubeVideos ( 'lord of the rings', 'movie' )
+		this.props.loadYoutubeVideos ( 'documentary', 'movie' )
 	}
 
 	render () {

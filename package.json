@@ -15,6 +15,7 @@
     "react-router-dom": "4.1.2",
     "react-scripts": "1.0.10",
     "react-truncate": "2.1.5",
+    "react-youtube": "7.4.0",
     "redux": "3.7.2",
     "redux-thunk": "2.2.0",
     "seamless-immutable": "7.1.2"

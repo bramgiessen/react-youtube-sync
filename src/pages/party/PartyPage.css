@@ -1,0 +1,14 @@
+.party-page .g-col{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.party-page .page-header{
+    padding: 20px 10px 0 10px;
+}
+
+.party-page .content-wrapper{
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 185px);
+}

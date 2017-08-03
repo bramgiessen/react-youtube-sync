@@ -15,7 +15,7 @@ export const YOUTUBE_SEARCH_URL = `${YOUTUBE_API_BASE_URL}/search`
 //-------------------------------------
 export const introductionText = (
 	<div>
-		<p> The movies that you find on this page are completely <i>free</i> movies that are uploaded to Youtube,
+		<p> Most of the movies that you find on this page are completely <i>free</i> movies that are uploaded to Youtube,
 			but
 			in the top you can search for any video you like!
 		</p>

@@ -1,3 +1,7 @@
+//=====================================
+//  persist.js : Containing utils related to data persistence (i.e. in localStorage)
+//-------------------------------------
+
 export const persistUtils = {
 	/**
 	 * Helper function to load and deserialize a key/value in the browsers local storage.

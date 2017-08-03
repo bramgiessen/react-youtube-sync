@@ -23,7 +23,7 @@ export default class VideoCard extends Component {
 			<div className="video-card g-col card"
 					 title={videoDetails.title}
 					 onClick={() => {
-						 handleVideoSelection (video, videoSource)
+						 handleVideoSelection (video.id.videoId, videoSource)
 					 }}>
 
 				<div className="card-content">

@@ -1,3 +1,7 @@
+//=====================================
+//  video.js : Containing utils related to video objects
+//-------------------------------------
+
 export const videoUtils = {
 
 	/**

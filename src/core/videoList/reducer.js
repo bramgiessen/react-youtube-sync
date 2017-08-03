@@ -7,7 +7,7 @@ import { videoListActions } from './index'
 const initialState = Immutable ( {
 	isFetching: false,
 	youtubeVideos: [],
-	selectedVideo: null,
+	selectedVideo: {videoId:null, videoSource:null},
 	error: null
 } )
 
