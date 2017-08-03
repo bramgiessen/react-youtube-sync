@@ -2,9 +2,9 @@
 import { combineReducers } from 'redux'
 
 // Reducers
-import { searchReducer } from './core/search/index'
-import { videoListReducer } from './core/videoList/index'
-import { userReducer } from './core/user/index'
+import { searchReducer } from './search/index'
+import { videoListReducer } from './videoList/index'
+import { userReducer } from './user/index'
 
 export default combineReducers ( {
 	videoList: videoListReducer,

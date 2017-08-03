@@ -13,14 +13,23 @@ import AppHeader from '../appHeader/AppHeader'
 import { searchActions } from "../../core/search/index"
 
 class App extends Component {
+	/**
+	 * Navigate to search results upon search submission
+	 */
+	handleSearch = (query) => {
+		this.props.router.push ( `/search/${query}` )
+		this.props.toggleSearch()
+	}
+
 	render () {
 		return (
 			<div className="app grid">
 
 				<AppHeader
 					search={this.props.search}
+					user={this.props.user}
 					toggleSearch={this.props.toggleSearch}
-					handleSearch={this.props.handleSearch}
+					handleSearch={this.handleSearch}
 					router={this.props.router}
 				/>
 
@@ -40,13 +49,14 @@ class App extends Component {
 
 const mapStateToProps = ( state ) => {
 	return {
-		search : state.search
+		search : state.search,
+		user: state.user,
 	}
 }
 
 const mapDispatchToProps = {
 	toggleSearch: searchActions.toggleSearchField,
-	handleSearch: searchActions.navigateToSearchResults
+	setSearchQuery: searchActions.setSearchQuery
 }
 
 App = connect ( mapStateToProps, mapDispatchToProps ) ( App )

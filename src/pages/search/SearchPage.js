@@ -3,10 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 // CSS
-import './BrowsePage.css'
-
-// Constants
-import { introductionText } from '../../core/constants'
+import './SearchPage.css'
 
 // Actions
 import { videoListActions } from '../../core/videoList/index'
@@ -15,7 +12,7 @@ import { videoListActions } from '../../core/videoList/index'
 import PageHeader from '../../components/pageHeader/PageHeader'
 import VideoList from '../../components/videoList/VideoList'
 
-class BrowsePage extends Component {
+class SearchPage extends Component {
 
 	constructor ( props ) {
 		super ( props )
@@ -24,26 +21,31 @@ class BrowsePage extends Component {
 
 	componentDidMount () {
 		// Read userName from localStorage, if it doesn't exist -> redirect to the home page
-		// so the user can set a username from here
+		// so the user can set a username from here first
 		const userName = this.props.user.userName
 		if ( !userName ) {
 			this.props.router.push ( '/' )
 		}
 
-		// Load an initial set of movies from Youtube into Redux store
-		this.props.loadYoutubeVideos ( 'lord of the rings', 'movie' )
+		// Load Youtube video search results into Redux store
+		this.props.loadYoutubeVideos ( this.props.params.query )
+	}
+
+	componentWillUpdate(nextProps) {
+		if (nextProps.params.query  !== this.props.params.query ) {
+			// Search query has been changed
+			this.props.loadYoutubeVideos ( nextProps.params.query )
+		}
 	}
 
 	render () {
-		const { user } = this.props
+		const currentQuery = this.props.params.query
 
 		return (
 			<div className="browse-page">
 				<PageHeader
-					titleLeader='Hi'
-					titleMain={user.userName}
-					titleAfter={', It\'s partytime!'}
-					descriptionText={introductionText}
+					titleLeader='Search results'
+					titleMain={currentQuery}
 				/>
 
 				<div className="g-row">
@@ -68,7 +70,7 @@ const mapStateToProps = ( state ) => {
 	return {
 		isFetchingVideos: state.videoList.isFetching,
 		youtubeVideos: state.videoList.youtubeVideos,
-		user: state.user,
+		user: state.user
 	}
 }
 
@@ -76,9 +78,9 @@ const mapDispatchToProps = {
 	loadYoutubeVideos: videoListActions.loadYoutubeVideos
 }
 
-BrowsePage = connect (
+SearchPage = connect (
 	mapStateToProps,
 	mapDispatchToProps
-) ( BrowsePage )
+) ( SearchPage )
 
-export default BrowsePage
+export default SearchPage

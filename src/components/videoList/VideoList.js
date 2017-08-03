@@ -6,11 +6,13 @@ import PropTypes from 'prop-types'
 import './VideoList.css'
 
 // Components
+import LoadingIndicator from '../../components/loadingIndicator/LoadingIndicator'
 import VideoCard from '../../components/videoCard/VideoCard'
 
 export default class VideoList extends Component {
 	static propTypes = {
-		youtubeVideos: PropTypes.array.isRequired
+		youtubeVideos: PropTypes.array.isRequired,
+		showLoadingAnimation: PropTypes.bool.isRequired
 	}
 
 	/**
@@ -33,11 +35,13 @@ export default class VideoList extends Component {
 	}
 
 	render () {
-		const { youtubeVideos } = this.props
+		const { youtubeVideos, showLoadingAnimation } = this.props
 
-		console.log ( this.props )
 		return (
 			<div className="video-list">
+				<LoadingIndicator
+					showLoadingAnnimation={showLoadingAnimation}
+				/>
 
 				{this.renderVideoCard ( youtubeVideos, 'youtube' )}
 

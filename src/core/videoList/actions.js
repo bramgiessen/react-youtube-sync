@@ -17,18 +17,17 @@ export const videoListActions = {
 	}),
 
 	/**
-	 * Action creator that handles the fetching of an initial set
-	 * of movies from Youtube the user can browse through
+	 * Action creator that handles the fetching of videos from Youtube
 	 * @returns {Function}
 	 */
-	loadInitialYoutubeMovies: () => {
+	loadYoutubeVideos: (query, videoType = 'any') => {
 		return async function ( dispatch ) {
 			try {
 				// Let the rest of the application know we are fetching search results
 				dispatch ( videoListActions.isFetching ( true ) )
 
 				// Fetch the search results and save them in store
-				const youtubeMovies = await youtubeApi.fetchYoutubeSearchResults ( 'movie', 'movie' )
+				const youtubeMovies = await youtubeApi.fetchYoutubeSearchResults ( query, videoType )
 				dispatch ( videoListActions.setYoutubeResults ( youtubeMovies.items ) )
 
 				// Let the rest of the application know we are no longer busy fetching

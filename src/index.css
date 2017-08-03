@@ -13,6 +13,7 @@ body {
     font-size: .875rem;
     line-height: 1.4;
     color: #aaabac;
+    background: #262728;
 }
 
 
@@ -63,3 +64,28 @@ body {
         transform: rotate(360deg);
     }
 }
+
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (min-width: 46.25em){
+    .g-col.card {
+        width: 20%;
+    }
+}
+
+@media screen and (max-width: 46.25em){
+    .g-col.card {
+        width: 33.33%;
+    }
+}
+
+@media screen and (max-width: 31.25em){
+    .g-col.card {
+        width: 50%;
+    }
+}
+
+

@@ -5,13 +5,13 @@ import { createStore, applyMiddleware } from 'redux'
 import ReduxThunk from 'redux-thunk'
 import { Provider } from 'react-redux'
 import { Router, browserHistory } from 'react-router'
-import { routes } from './routes';
+import { routes } from './core/routes'
 
 // CSS
 import './index.css'
 
-// Functions
-import combineReducers from './reducers'
+// Reducers
+import combineReducers from './core/reducers'
 
 // Apply middlewares and initialize store
 const createStoreWithMiddlewares = applyMiddleware ( ReduxThunk ) ( createStore )

@@ -1,14 +1,17 @@
+// Libs & utils
 import React, { Component } from 'react'
-import './LoadingIndicator.css'
 import PropTypes from 'prop-types'
+
+// CSS
+import './LoadingIndicator.css'
 
 export default class LoadingIndicator extends Component {
 	static propTypes = {
-		loading: PropTypes.bool
+		showLoadingAnnimation: PropTypes.bool
 	}
 
 	render() {
-		if (this.props.loading) {
+		if (this.props.showLoadingAnnimation) {
 			return (
 				<div className="loading-indicator">
 					<div className="circle circle-1"></div>

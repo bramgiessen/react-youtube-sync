@@ -21,6 +21,14 @@ class HomePage extends Component {
 		}
 	}
 
+	componentDidMount () {
+		// Read userName from localStorage, if it exists -> redirect to the browse page
+		const userName = this.props.user.userName
+		if ( userName ) {
+			this.props.router.push ( '/browse' )
+		}
+	}
+
 	/**
 	 * When the user presses the 'Start watching' button
 	 */
@@ -84,12 +92,18 @@ class HomePage extends Component {
 //  CONNECT
 //-------------------------------------
 
+const mapStateToProps = ( state ) => {
+	return {
+		user : state.user,
+	}
+}
+
 const mapDispatchToProps = {
 	setUserName: userActions.setUserName
 }
 
 HomePage = connect (
-	null,
+	mapStateToProps,
 	mapDispatchToProps
 ) ( HomePage )
 

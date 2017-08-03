@@ -14,6 +14,7 @@ import SearchBar from '../searchBar/SearchBar'
 export default class AppHeader extends Component {
 	static propTypes = {
 		search: PropTypes.object.isRequired,
+		user: PropTypes.object.isRequired,
 		toggleSearch: PropTypes.func.isRequired,
 		handleSearch: PropTypes.func.isRequired,
 	}
@@ -25,7 +26,22 @@ export default class AppHeader extends Component {
 		this.props.router.push ( '/' )
 	}
 
+	/**
+	 * Conditionally render a search button
+	 * @param bool
+	 * @returns {*}
+	 */
+	renderSearchButton = (bool) => {
+		return bool ? (
+			<li>
+				<span className="btn btn-icon fa fa-search" onClick={this.props.toggleSearch}/>
+			</li>
+			) : null
+	}
+
 	render () {
+		const {search, handleSearch, user} = this.props
+
 		return (
 			<div className="app-header">
 				<div className="g-row">
@@ -37,9 +53,7 @@ export default class AppHeader extends Component {
 						</div>
 
 						<ul className="header-actions">
-							<li>
-								<span className="btn btn-icon fa fa-search" onClick={this.props.toggleSearch}/>
-							</li>
+							{this.renderSearchButton(user.userName)}
 							<li>
 								<a title="Visit my portfolio site" href="http://bramgiessen.com" target="_blank"
 									 rel="noopener noreferrer">
@@ -60,8 +74,8 @@ export default class AppHeader extends Component {
 				<div className="g-row">
 					<div className="g-col">
 						<SearchBar
-							search={this.props.search}
-							handleSearch={this.props.handleSearch}
+							search={search}
+							handleSearch={handleSearch}
 						/>
 					</div>
 				</div>
