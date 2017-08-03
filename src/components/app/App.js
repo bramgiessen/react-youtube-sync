@@ -10,15 +10,16 @@ import 'font-awesome/css/font-awesome.min.css'
 import AppHeader from '../appHeader/AppHeader'
 
 // Actions
+import { appActions } from "../../core/app/index"
 import { searchActions } from "../../core/search/index"
 
 class App extends Component {
-	/**
-	 * Navigate to search results upon search submission
-	 */
-	handleSearch = (query) => {
-		this.props.router.push ( `/search/${query}` )
-		this.props.toggleSearch()
+
+	componentWillUpdate(nextProps) {
+		// Check if the current path has been changed, if so -> navigate to new path
+		if (nextProps.app.currentPath  !== this.props.app.currentPath ) {
+			this.props.router.push ( nextProps.app.currentPath)
+		}
 	}
 
 	render () {
@@ -29,7 +30,7 @@ class App extends Component {
 					search={this.props.search}
 					user={this.props.user}
 					toggleSearch={this.props.toggleSearch}
-					handleSearch={this.handleSearch}
+					handleSearch={this.props.handleSearch}
 					router={this.props.router}
 				/>
 
@@ -51,12 +52,14 @@ const mapStateToProps = ( state ) => {
 	return {
 		search : state.search,
 		user: state.user,
+		app: state.app
 	}
 }
 
 const mapDispatchToProps = {
-	toggleSearch: searchActions.toggleSearchField,
-	setSearchQuery: searchActions.setSearchQuery
+	navigateToPath: appActions.navigateToPath,
+	handleSearch: searchActions.handleSearch,
+	toggleSearch: searchActions.toggleSearchField
 }
 
 App = connect ( mapStateToProps, mapDispatchToProps ) ( App )

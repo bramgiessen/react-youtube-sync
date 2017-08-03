@@ -12,7 +12,8 @@ import VideoCard from '../../components/videoCard/VideoCard'
 export default class VideoList extends Component {
 	static propTypes = {
 		youtubeVideos: PropTypes.array.isRequired,
-		showLoadingAnimation: PropTypes.bool.isRequired
+		showLoadingAnimation: PropTypes.bool.isRequired,
+		handleVideoSelection: PropTypes.func.isRequired,
 	}
 
 	/**
@@ -20,7 +21,7 @@ export default class VideoList extends Component {
 	 * @param youtubeVideos
 	 * @returns {*|Object|Array}
 	 */
-	renderVideoCard = ( videos, source ) => {
+	renderVideoCard = ( videos, source, handleVideoSelection ) => {
 		return (
 			videos.map ( ( video, index ) => {
 				return (
@@ -28,6 +29,7 @@ export default class VideoList extends Component {
 						key={index}
 						videoSource={source}
 						video={video}
+						handleVideoSelection={handleVideoSelection}
 					/>
 				)
 			} )
@@ -35,7 +37,7 @@ export default class VideoList extends Component {
 	}
 
 	render () {
-		const { youtubeVideos, showLoadingAnimation } = this.props
+		const { youtubeVideos, showLoadingAnimation, handleVideoSelection } = this.props
 
 		return (
 			<div className="video-list">
@@ -43,7 +45,7 @@ export default class VideoList extends Component {
 					showLoadingAnnimation={showLoadingAnimation}
 				/>
 
-				{this.renderVideoCard ( youtubeVideos, 'youtube' )}
+				{this.renderVideoCard ( youtubeVideos, 'youtube', handleVideoSelection )}
 
 			</div>
 		)

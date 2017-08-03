@@ -5,6 +5,9 @@ import { connect } from 'react-redux'
 // CSS
 import './PartyPage.css'
 
+// Components
+import PageHeader from '../../components/pageHeader/PageHeader'
+
 class PartyPage extends Component {
 
 	constructor ( props ) {
@@ -17,10 +20,14 @@ class PartyPage extends Component {
 
 		return (
 			<div className="party-page">
+				<PageHeader
+					titleLeader='Welcome to party'
+					titleMain={'partyname goes here'}
+				/>
+
 				<div className="g-row">
 					<div className="g-col">
 
-					partyyy
 
 					</div>
 				</div>

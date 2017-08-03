@@ -11,25 +11,30 @@ export default class VideoCard extends Component {
 	static propTypes = {
 		video: PropTypes.object.isRequired,
 		videoSource: PropTypes.string.isRequired,
+		handleVideoSelection: PropTypes.func.isRequired,
 	}
 
 
 	render () {
-		const { video, videoSource } = this.props
-		const videoDetails = videoUtils.getVideoDetails(video, videoSource)
+		const { video, videoSource, handleVideoSelection } = this.props
+		const videoDetails = videoUtils.getVideoDetails ( video, videoSource )
 
 		return (
-			<div className="video-card g-col card" title={videoDetails.title}>
+			<div className="video-card g-col card"
+					 title={videoDetails.title}
+					 onClick={() => {
+						 handleVideoSelection (video, videoSource)
+					 }}>
 
 				<div className="card-content">
 
 					<div className="thumbnail">
-						<img src={videoDetails.thumbnailSrc} alt="Video thumbnail" />
+						<img src={videoDetails.thumbnailSrc} alt="Video thumbnail"/>
 						<div className="video-description">
 							<Truncate lines={4} ellipsis='...'>
 								{videoDetails.description}
 							</Truncate>
-							</div>
+						</div>
 					</div>
 					<div className="main">
 						<h1 className="video-title">

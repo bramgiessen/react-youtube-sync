@@ -7,6 +7,7 @@ import './VideoPlayer.css'
 
 export default class VideoPlayer extends Component {
 	static propTypes = {
+		videoId: PropTypes.string.isRequired
 	}
 
 	render () {

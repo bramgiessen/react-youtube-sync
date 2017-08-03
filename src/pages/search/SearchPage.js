@@ -31,8 +31,9 @@ class SearchPage extends Component {
 		this.props.loadYoutubeVideos ( this.props.params.query )
 	}
 
-	componentWillUpdate(nextProps) {
-		if (nextProps.params.query  !== this.props.params.query ) {
+	componentWillUpdate ( nextProps ) {
+		// If the url query param has changed -> load new search results based on its new value
+		if ( nextProps.params.query !== this.props.params.query ) {
 			// Search query has been changed
 			this.props.loadYoutubeVideos ( nextProps.params.query )
 		}

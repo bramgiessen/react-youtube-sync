@@ -9,6 +9,7 @@ import './BrowsePage.css'
 import { introductionText } from '../../core/constants'
 
 // Actions
+import { appActions } from '../../core/app/index'
 import { videoListActions } from '../../core/videoList/index'
 
 // Components
@@ -27,7 +28,7 @@ class BrowsePage extends Component {
 		// so the user can set a username from here
 		const userName = this.props.user.userName
 		if ( !userName ) {
-			this.props.router.push ( '/' )
+			this.props.navigateToPath ( '/' )
 		}
 
 		// Load an initial set of movies from Youtube into Redux store
@@ -35,7 +36,7 @@ class BrowsePage extends Component {
 	}
 
 	render () {
-		const { user } = this.props
+		const { user, isFetchingVideos, youtubeVideos, handleVideoSelection } = this.props
 
 		return (
 			<div className="browse-page">
@@ -49,8 +50,9 @@ class BrowsePage extends Component {
 				<div className="g-row">
 
 					<VideoList
-						showLoadingAnimation={this.props.isFetchingVideos}
-						youtubeVideos={this.props.youtubeVideos}
+						showLoadingAnimation={isFetchingVideos}
+						youtubeVideos={youtubeVideos}
+						handleVideoSelection={handleVideoSelection}
 					/>
 
 				</div>
@@ -73,7 +75,9 @@ const mapStateToProps = ( state ) => {
 }
 
 const mapDispatchToProps = {
-	loadYoutubeVideos: videoListActions.loadYoutubeVideos
+	navigateToPath: appActions.navigateToPath,
+	loadYoutubeVideos: videoListActions.loadYoutubeVideos,
+	handleVideoSelection: videoListActions.handleVideoSelection
 }
 
 BrowsePage = connect (
