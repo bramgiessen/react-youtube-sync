@@ -1,0 +1,59 @@
+.page-header {
+    width: 100%;
+    height: auto;
+    background-image: linear-gradient(to bottom, rgba(30, 31, 32, 1) 10%, rgba(0, 0, 0, 0));
+    padding: 35px 10px 0 10px;
+    margin-bottom: 10px;
+}
+
+.page-header .page-header-title {
+    color: #d6d6d6;
+    line-height: 1.1;
+}
+
+.page-header .page-header-title .leader {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 300;
+}
+
+.page-header .page-header-title .title-main {
+    display: inline-block;
+    font-size: 3rem;
+    font-weight: 500;
+}
+
+.page-header .page-header-title .title-after {
+    display: inline-block;
+    font-size: 2.25rem;
+    font-weight: 300;
+}
+
+.page-header .page-header-description {
+    margin-top: 40px;
+    line-height: 1.1;
+    font-size: 1rem;
+}
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 46.25em){
+    .page-header .page-header-title .leader {
+        font-size: 1.4rem;
+    }
+
+    .page-header .page-header-title .title-main {
+        font-size: 2rem;
+    }
+
+    .page-header .page-header-title .title-after {
+        font-size: 1.7rem;
+    }
+
+    .page-header .page-header-description {
+        margin-top: 20px;
+    font-size: 0.7rem;
+    }
+}

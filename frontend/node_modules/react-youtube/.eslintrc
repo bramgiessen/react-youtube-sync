@@ -1,0 +1,7 @@
+{
+  "parser": "babel-eslint",
+  "extends": "eslint-config-airbnb",
+  "rules": {
+  	"linebreak-style": 0,
+  }
+}
