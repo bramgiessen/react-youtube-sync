@@ -10,7 +10,7 @@ export default class ChatBox extends Component {
 	static propTypes = {
 		onMessageSend: PropTypes.func.isRequired,
 		partyId: PropTypes.string.isRequired,
-		userName: PropTypes.string.isRequired,
+		userName: PropTypes.string,
 		messagesInParty: PropTypes.array
 	}
 

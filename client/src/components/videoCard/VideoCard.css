@@ -24,6 +24,8 @@
     height: 96px;
     display: flex;
     align-items: center;
+    background: #171717;
+    overflow: hidden;
 }
 
 .video-card .card-content .thumbnail img {

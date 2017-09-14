@@ -19,7 +19,7 @@ export const routes = {
 			component: BrowsePage
 		},
 		{
-			path: '/party/:id',
+			path: '/party/:partyId',
 			component: PartyPage
 		},
 		{

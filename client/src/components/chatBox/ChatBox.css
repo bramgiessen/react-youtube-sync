@@ -76,6 +76,7 @@
     color: #f0f0f0;
     font-size: 1.1rem;
     padding: 0 10px;
+    -webkit-appearance: none;
 }
 
 .chat-box .input-box .submit:hover{

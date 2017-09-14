@@ -14,6 +14,7 @@ import { appActions } from "../../core/app/index"
 import { searchActions } from "../../core/search/index"
 
 class App extends Component {
+
 	componentWillUpdate ( nextProps ) {
 		// Check if the current path has been changed, if so -> navigate to new path
 		if ( nextProps.app.currentPath !== this.props.app.currentPath ) {

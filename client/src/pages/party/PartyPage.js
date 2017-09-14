@@ -18,12 +18,13 @@ class PartyPage extends Component {
 	static propTypes = {
 		selectedVideo: PropTypes.object.isRequired,
 		connectToParty: PropTypes.func.isRequired,
+        userName: PropTypes.string
 	}
 
 	constructor ( props ) {
 		super ( props )
 		this.state = {}
-		this.partyId = generalUtils.getPartyIdFromUrl ( window.location.href )
+		this.partyId = this.props.partyId || this.props.params.partyId
 	}
 
 	componentDidMount () {
@@ -34,8 +35,9 @@ class PartyPage extends Component {
 	}
 
 	handleFocus = ( event ) => {
-		event.target.select ();
-	}
+		// we use setSelectionRange() because select() doesn't work on IOS
+		event.target.setSelectionRange(0, 9999)
+    }
 
 	/**
 	 * Render block where users can copy their sharable party url from
@@ -49,7 +51,8 @@ class PartyPage extends Component {
 				<input type="text"
 							 readOnly='readonly'
 							 value={partyUrl}
-							 onFocus={this.handleFocus}/>
+					   		 onClick={this.handleFocus}
+							 />
 			</div>
 		)
 	}
@@ -77,9 +80,8 @@ class PartyPage extends Component {
 	}
 
 	render () {
-		const { selectedVideo, usersInParty, setVideoPlayerState, playerState } = this.props
+		const { selectedVideo, usersInParty, setVideoPlayerState, playerState, userName } = this.props
 		const partyUrl = window.location.href.split ( '?' )[ 0 ]
-
 
 		return (
 			<div className="party-page">
@@ -92,6 +94,7 @@ class PartyPage extends Component {
 								<VideoPlayer
 									selectedVideo={selectedVideo}
 									partyId={this.partyId}
+									userName={userName}
 									onPlayerStateChange={setVideoPlayerState}
 									playerState={playerState}
 								/>
@@ -103,7 +106,7 @@ class PartyPage extends Component {
 						<ChatBox
 							onMessageSend={this.props.sendMessageToParty}
 							partyId={this.partyId}
-							userName={this.props.userName}
+							userName={userName}
 							messagesInParty={this.props.messagesInParty}
 						/>
 

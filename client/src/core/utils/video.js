@@ -27,7 +27,6 @@ export const videoUtils = {
 	 * @returns {*}
 	 */
 	getYoutubePlayerState: ( event ) => {
-		console.log(event)
 		let state = ''
 		switch ( event.data ) {
 			case -1:

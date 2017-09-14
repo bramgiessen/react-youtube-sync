@@ -13,7 +13,8 @@ export default class VideoPlayer extends Component {
 		onPlayerStateChange: PropTypes.func.isRequired,
 		partyId: PropTypes.string.isRequired,
 		playerState: PropTypes.object.isRequired,
-		fullWidth: PropTypes.bool
+		fullWidth: PropTypes.bool,
+        userName: PropTypes.string
 	}
 
 	constructor(props) {
@@ -24,9 +25,9 @@ export default class VideoPlayer extends Component {
 	}
 
 	componentDidUpdate(prevProps, prevState){
-		const videoPlayer = this.videoPlayer.internalPlayer
+		const videoPlayer = this.videoPlayer && this.videoPlayer.internalPlayer
 
-		// If the player state has been changes by someone else in the party and there is more than a 2 sec difference ->
+		// If the player state has been changed by someone else in the party and there is more than a 2 sec difference ->
 		// update the player position
 		if(prevProps.playerState.playerState !== this.props.playerState.playerState
 				|| (Math.abs(prevProps.playerState.timeInVideo - this.props.playerState.timeInVideo) > 2)){
@@ -48,10 +49,10 @@ export default class VideoPlayer extends Component {
 	 * @param videoSource
 	 * @returns {XML | null}
 	 */
-	renderVideoPlayer = ( videoId, videoSource, onPlayerStateChange, partyId ) => {
+	renderVideoPlayer = ( videoId, videoSource, onPlayerStateChange, partyId, userName ) => {
 		switch ( videoSource ) {
 			case 'youtube':
-				return this.renderYoutubeVideoPlayer ( videoId, onPlayerStateChange, partyId )
+				return this.renderYoutubeVideoPlayer ( videoId, onPlayerStateChange, partyId, userName )
 			default:
 				return null
 		}
@@ -62,12 +63,15 @@ export default class VideoPlayer extends Component {
 	 * @param videoId
 	 * @returns {XML}
 	 */
-	renderYoutubeVideoPlayer = ( videoId, onPlayerStateChange, partyId ) => {
+	renderYoutubeVideoPlayer = ( videoId, onPlayerStateChange, partyId, userName ) => {
+		const userIsLoggedIn = !!userName
+
 		const opts = {
 			height: '100%',
 			width: '100%',
 			playerVars: { // https://developers.google.com/youtube/player_parameters
-				autoplay: 1
+				autoplay: 0,
+				controls: userIsLoggedIn ? 1 : 0 // Only show controls if the user is logged in
 			}
 		}
 
@@ -77,23 +81,29 @@ export default class VideoPlayer extends Component {
 				opts={opts}
 				ref={e => this.videoPlayer = e}
 				onStateChange={
-					( event ) => onPlayerStateChange (
+					( event ) => {
+						console.log(event)
+						console.log(videoUtils.getYoutubePlayerState ( event ))
+
+						onPlayerStateChange (
 						videoUtils.getYoutubePlayerState ( event ),
 						event.target.getCurrentTime (),
 						partyId )
+					}
 				}
 			/>
 		)
 	}
 
 	render () {
-		const { selectedVideo, onPlayerStateChange, partyId } = this.props
+		console.log(this.props)
+		const { selectedVideo, onPlayerStateChange, partyId, userName } = this.props
 		const { id, videoSource } = selectedVideo
 
 
 		return (
 			<div className="video-player">
-				{this.renderVideoPlayer ( id, videoSource, onPlayerStateChange, partyId )}
+				{this.renderVideoPlayer ( id, videoSource, onPlayerStateChange, partyId, userName )}
 			</div>
 		)
 	}

@@ -1,34 +1,41 @@
 // Libs & utils
-import appCache from '../cache'
 import { generalUtils, cacheUtils } from '../utils/index'
 import { debounce } from 'lodash'
 
 export const party = {
-	cacheKeys: {
-		partyIds: 'partyIds',
-		videosForParties: 'videosForParties',
-		usersInParties: 'usersInParties',
-		messagesInParties: 'messagesInParties',
-	},
+
+	activeParties: [
+		{
+			partyId:0,
+			partyInitiatorId: null,
+			videoForParty:{},
+			usersInParty:[],
+			messagesInParty:[]
+		}
+	],
 
 	createParty: ( io, socket ) => {
+		const socketId = socket.id
+
 		// Generate unique partyId
 		let partyId = generalUtils.generateId ()
 		while ( party.partyExists ( partyId ) ) {
 			partyId = generalUtils.generateId ()
 		}
-		cacheUtils.addToArrayInCache ( partyId, party.cacheKeys.partyIds, false )
 
-		// Make sure the user left all old parties before joining any new ones
-		party.leaveParty ( io, socket )
-
-		// Join the new party
-		socket.join ( partyId )
+		// Add a new party with the generated partyId to the activeParties array
+		party.activeParties.push({
+			partyId,
+            partyInitiatorId: socketId,
+            videoForParty: {},
+            usersInParty:[],
+            messagesInParty:[]
+		})
 
 		return partyId
 	},
 
-	leaveParty: ( io, socket ) => {
+	leaveCurrentParties: ( io, socket ) => {
 		const currentParties = io.sockets.adapter.sids[ socket.id ]
 		for ( var party in currentParties ) {
 			socket.leave ( party )
@@ -36,94 +43,71 @@ export const party = {
 	},
 
 	partyExists: ( partyId ) => {
-		const parties = appCache.get ( party.cacheKeys.partyIds )
-		return parties && parties.indexOf ( partyId ) !== -1
+		const partyIds = party.activeParties.map(activeParty => activeParty.partyId)
+		return partyIds && partyIds.indexOf ( partyId ) !== -1
 	},
 
 	setVideoForParty: ( io, socket, videoDetails ) => {
-		const currentPartyId = Object.keys ( io.sockets.adapter.sids[ socket.id ] )[ 0 ]
-		const currentVideosForParties = appCache.get ( party.cacheKeys.videosForParties )
+		const socketId = socket.id
+		const currentParty = party.activeParties.find((activeParty) => activeParty.partyInitiatorId && activeParty.partyInitiatorId === socketId)
 
-		// Make sure we don't already have a video for this party set in our cache
-		const filteredVideosForParties = currentVideosForParties
-			? currentVideosForParties.filter ( videoForParty => videoForParty.partyId
-			!== currentPartyId ) : []
+		// If we are trying to set the videoId for a non-existing party -> abort
+		if(!currentParty){ return }
 
-		const videoForParty = { partyId: currentPartyId, videoDetails }
+		// Set the selected video as a property for the corresponding party
+        const videoForParty = { partyId: currentParty.partyId, videoDetails }
+		currentParty.videoForParty = videoForParty
 
-		// Add the video for this party to the filteredVideosForParties array
-		filteredVideosForParties.push ( videoForParty )
-
-		// Set the videosForParties in cache
-		appCache.set ( party.cacheKeys.videosForParties, filteredVideosForParties )
+		// The video has been set for this party -> remove the partyInitiatorId so
+		// that the initiating user can continue to create new parties
+        currentParty.partyInitiatorId = null
 	},
 
 	getVideoForParty: ( partyId ) => {
-		const currentVideosForParties = appCache.get ( party.cacheKeys.videosForParties )
-		return currentVideosForParties ? currentVideosForParties.find ( ( videoForParty ) => {
-				return videoForParty.partyId === partyId
-			} ) : []
+        const partyForId = party.activeParties.find((activeParty) => activeParty.partyId && activeParty.partyId === partyId)
+
+		return partyForId && partyForId.videoForParty ?
+            partyForId.videoForParty : {}
 	},
 
 	addUserToParty: ( io, socket, partyId, userName ) => {
 		const socketId = socket.id
+        const partyForId = party.activeParties.find((activeParty) => activeParty.partyId && activeParty.partyId === partyId)
+        const userInParty = { socketId, partyId, userName }
 
-		// Read all users and in which parties they currently reside
-		const currentUsersInParties = appCache.get ( party.cacheKeys.usersInParties )
+        // Make sure the user isn't in any other parties anymore
+       	party.removeUserFromParty(io, socket)
 
-		// Make sure we don't have the user in another party as well
-		const filteredUsersInParties = currentUsersInParties
-			? currentUsersInParties.filter ( userInParty => userInParty.socketId
-			!== socketId ) : []
+		// Add the user to the selected party
+        partyForId.usersInParty.push(userInParty)
 
-		const userInParty = { socketId, partyId, userName }
-
-		// Add the user the filteredUsersInParties array
-		filteredUsersInParties.push ( userInParty )
-
-		// Connect to the new party
+		// Connect the user to the new party
 		socket.join ( partyId )
-
-		// Set the usersInParties in cache
-		appCache.set ( party.cacheKeys.usersInParties, filteredUsersInParties )
 	},
 
 	removeUserFromParty: ( io, socket ) => {
 		const socketId = socket.id
 
-		// Read all users and in which parties they currently reside
-		const currentUsersInParties = appCache.get ( party.cacheKeys.usersInParties )
+        // Make sure the user isn't in any server managed parties anymore
+        party.activeParties.forEach((activeParty) => {
+            activeParty.usersInParty = activeParty.usersInParty.filter((user) => {
+                return user.socketId !== socketId
+            })
+        })
 
-		// Make sure we don't have the user in another party as well
-		const filteredUsersInParties = currentUsersInParties
-			? currentUsersInParties.filter ( userInParty => userInParty.socketId
-			!== socketId ) : []
-
-		// Disconnect the socket from the party / room
-		const currentParties = io.sockets.adapter.sids[ socket.id ]
-		for ( let party in currentParties ) {
-			socket.leave ( party )
-		}
-
-		// Set the videosForParties in cache
-		appCache.set ( party.cacheKeys.usersInParties, filteredUsersInParties )
+		// Disconnect the socket from the party / room managed by socketIo
+		party.leaveCurrentParties(io, socket)
 	},
 
 	getUsersForParty: ( partyId ) => {
-		const currentUsersInParties = appCache.get ( party.cacheKeys.usersInParties )
-		return currentUsersInParties ? currentUsersInParties.filter ( ( userInParty ) => {
-				return userInParty.partyId === partyId
-			} ) : []
+		const partyForId = party.activeParties.find((activeParty) => activeParty.partyId === partyId)
+		return partyForId ? partyForId.usersInParty : []
 	},
 
 	getPartyIdsForUser: ( socketId ) => {
-		const currentUsersInParties = appCache.get ( party.cacheKeys.usersInParties )
-
-		return currentUsersInParties ? currentUsersInParties.filter ( ( userInParty ) => {
-				return userInParty.socketId === socketId
-			} ).map ( ( userInParty ) => {
-				return userInParty.partyId
-			} ) : []
+        return party.activeParties.filter((activeParty) => {
+        	return activeParty.usersInParty.find((user) =>  user.socketId === socketId)
+		}).map((activeParty) => activeParty.partyId)
 	},
 
 	disconnectFromParty: ( io, socket ) => {
@@ -140,17 +124,12 @@ export const party = {
 	},
 
 	getMessagesInParty: ( partyId ) => {
-		// Read all users and in which parties they currently reside
-		const currentMessagesInParties = appCache.get ( party.cacheKeys.messagesInParties )
+        const partyForId = party.activeParties.find((activeParty) => activeParty.partyId === partyId)
 
-		// Make sure we don't have the messages from another party as well
-		return currentMessagesInParties
-			? currentMessagesInParties.filter ( messageInParty => messageInParty.partyId
-			=== partyId ) : []
+		return partyForId.messagesInParty
 	},
 
 	sendMessageToParty: ( io, socket, message, partyId, userName ) => {
-
 		// Read all messages in the party
 		const messagesInCurrentParty = party.getMessagesInParty ( partyId )
 
@@ -158,9 +137,6 @@ export const party = {
 
 		// Add the message to the messagesInCurrentParty array
 		messagesInCurrentParty.push ( messageWithUserName )
-
-		// Set the messagesInParty in cache
-		appCache.set ( party.cacheKeys.messagesInParties, messagesInCurrentParty )
 
 		io.to ( partyId ).emit ( 'action', { type: 'PARTY_MESSAGE_RECEIVED', payload: messagesInCurrentParty } )
 	},
