@@ -25,3 +25,17 @@
     background: transparent;
     -webkit-font-smoothing: antialiased;
 }
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 46.25em){
+    .search-bar .search-form .input {
+        font-size: 1.3rem;
+    }
+
+    .search-bar.open {
+        height: 70px;
+    }
+}

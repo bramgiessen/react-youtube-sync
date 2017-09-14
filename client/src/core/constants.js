@@ -4,7 +4,7 @@ import React from 'react'
 //=====================================
 //  BACKEND / WEBSOCKET SERVER
 //-------------------------------------
-export const WEBSOCKET_URL = 'http://0.0.0.0:9000'
+export const WEBSOCKET_URL = 'http://192.168.1.19:9000'
 
 
 //=====================================

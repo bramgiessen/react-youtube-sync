@@ -22,7 +22,6 @@
 .video-card .card-content .thumbnail {
     position: relative;
     height: 96px;
-    background: #171819;
     display: flex;
     align-items: center;
 }

@@ -21,7 +21,7 @@ export default class VideoList extends Component {
 	 * @param youtubeVideos
 	 * @returns {*|Object|Array}
 	 */
-	renderVideoCard = ( videos, source, handleVideoSelection ) => {
+	renderVideoCards = ( videos, source, handleVideoSelection ) => {
 		return (
 			videos.map ( ( video, index ) => {
 				return (
@@ -45,7 +45,7 @@ export default class VideoList extends Component {
 					showLoadingAnnimation={showLoadingAnimation}
 				/>
 
-				{this.renderVideoCard ( youtubeVideos, 'youtube', handleVideoSelection )}
+				{this.renderVideoCards ( youtubeVideos, 'youtube', handleVideoSelection )}
 
 			</div>
 		)

@@ -1,6 +1,6 @@
 .app-description-block {
     width: 100%;
-    margin-top: 120px;
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     transition: margin-top 0.4s ease, opacity 0.25s ease;
@@ -26,23 +26,6 @@
     margin-top: 25px;
 }
 
-.app-description-block .tutorial {
-    margin-top: 40px;
-    display: flex;
-    flex-direction: column;
-}
-
-.app-description-block .tutorial .tutorial-header {
-    text-align: center;
-    font-size: 1.2vw;
-}
-
-.app-description-block .tutorial .tutorial-steps {
-    margin: 0 auto;
-    max-width: 55%;
-    font-size: 1vw;
-}
-
 .app-description-block .start-button {
     opacity: 0.7;
     display: table;
@@ -59,7 +42,6 @@
 }
 
 .app-description-block .infographic {
-    margin-top: 40px;
     display: flex;
     flex-direction: row;
     height: 200px;

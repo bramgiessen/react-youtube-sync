@@ -37,16 +37,6 @@ export default class AppDescription extends Component {
 				<span className="tagline">The easiest way to watch Youtube videos together in <i>perfect sync</i>,
 								across multiple browsers / devices !</span>
 
-				<div className="tutorial">
-					<span className="tutorial-header">How? It's easy! Just follow these steps:</span>
-
-					<ol className="tutorial-steps">
-						<li>Choose a username</li>
-						<li>Choose a video</li>
-						<li>Share the special generated url with your friends and start watching together!</li>
-					</ol>
-				</div>
-
 				<div className="start-button" onClick={startButtonClickHandler}>Start watching !</div>
 			</div>
 		)

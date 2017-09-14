@@ -43,6 +43,7 @@
     float: right;
     margin: 0;
     padding-top: 20px;
+    padding-left: 0;
     height: 70px;
 }
 
@@ -73,16 +74,6 @@
     font-size: 1.4rem;
 }
 
-.app-header .search-bar {
-    height: 0;
-    overflow: hidden;
-    transition: height .16s ease-in-out;
-}
-
-.app-header .search-bar.open {
-    height: 90px;
-}
-
 /*==================================*/
 /* Media queries */
 /*----------------------------------*/
@@ -90,5 +81,9 @@
 @media screen and (max-width: 46.25em){
     .app-header .header-title-wrapper .content{
         font-size: 0.75rem;
+    }
+
+    .app-header .header-actions .btn-icon{
+        font-size: 1rem;
     }
 }
