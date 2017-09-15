@@ -4,11 +4,18 @@ import { debounce } from 'lodash'
 
 export const party = {
 
+	// Keeping all parties in memory for this demo / P.O.C.
+	// in production software this would be persisted in i.e.
 	activeParties: [
 		{
 			partyId:0,
 			partyInitiatorId: null,
-			videoForParty:{},
+			videoForParty:{
+				videoDetails : {},
+				videoState : 'paused',
+				timeInVideo : 0
+			},
+            playerInterval : null,
 			usersInParty:[],
 			messagesInParty:[]
 		}
@@ -55,7 +62,7 @@ export const party = {
 		if(!currentParty){ return }
 
 		// Set the selected video as a property for the corresponding party
-        const videoForParty = { partyId: currentParty.partyId, videoDetails }
+        const videoForParty = { videoDetails, videoState: 'paused', timeInVideo: 0 }
 		currentParty.videoForParty = videoForParty
 
 		// The video has been set for this party -> remove the partyInitiatorId so
@@ -142,8 +149,26 @@ export const party = {
 	},
 
 	setPlayerState: debounce(( io, socket, payload, playerState, timeInVideo, partyId ) => {
+        const partyForId = party.activeParties.find((activeParty) => activeParty.partyId === partyId)
+		const videoForParty = party.getVideoForParty(partyId)
+
+		console.log(playerState, timeInVideo)
 		if ( playerState === 'playing' || playerState === 'paused' ) {
+            videoForParty.videoState = playerState
+			videoForParty.timeInVideo = timeInVideo
 			io.to ( partyId ).emit ( 'action', { type: 'SET_PARTY_PLAYER_STATE', payload: { playerState, timeInVideo } } )
+		}
+
+		// Keep track of the time in the video while the video is playing
+		if(playerState === 'playing') {
+			if(!partyForId.playerInterval){
+                partyForId.playerInterval = setInterval(() => {
+                    videoForParty.timeInVideo += 1
+                }, 1000)
+			}
+		} else if (playerState === 'paused' && videoForParty.playerInterval) {
+			clearInterval(partyForId.playerInterval)
+            partyForId.playerInterval = null
 		}
 
 	}, 500)

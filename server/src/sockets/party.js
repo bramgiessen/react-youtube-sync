@@ -33,7 +33,7 @@ function connectToParty ( io, socket, payload ) {
 
 	if ( videoForParty ) {
         // Emit data necessary for joining the party
-		socket.emit ( 'action', { type: 'SET_SELECTED_VIDEO', payload: videoForParty.videoDetails } )
+		socket.emit ( 'action', { type: 'SET_SELECTED_VIDEO', payload: videoForParty } )
 		io.to ( partyId ).emit ( 'action', { type: 'SET_USERS_IN_PARTY', payload: usersInParty } )
 		io.to ( partyId ).emit ( 'action', { type: 'PARTY_MESSAGE_RECEIVED', payload: messagesInParty } )
 	}

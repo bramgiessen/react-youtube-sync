@@ -32,7 +32,7 @@ export default class VideoPlayer extends Component {
 		if(prevProps.playerState.playerState !== this.props.playerState.playerState
 				|| (Math.abs(prevProps.playerState.timeInVideo - this.props.playerState.timeInVideo) > 2)){
 
-			videoPlayer.seekTo(this.props.playerState.timeInVideo)
+			videoPlayer.seekTo(this.props.selectedVideo.timeInVideo)
 			if(this.props.playerState.playerState !== 'playing'){
 				videoPlayer.pauseVideo()
 			}else{
@@ -49,10 +49,10 @@ export default class VideoPlayer extends Component {
 	 * @param videoSource
 	 * @returns {XML | null}
 	 */
-	renderVideoPlayer = ( videoId, videoSource, onPlayerStateChange, partyId, userName ) => {
+	renderVideoPlayer = ( videoId, videoSource, videoState, timeInVideo, onPlayerStateChange, partyId, userName ) => {
 		switch ( videoSource ) {
 			case 'youtube':
-				return this.renderYoutubeVideoPlayer ( videoId, onPlayerStateChange, partyId, userName )
+				return this.renderYoutubeVideoPlayer ( videoId, videoState, timeInVideo, onPlayerStateChange, partyId, userName )
 			default:
 				return null
 		}
@@ -63,14 +63,14 @@ export default class VideoPlayer extends Component {
 	 * @param videoId
 	 * @returns {XML}
 	 */
-	renderYoutubeVideoPlayer = ( videoId, onPlayerStateChange, partyId, userName ) => {
+	renderYoutubeVideoPlayer = ( videoId, videoState, timeInVideo, onPlayerStateChange, partyId, userName ) => {
 		const userIsLoggedIn = !!userName
 
 		const opts = {
 			height: '100%',
 			width: '100%',
 			playerVars: { // https://developers.google.com/youtube/player_parameters
-				autoplay: 0,
+				autoplay: videoState === 'playing' ? 1 : 0,
 				controls: userIsLoggedIn ? 1 : 0 // Only show controls if the user is logged in
 			}
 		}
@@ -82,9 +82,6 @@ export default class VideoPlayer extends Component {
 				ref={e => this.videoPlayer = e}
 				onStateChange={
 					( event ) => {
-						console.log(event)
-						console.log(videoUtils.getYoutubePlayerState ( event ))
-
 						onPlayerStateChange (
 						videoUtils.getYoutubePlayerState ( event ),
 						event.target.getCurrentTime (),
@@ -98,12 +95,13 @@ export default class VideoPlayer extends Component {
 	render () {
 		console.log(this.props)
 		const { selectedVideo, onPlayerStateChange, partyId, userName } = this.props
-		const { id, videoSource } = selectedVideo
+		const { id, videoSource } = selectedVideo.videoDetails
+		const { videoState, timeInVideo } = selectedVideo
 
 
 		return (
 			<div className="video-player">
-				{this.renderVideoPlayer ( id, videoSource, onPlayerStateChange, partyId, userName )}
+				{this.renderVideoPlayer ( id, videoSource, videoState, timeInVideo, onPlayerStateChange, partyId, userName )}
 			</div>
 		)
 	}

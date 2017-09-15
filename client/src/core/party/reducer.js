@@ -8,11 +8,15 @@ import { partyActions } from './index'
 const initialState = Immutable ( {
 	partyId: null,
 	selectedVideo: {
-		id: '',
-		title: '',
-		description: '',
-		thumbnailSrc: '',
-		videoSource: ''
+        videoDetails: {
+            id: '',
+            title: '',
+            description: '',
+            thumbnailSrc: '',
+            videoSource: ''
+		},
+        videoState: '',
+		timeInVideo: 0
 	},
 	usersInParty: [],
 	messagesInParty: [],
@@ -38,8 +42,8 @@ export const partyReducer = ( state = initialState, action ) => {
 			return Immutable.set ( state, 'messagesInParty', action.payload )
 
 		case partyActions.SET_PARTY_PLAYER_STATE:
-			return Immutable.set ( state, 'playerState', action.payload )
-
+			// @todo: make sure selectedvideo also gets updated with new time of video!!
+			return Immutable.flatMap({'playerState' : action.payload, 'selectedVideo' : action.payload.timeInVideo})
 
 		default:
 			return state
