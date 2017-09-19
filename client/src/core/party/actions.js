@@ -1,7 +1,7 @@
 export const partyActions = {
 	SET_PARTY_ID: 'SET_PARTY_ID',
+    SET_PARTY_STATE: 'SET_PARTY_STATE',
 	WEBSOCKET_CREATE_PARTY: 'WEBSOCKET_CREATE_PARTY',
-	WEBSOCKET_SET_SELECTED_VIDEO: 'WEBSOCKET_SET_SELECTED_VIDEO',
 	WEBSOCKET_CONNECT_TO_PARTY: 'WEBSOCKET_CONNECT_TO_PARTY',
 	WEBSOCKET_DISCONNECT_FROM_PARTY: 'WEBSOCKET_DISCONNECT_FROM_PARTY',
 	WEBSOCKET_SEND_MESSAGE_TO_PARTY: 'WEBSOCKET_SEND_MESSAGE_TO_PARTY',
@@ -11,13 +11,9 @@ export const partyActions = {
 	SET_USERS_IN_PARTY: 'SET_USERS_IN_PARTY',
 	SET_PARTY_PLAYER_STATE: 'SET_PARTY_PLAYER_STATE',
 
-	createParty: () => ({
-		type: partyActions.WEBSOCKET_CREATE_PARTY
-	}),
-
-	setSelectedVideo: ( videoDetails, videoSource ) => ({
-		type: partyActions.WEBSOCKET_SET_SELECTED_VIDEO,
-		payload: { ...videoDetails, videoSource }
+	createParty: (videoDetails, videoSource) => ({
+		type: partyActions.WEBSOCKET_CREATE_PARTY,
+        payload: { ...videoDetails, videoSource }
 	}),
 
 	connectToParty: ( userName, partyId ) => ({

@@ -2,7 +2,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { generalUtils } from '../../core/utils/index'
 
 // CSS
 import './PartyPage.css'
@@ -15,6 +14,7 @@ import ChatBox from '../../components/chatBox/ChatBox'
 import { partyActions } from '../../core/party/index'
 
 class PartyPage extends Component {
+	// todo: make all proptypes match actual proptypes
 	static propTypes = {
 		selectedVideo: PropTypes.object.isRequired,
 		connectToParty: PropTypes.func.isRequired,
@@ -44,7 +44,7 @@ class PartyPage extends Component {
 	 * @param partyUrl
 	 * @returns {XML}
 	 */
-	renderShareablePArtyUrl = ( partyUrl ) => {
+	renderShareablePartyUrl = ( partyUrl ) => {
 		return (
 			<div className="share-party-url">
 				<h2 className="title">Your shareable party URL:</h2>
@@ -80,14 +80,14 @@ class PartyPage extends Component {
 	}
 
 	render () {
-		const { selectedVideo, usersInParty, setVideoPlayerState, playerState, userName } = this.props
+		const { selectedVideo, partyState, usersInParty, setVideoPlayerState, videoPlayer, userName } = this.props
 		const partyUrl = window.location.href.split ( '?' )[ 0 ]
 
 		return (
 			<div className="party-page">
 				<div className="g-row">
 					<div className="g-col">
-						{this.renderShareablePArtyUrl ( partyUrl )}
+						{this.renderShareablePartyUrl ( partyUrl )}
 
 						<div className="content-flex-horizontal">
 							<div className="player-container">
@@ -96,7 +96,7 @@ class PartyPage extends Component {
 									partyId={this.partyId}
 									userName={userName}
 									onPlayerStateChange={setVideoPlayerState}
-									playerState={playerState}
+									videoPlayer={videoPlayer}
 								/>
 							</div>
 
@@ -127,9 +127,10 @@ const mapStateToProps = ( state ) => {
 		selectedVideo: state.party.selectedVideo,
 		userName: state.user.userName,
 		partyId: state.party.partyId,
+		partyState: state.party.partyState,
 		usersInParty: state.party.usersInParty,
 		messagesInParty: state.party.messagesInParty,
-		playerState: state.party.playerState
+        videoPlayer: state.party.videoPlayer
 	}
 }
 

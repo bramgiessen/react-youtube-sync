@@ -12,7 +12,7 @@ export default class VideoPlayer extends Component {
 		selectedVideo: PropTypes.object.isRequired,
 		onPlayerStateChange: PropTypes.func.isRequired,
 		partyId: PropTypes.string.isRequired,
-		playerState: PropTypes.object.isRequired,
+        videoPlayer: PropTypes.object.isRequired,
 		fullWidth: PropTypes.bool,
         userName: PropTypes.string
 	}
@@ -29,11 +29,11 @@ export default class VideoPlayer extends Component {
 
 		// If the player state has been changed by someone else in the party and there is more than a 2 sec difference ->
 		// update the player position
-		if(prevProps.playerState.playerState !== this.props.playerState.playerState
-				|| (Math.abs(prevProps.playerState.timeInVideo - this.props.playerState.timeInVideo) > 2)){
+		if(prevProps.videoPlayer.playerState !== this.props.videoPlayer.playerState
+				|| (Math.abs(prevProps.videoPlayer.timeInVideo - this.props.videoPlayer.timeInVideo) > 2)){
 
-			videoPlayer.seekTo(this.props.selectedVideo.timeInVideo)
-			if(this.props.playerState.playerState !== 'playing'){
+			videoPlayer.seekTo(this.props.videoPlayer.timeInVideo)
+			if(this.props.videoPlayer.playerState !== 'playing'){
 				videoPlayer.pauseVideo()
 			}else{
 				videoPlayer.playVideo()
@@ -49,10 +49,10 @@ export default class VideoPlayer extends Component {
 	 * @param videoSource
 	 * @returns {XML | null}
 	 */
-	renderVideoPlayer = ( videoId, videoSource, videoState, timeInVideo, onPlayerStateChange, partyId, userName ) => {
-		switch ( videoSource ) {
+	renderVideoPlayer = ( selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName ) => {
+		switch ( selectedVideo.videoSource ) {
 			case 'youtube':
-				return this.renderYoutubeVideoPlayer ( videoId, videoState, timeInVideo, onPlayerStateChange, partyId, userName )
+				return this.renderYoutubeVideoPlayer (selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName )
 			default:
 				return null
 		}
@@ -63,21 +63,21 @@ export default class VideoPlayer extends Component {
 	 * @param videoId
 	 * @returns {XML}
 	 */
-	renderYoutubeVideoPlayer = ( videoId, videoState, timeInVideo, onPlayerStateChange, partyId, userName ) => {
+	renderYoutubeVideoPlayer = ( selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName ) => {
 		const userIsLoggedIn = !!userName
 
 		const opts = {
 			height: '100%',
 			width: '100%',
 			playerVars: { // https://developers.google.com/youtube/player_parameters
-				autoplay: videoState === 'playing' ? 1 : 0,
+				autoplay: videoPlayer.playerState === 'playing' ? 1 : 0,
 				controls: userIsLoggedIn ? 1 : 0 // Only show controls if the user is logged in
 			}
 		}
 
 		return (
 			<YoutubePlayer
-				videoId={videoId}
+				videoId={selectedVideo.id}
 				opts={opts}
 				ref={e => this.videoPlayer = e}
 				onStateChange={
@@ -93,15 +93,11 @@ export default class VideoPlayer extends Component {
 	}
 
 	render () {
-		console.log(this.props)
-		const { selectedVideo, onPlayerStateChange, partyId, userName } = this.props
-		const { id, videoSource } = selectedVideo.videoDetails
-		const { videoState, timeInVideo } = selectedVideo
-
+		const { selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName } = this.props
 
 		return (
 			<div className="video-player">
-				{this.renderVideoPlayer ( id, videoSource, videoState, timeInVideo, onPlayerStateChange, partyId, userName )}
+				{this.renderVideoPlayer ( selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName )}
 			</div>
 		)
 	}

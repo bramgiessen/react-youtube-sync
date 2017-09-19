@@ -30,10 +30,7 @@ export const videoListActions = {
 	handleVideoSelection: (videoDetails, videoSource) => {
 		return async function ( dispatch ) {
 			// Create a new party
-			dispatch(partyActions.createParty())
-
-			// Set the selected video id
-			dispatch(partyActions.setSelectedVideo(videoDetails, videoSource))
+			dispatch(partyActions.createParty(videoDetails, videoSource))
 		}
 	},
 

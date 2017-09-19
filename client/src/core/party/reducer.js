@@ -4,25 +4,22 @@ import Immutable from 'seamless-immutable'
 // Actions
 import { partyActions } from './index'
 
-
 const initialState = Immutable ( {
 	partyId: null,
+	partyState: 'active',
 	selectedVideo: {
-        videoDetails: {
             id: '',
             title: '',
             description: '',
             thumbnailSrc: '',
             videoSource: ''
-		},
-        videoState: '',
-		timeInVideo: 0
 	},
 	usersInParty: [],
 	messagesInParty: [],
-	playerState: {
-		playerState: '',
-		timeInVideo: 0
+    videoPlayer: {
+        playerState: 'paused',
+        playerInterval: null,
+        timeInVideo: 0
 	}
 } )
 
@@ -32,8 +29,11 @@ export const partyReducer = ( state = initialState, action ) => {
 		case partyActions.SET_PARTY_ID:
 			return Immutable.set ( state, 'partyId', action.payload )
 
+        case partyActions.SET_PARTY_STATE:
+            return Immutable.set ( state, 'partyState', action.payload )
+
 		case partyActions.SET_SELECTED_VIDEO:
-			return Immutable.set ( state, 'selectedVideo', { ...action.payload } )
+			return Immutable.set ( state, 'selectedVideo', action.payload )
 
 		case partyActions.SET_USERS_IN_PARTY:
 			return Immutable.set ( state, 'usersInParty', action.payload )
@@ -42,8 +42,8 @@ export const partyReducer = ( state = initialState, action ) => {
 			return Immutable.set ( state, 'messagesInParty', action.payload )
 
 		case partyActions.SET_PARTY_PLAYER_STATE:
-			// @todo: make sure selectedvideo also gets updated with new time of video!!
-			return Immutable.flatMap({'playerState' : action.payload, 'selectedVideo' : action.payload.timeInVideo})
+			return Immutable.set ( state, 'videoPlayer', action.payload )
+
 
 		default:
 			return state
