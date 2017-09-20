@@ -1,5 +1,5 @@
 // Libs & utils
-import { party } from '../core/index'
+import { party, user } from '../core/index'
 
 export const partySocketHandlers = {
 	'WEBSOCKET_CREATE_PARTY': createParty,
@@ -51,8 +51,11 @@ function connectToParty ( io, socket, payload ) {
         socket.emit ( 'action', { type: 'SET_PARTY_STATE', payload: 'inactive' } )
 	}
 
+	// Create a new user if the user doesn't already exists
+	user.createNewUser (socket, userName)
+
     // Add the user to the party
-    party.addUserToParty ( io, socket, partyId, userName )
+    user.addUserToParty ( io, socket, partyId, userName )
 
     // Gather the selected video details for the party
 	const videoForParty = party.getSelectedVideoForParty ( partyId )

@@ -28,6 +28,11 @@ export const generalUtils = {
 		return text;
 	},
 
+    /**
+	 * Convert amount of seconds to string in format of HH:MM:SS
+     * @param seconds
+     * @returns {string}
+     */
     toHHMMSS: (seconds) => {
         var sec_num = parseInt(seconds, 10); // don't forget the second param
         var hours   = Math.floor(sec_num / 3600);

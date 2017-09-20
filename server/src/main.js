@@ -3,8 +3,7 @@ import { createServer } from 'http'
 import socketIo from 'socket.io'
 import debugFactory from 'debug'
 import { generalUtils } from './utils/index'
-import { partySocketHandlers } from './sockets/index'
-import { party } from './core/party'
+import { partySocketHandlers, userSocketHandlers } from './sockets/index'
 
 // Configuration files
 import { appConfig } from './config/index'
@@ -38,7 +37,8 @@ io.on ( 'connection', ( socket ) => {
 
 	// Create event handlers for this socket
 	var eventHandlers = [
-		partySocketHandlers
+		partySocketHandlers,
+        userSocketHandlers
 	]
 
 	// merge all eventHandlers into one object
@@ -54,7 +54,7 @@ io.on ( 'connection', ( socket ) => {
 
 	// Remove closed connections from our open connections list
 	socket.on ( 'disconnect', ( ) => {
-		party.disconnectFromParty ( io, socket )
+        userSocketHandlers.WEBSOCKET_DISCONNECT_FROM_PARTY ( io, socket )
 	} )
 } )
 

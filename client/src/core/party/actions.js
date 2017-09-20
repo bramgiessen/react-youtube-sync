@@ -30,9 +30,9 @@ export const partyActions = {
 		payload: { message, userName, partyId }
 	}),
 
-	setVideoPlayerState: ( playerState, timeInVideo, partyId ) => ({
+	setVideoPlayerState: ( playerState, timeInVideo, partyId ) => {console.log(playerState);return ({
 		type: partyActions.WEBSOCKET_SET_VIDEO_PLAYER_STATE,
 		payload: { playerState, timeInVideo, partyId }
-	})
+	})}
 
 }
