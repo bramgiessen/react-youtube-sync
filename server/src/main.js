@@ -32,8 +32,8 @@ app.listen ( appConfig.port, appConfig.host, error => {
 //  SOCKET.IO HANDLERS
 //-------------------------------------
 io.on ( 'connection', ( socket ) => {
-
-	console.log ( 'CONNECTION!!!!!' )
+	// Debug information about user connection
+	debug ( `User with id ${socket.id} connected` )
 
 	// Create event handlers for this socket
 	var eventHandlers = [
@@ -54,6 +54,7 @@ io.on ( 'connection', ( socket ) => {
 
 	// Remove closed connections from our open connections list
 	socket.on ( 'disconnect', ( ) => {
+        debug ( `User with id ${socket.id} disconnected` )
         userSocketHandlers.WEBSOCKET_DISCONNECT_FROM_PARTY ( io, socket )
 	} )
 } )

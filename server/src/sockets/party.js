@@ -1,5 +1,6 @@
 // Libs & utils
 import { party, user } from '../core/index'
+import { messageUtils } from "../utils/index"
 
 export const partySocketHandlers = {
 	'WEBSOCKET_CREATE_PARTY': createParty,
@@ -46,7 +47,7 @@ function connectToParty ( io, socket, payload ) {
 	// ONLY if the client provides a username -> add him to the party
 	if(userName){
 		// Create a new message to let everybody know that a new user just joined the party
-        userJoinedMessage = party.generateUserJoinedMessage(userName, partyId)
+        userJoinedMessage = messageUtils.generateUserJoinedMessage(userName, partyId)
 	}else{
         socket.emit ( 'action', { type: 'SET_PARTY_STATE', payload: 'inactive' } )
 	}
@@ -83,7 +84,7 @@ function connectToParty ( io, socket, payload ) {
 		io.to ( partyId ).emit ( 'action', { type: 'SET_USERS_IN_PARTY', payload: usersInParty } )
 
 		// Resend all messages that have been posted in the party to all clients in the party
-		// todo: optimize by only sending new messages to already connected users
+		// todo: optimize by sending ONLY NEW messages to already connected users instead of resending ALL messages
 		io.to ( partyId ).emit ( 'action', { type: 'PARTY_MESSAGE_RECEIVED', payload: messagesInParty } )
 	}
 }

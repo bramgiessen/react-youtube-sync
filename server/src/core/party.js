@@ -1,8 +1,7 @@
 // Libs & utils
-import { generalUtils } from '../utils/index'
 import { debounce } from 'lodash'
-import { cache } from './index'
-import {user} from "./user";
+import { cache, user } from './index'
+import { generalUtils, messageUtils } from '../utils/index'
 
 export const party = {
 
@@ -108,39 +107,6 @@ export const party = {
 	},
 
     /**
-	 * Generate a message to let other users know that a new user joined the party
-     * @param userName
-     * @param partyId
-     * @returns {{message: string, userName: string, partyId: *}}
-     */
-	generateUserJoinedMessage: (userName, partyId) => {
-		return {message: `${userName} joined the party`, userName: 'Server', partyId}
-	},
-
-    /**
-	 * Generate a message to let other users know that a user skipped / paused / plays a video
-     * @param socketId
-     * @param playerState
-     * @param timeInVideo
-     * @returns {string}
-     */
-	generatePlayerStateChangeMessage: (socketId, playerState, timeInVideo) => {
-        const userForSocketId = user.getUserForId(socketId)
-		const formattedTimeInVideo = generalUtils.toHHMMSS(timeInVideo)
-		let playerStateChangeMessage = ''
-
-		switch (playerState) {
-			case 'paused':
-                playerStateChangeMessage = `${userForSocketId.userName} paused the video`
-				break;
-			case 'playing':
-                playerStateChangeMessage = `${userForSocketId.userName} started playing the video at ${formattedTimeInVideo}`
-				break;
-		}
-		return playerStateChangeMessage
-	},
-
-    /**
 	 * Broadcast a message to a specific party
      * @param io
      * @param socket
@@ -167,9 +133,10 @@ export const party = {
 			return false
 		}
 
+        const userForSocketId = user.getUserForId(socket.id)
         const partyForId = party.getPartyById(partyId)
         const videoPlayerForParty = party.getVideoPlayerForParty(partyId)
-		const playerStateChangeMessage = party.generatePlayerStateChangeMessage(socket.id, playerState, timeInVideo)
+		const playerStateChangeMessage = messageUtils.generatePlayerStateChangeMessage(userForSocketId.userName, playerState, timeInVideo)
 
 		// If the playerState has been changed to 'playing' or 'paused' -> let all clients in the party know
 		if ( playerState === 'playing' || playerState === 'paused' ) {
