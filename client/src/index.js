@@ -22,9 +22,9 @@ import combineReducers from './core/reducers'
 const socket = io ( WEBSOCKET_URL )
 
 // Initialize redux-socket-io middleware
-// NOTE: All redux actions prefixed with 'WEBSOCKET_' will automatically ALSO be emitted
+// NOTE: All redux actions prefixed with 'WS_TO_SERVER_' will automatically ALSO be emitted
 // 			 over websockets to the backend
-const socketIoMiddleware = createSocketIoMiddleware ( socket, 'WEBSOCKET_' );
+const socketIoMiddleware = createSocketIoMiddleware ( socket, 'WS_TO_SERVER_' );
 
 // Apply middlewares and initialize store
 const createStoreWithMiddlewares = applyMiddleware ( ReduxThunk, socketIoMiddleware ) ( createStore )

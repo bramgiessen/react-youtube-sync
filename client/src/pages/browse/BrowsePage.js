@@ -9,9 +9,9 @@ import './BrowsePage.css'
 import { introductionText } from '../../core/constants'
 
 // Actions
-import { appActions } from '../../core/app/index'
-import { partyActions } from '../../core/party/index'
-import { videoListActions } from '../../core/videoList/index'
+import { appActions } from '../../core/app'
+import { userActions } from '../../core/user'
+import { videoListActions } from '../../core/videoList'
 
 // Components
 import PageHeader from '../../components/pageHeader/PageHeader'
@@ -81,7 +81,7 @@ const mapStateToProps = ( state ) => {
 
 const mapDispatchToProps = {
 	navigateToPath: appActions.navigateToPath,
-	disconnectFromAllParties: partyActions.disconnectFromAllParties,
+	disconnectFromAllParties: userActions.disconnectFromAllParties,
 	loadYoutubeVideos: videoListActions.loadYoutubeVideos,
 	handleVideoSelection: videoListActions.handleVideoSelection
 }

@@ -1,7 +1,10 @@
 // Libs & utils
-import { debounce } from 'lodash'
-import { cache, user } from './index'
-import { generalUtils, messageUtils } from '../utils/index'
+import { debounce, cloneDeep } from 'lodash'
+import { cache, user } from './'
+import { generalUtils, socketUtils } from '../utils'
+
+// Constants
+import { ACTION_TYPES } from '../core/constants'
 
 export const party = {
 
@@ -74,9 +77,11 @@ export const party = {
      */
     getVideoPlayerForParty: ( partyId ) => {
         const partyForId = party.getPartyById(partyId)
+		const videoPlayerForParty = partyForId && partyForId.videoPlayer
+			? cloneDeep(partyForId.videoPlayer)
+			: {}
 
-        return partyForId && partyForId.videoPlayer ?
-            partyForId.videoPlayer : {}
+        return videoPlayerForParty
     },
 
     /**
@@ -123,40 +128,53 @@ export const party = {
 		// Add the message to the messagesInCurrentParty array
 		messagesInCurrentParty.push ( messageWithUserName )
 
-		io.to ( partyId ).emit ( 'action', { type: 'PARTY_MESSAGE_RECEIVED', payload: messagesInCurrentParty } )
+		// Emit all messages in the party to all clients in the party
+        socketUtils.emitActionToParty(io, partyId, ACTION_TYPES.PARTY_MESSAGE_RECEIVED, messagesInCurrentParty)
 	},
 
-	setPlayerState: debounce(( io, socket, payload, playerState, timeInVideo, partyId ) => {
-		// If the user is not in the party he is trying to set the playerState for
-		// or has no userName (and thus is not authenticated) -> abort!
-		if(!user.isAuthorizedInParty(socket.id, partyId)){
-			return false
-		}
-
-        const userForSocketId = user.getUserForId(socket.id)
-        const partyForId = party.getPartyById(partyId)
+    /**
+	 * Toggle the videoPlayer interval that keeps track of the time in the video
+	 * for the party based on the given playerState
+     * @param playerState ('paused' -> clear the interval | 'playing' -> start the interval)
+     * @param partyId
+     */
+	toggleVideoPlayerInterval: (playerState, partyId) => {
+        const partyForId = party.getPartyById( partyId )
         const videoPlayerForParty = party.getVideoPlayerForParty(partyId)
-		const playerStateChangeMessage = messageUtils.generatePlayerStateChangeMessage(userForSocketId.userName, playerState, timeInVideo)
+
+        // Keep track of the time in the video while the video is playing
+        if(playerState === 'playing') {
+            if(!partyForId.videoPlayerInterval){
+                partyForId.videoPlayerInterval = setInterval(() => {
+                    videoPlayerForParty.timeInVideo += 1
+                }, 1000)
+            }
+        } else if ((playerState === 'paused' || playerState === 'ended') && partyForId.videoPlayerInterval) {
+            clearInterval(partyForId.videoPlayerInterval)
+            partyForId.videoPlayerInterval = null
+        }
+	},
+
+    /**
+	 * Update the videoPlayerState of a party ( to paused/playing )
+     */
+	setPlayerState: debounce(( io, socket, playerState, timeInVideo, partyId, callback ) => {
+        const partyForId = party.getPartyById( partyId )
+        const videoPlayerForParty = party.getVideoPlayerForParty(partyId)
 
 		// If the playerState has been changed to 'playing' or 'paused' -> let all clients in the party know
 		if ( playerState === 'playing' || playerState === 'paused' ) {
             videoPlayerForParty.playerState = playerState
             videoPlayerForParty.timeInVideo = timeInVideo
-			socket.broadcast.to ( partyId ).emit ( 'action', { type: 'SET_PARTY_PLAYER_STATE', payload: videoPlayerForParty } )
-			party.sendMessageToParty(io, socket, playerStateChangeMessage, partyId, 'Server')
 		}
 
-		// Keep track of the time in the video while the video is playing
-		if(playerState === 'playing') {
-			if(!partyForId.videoPlayerInterval){
-                partyForId.videoPlayerInterval = setInterval(() => {
-                    videoPlayerForParty.timeInVideo += 1
-                }, 1000)
-			}
-		} else if ((playerState === 'paused' || playerState === 'ended') && partyForId.videoPlayerInterval) {
-			clearInterval(partyForId.videoPlayerInterval)
-            partyForId.videoPlayerInterval = null
-		}
+		// Toggle the videoPlayer interval that keeps track of the time in the video
+		// for the party
+		party.toggleVideoPlayerInterval()
 
+		// Set the new videoPlayer state in the party object
+		partyForId.videoPlayer = videoPlayerForParty
+
+        callback()
 	}, 500)
 }

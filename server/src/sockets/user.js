@@ -1,10 +1,13 @@
 // Libs & utils
-import { party, user } from '../core/index'
-import { messageUtils } from '../utils/index'
+import { party, user } from '../core'
+import { messageUtils, socketUtils } from "../utils"
+
+// Constants
+import { ACTION_TYPES } from '../core/constants'
 
 export const userSocketHandlers = {
-    'WEBSOCKET_CONNECT_TO_PARTY': connectToParty,
-    'WEBSOCKET_DISCONNECT_FROM_PARTY': disconnectFromAllParties,
+    'WS_TO_SERVER_CONNECT_TO_PARTY': connectToParty,
+    'WS_TO_SERVER_DISCONNECT_FROM_PARTY': disconnectFromAllParties,
 }
 
 /**
@@ -25,7 +28,7 @@ function connectToParty ( io, socket, payload ) {
     // Make sure the party we are trying to join actually exists
     // if not -> let the client know that the party he is trying to join doesn't exist
     if(!party.partyExists(partyId)){
-        socket.emit ( 'action', { type: 'SET_PARTY_STATE', payload: 'inactive' } )
+        socketUtils.emitActionToClient( socket, ACTION_TYPES.SET_PARTY_STATE, 'inactive' )
         return false
     }
 
@@ -34,7 +37,7 @@ function connectToParty ( io, socket, payload ) {
         // Create a new message to let everybody know that a new user just joined the party
         userJoinedMessage = messageUtils.generateUserJoinedMessage(userName, partyId)
     }else{
-        socket.emit ( 'action', { type: 'SET_PARTY_STATE', payload: 'inactive' } )
+        socketUtils.emitActionToClient( socket, ACTION_TYPES.SET_PARTY_STATE, 'inactive' )
     }
 
     // Create a new user if the user doesn't already exists
@@ -55,22 +58,22 @@ function connectToParty ( io, socket, payload ) {
     // Gather all messages that have previously been posted in the party
     // and add a new message to let everybody know that a new user just joined the party
     const messagesInParty = party.getMessagesInParty ( partyId )
-    if(userJoinedMessage) {messagesInParty.push( userJoinedMessage )}
+    if(userJoinedMessage) { messagesInParty.push( userJoinedMessage ) }
 
     // If the party is valid and thus has a selected video -> emit all gathered party details to the just connected user
     if ( videoForParty ) {
         // Let the client know which video is selected in the party:
-        socket.emit ( 'action', { type: 'SET_SELECTED_VIDEO', payload: videoForParty } )
+        socketUtils.emitActionToClient( socket, ACTION_TYPES.SET_SELECTED_VIDEO, videoForParty )
 
         // Let the client know what the current playerState is in the party ('playing', 'paused' etc.)
-        socket.emit ( 'action', { type: 'SET_PARTY_PLAYER_STATE', payload: videoPlayerForParty } )
+        socketUtils.emitActionToClient( socket, ACTION_TYPES.SET_PARTY_PLAYER_STATE, videoPlayerForParty )
 
         // Let the client know which other users are currently connected to the party
-        io.to ( partyId ).emit ( 'action', { type: 'SET_USERS_IN_PARTY', payload: usersInParty } )
+        socketUtils.emitActionToParty(io, partyId, ACTION_TYPES.SET_USERS_IN_PARTY, usersInParty)
 
         // Resend all messages that have been posted in the party to all clients in the party
-        // todo: optimize by only sending new messages to already connected users
-        io.to ( partyId ).emit ( 'action', { type: 'PARTY_MESSAGE_RECEIVED', payload: messagesInParty } )
+        // todo: optimize by sending ONLY NEW messages to already connected users instead of resending ALL messages
+        socketUtils.emitActionToParty(io, partyId, ACTION_TYPES.PARTY_MESSAGE_RECEIVED, messagesInParty)
     }
 }
 

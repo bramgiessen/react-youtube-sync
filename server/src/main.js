@@ -3,7 +3,9 @@ import { createServer } from 'http'
 import socketIo from 'socket.io'
 import debugFactory from 'debug'
 import { generalUtils } from './utils/index'
-import { partySocketHandlers, userSocketHandlers } from './sockets/index'
+
+// Socket handlers
+import { partySocketHandlers, userSocketHandlers } from './sockets'
 
 // Configuration files
 import { appConfig } from './config/index'
@@ -35,27 +37,28 @@ io.on ( 'connection', ( socket ) => {
 	// Debug information about user connection
 	debug ( `User with id ${socket.id} connected` )
 
-	// Create event handlers for this socket
-	var eventHandlers = [
+	//  Merge all separate eventHandlers into one object
+	//  so that the eventHandlers can automatically be matched to corresponding actions
+	var eventHandlers = generalUtils.mergeObjectsInArray ([
 		partySocketHandlers,
         userSocketHandlers
-	]
-
-	// merge all eventHandlers into one object
-	const combinedEventHandlers = generalUtils.mergeObjectsInArray ( eventHandlers )
+		])
 
 	// Bind eventHandlers to corresponding actions
 	socket.on ( 'action', ( action ) => {
-		const eventHandler = combinedEventHandlers[ action.type ]
+		const eventHandler = eventHandlers[ action.type ]
+
+		// If there is an eventHandler defined for the given actionType
+		// -> execute that eventHandler with parameters io, socket and the actions' payload
 		if ( eventHandler ) {
 			eventHandler ( io, socket, action.payload )
 		}
 	} )
 
-	// Remove closed connections from our open connections list
+	// When a client disconnects -> remove the clientId from all parties it was connected to
 	socket.on ( 'disconnect', ( ) => {
         debug ( `User with id ${socket.id} disconnected` )
-        userSocketHandlers.WEBSOCKET_DISCONNECT_FROM_PARTY ( io, socket )
+        userSocketHandlers.WS_TO_SERVER_DISCONNECT_FROM_PARTY ( io, socket )
 	} )
 } )
 

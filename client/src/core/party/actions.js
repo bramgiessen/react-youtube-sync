@@ -1,38 +1,42 @@
+//=====================================
+//  Party Actions : Containing WEBSOCKET connected actions:
+//					These actions automatically get send to the backend/server
+//					as messages over websockets. This is handled automatically through
+//					the middleware 'redux-socket.io' by prefixing these specific actions
+// 					with the string 'WS_TO_SERVER_'.
+//-------------------------------------
+
 export const partyActions = {
-	SET_PARTY_ID: 'SET_PARTY_ID',
-    SET_PARTY_STATE: 'SET_PARTY_STATE',
-	WEBSOCKET_CREATE_PARTY: 'WEBSOCKET_CREATE_PARTY',
-	WEBSOCKET_CONNECT_TO_PARTY: 'WEBSOCKET_CONNECT_TO_PARTY',
-	WEBSOCKET_DISCONNECT_FROM_PARTY: 'WEBSOCKET_DISCONNECT_FROM_PARTY',
-	WEBSOCKET_SEND_MESSAGE_TO_PARTY: 'WEBSOCKET_SEND_MESSAGE_TO_PARTY',
-	WEBSOCKET_SET_VIDEO_PLAYER_STATE: 'WEBSOCKET_SET_VIDEO_PLAYER_STATE',
-	SET_SELECTED_VIDEO: 'SET_SELECTED_VIDEO',
-	PARTY_MESSAGE_RECEIVED: 'PARTY_MESSAGE_RECEIVED',
-	SET_USERS_IN_PARTY: 'SET_USERS_IN_PARTY',
-	SET_PARTY_PLAYER_STATE: 'SET_PARTY_PLAYER_STATE',
+
+	// INCOMING FROM SERVER
+    // Actions that get initiated by incoming WEBSOCKET messages from the backend/server
+    WS_TO_CLIENT_SET_PARTY_ID: 'WS_TO_CLIENT_SET_PARTY_ID',
+    WS_TO_CLIENT_SET_PARTY_STATE: 'WS_TO_CLIENT_SET_PARTY_STATE',
+    WS_TO_CLIENT_SET_SELECTED_VIDEO: 'WS_TO_CLIENT_SET_SELECTED_VIDEO',
+    WS_TO_CLIENT_PARTY_MESSAGE_RECEIVED: 'WS_TO_CLIENT_PARTY_MESSAGE_RECEIVED',
+    WS_TO_CLIENT_SET_USERS_IN_PARTY: 'WS_TO_CLIENT_SET_USERS_IN_PARTY',
+    WS_TO_CLIENT_SET_PARTY_PLAYER_STATE: 'WS_TO_CLIENT_SET_PARTY_PLAYER_STATE',
+
+	// OUTGOING TO SERVER
+	// Actions that after dispatching automatically get sent
+	// as messages over WEBSOCKETS to the backend/server
+    WS_TO_SERVER_CREATE_PARTY: 'WS_TO_SERVER_CREATE_PARTY',
+    WS_TO_SERVER_SEND_MESSAGE_TO_PARTY: 'WS_TO_SERVER_SEND_MESSAGE_TO_PARTY',
+    WS_TO_SERVER_SET_VIDEO_PLAYER_STATE: 'WS_TO_SERVER_SET_VIDEO_PLAYER_STATE',
 
 	createParty: (videoDetails, videoSource) => ({
-		type: partyActions.WEBSOCKET_CREATE_PARTY,
+		type: partyActions.WS_TO_SERVER_CREATE_PARTY,
         payload: { ...videoDetails, videoSource }
 	}),
 
-	connectToParty: ( userName, partyId ) => ({
-		type: partyActions.WEBSOCKET_CONNECT_TO_PARTY,
-		payload: { userName, partyId }
-	}),
-
-	disconnectFromAllParties: () => ({
-		type: partyActions.WEBSOCKET_DISCONNECT_FROM_PARTY
-	}),
-
 	sendMessageToParty: ( message, userName, partyId ) => ({
-		type: partyActions.WEBSOCKET_SEND_MESSAGE_TO_PARTY,
+		type: partyActions.WS_TO_SERVER_SEND_MESSAGE_TO_PARTY,
 		payload: { message, userName, partyId }
 	}),
 
-	setVideoPlayerState: ( playerState, timeInVideo, partyId ) => {console.log(playerState);return ({
-		type: partyActions.WEBSOCKET_SET_VIDEO_PLAYER_STATE,
+	setVideoPlayerState: ( playerState, timeInVideo, partyId ) => ({
+		type: partyActions.WS_TO_SERVER_SET_VIDEO_PLAYER_STATE,
 		payload: { playerState, timeInVideo, partyId }
-	})}
+	})
 
 }

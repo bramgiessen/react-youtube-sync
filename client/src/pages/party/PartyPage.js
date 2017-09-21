@@ -11,7 +11,8 @@ import VideoPlayer from '../../components/videoPlayer/VideoPlayer'
 import ChatBox from '../../components/chatBox/ChatBox'
 
 // Actions
-import { partyActions } from '../../core/party/index'
+import { partyActions } from '../../core/party'
+import { userActions } from '../../core/user'
 
 class PartyPage extends Component {
 	// todo: make all proptypes match actual proptypes
@@ -135,7 +136,7 @@ const mapStateToProps = ( state ) => {
 }
 
 const mapDispatchToProps = {
-	connectToParty: partyActions.connectToParty,
+	connectToParty: userActions.connectToParty,
 	sendMessageToParty: partyActions.sendMessageToParty,
 	setVideoPlayerState: partyActions.setVideoPlayerState
 }
