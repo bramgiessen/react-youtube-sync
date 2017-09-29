@@ -76,13 +76,14 @@ export const party = {
 		const videoPlayerForParty = party.getVideoPlayerForParty(partyId)
 		const currentPlayerState = videoPlayerForParty.playerState
 		const currentTimeInVideo = videoPlayerForParty.timeInVideo
-		const timeInVideoDiffers = currentTimeInVideo !== newTimeInVideo
+		// Only consider timeInVideoDiffers to be true if there is more than a 2 seconds difference
+		const timeInVideoDiffers = Math.abs(currentTimeInVideo - newTimeInVideo) >= 2
 		const playerStateDiffers = currentPlayerState !== newPlayerState
 		const isValidPlayerState = validPlayerStates.indexOf(newPlayerState) !== -1
 
 		const isValidStateChange = !(currentPlayerState === 'playing'
 			&& newPlayerState === 'paused'
-			&& !timeInVideoDiffers)
+			&& timeInVideoDiffers)
 
 		return isValidPlayerState && isValidStateChange &&( timeInVideoDiffers || playerStateDiffers )
 	},

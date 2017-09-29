@@ -92,6 +92,7 @@ function setPartyVideoPlayerState (io, socket, payload) {
 
             // Broadcast the 'pause' action to the party
             socketUtils.broadcastActionToParty(socket, partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, {playerState:'paused', timeInVideo})
+
             // Send a message to the party, letting them know that a user paused the video
             party.sendMessageToParty(io, socket, playerStateChangeMessage, partyId, 'Server')
         }
@@ -101,6 +102,7 @@ function setPartyVideoPlayerState (io, socket, payload) {
         // before sending the 'play' command to everyone in the party
         if(playerState === 'playing'){
             socketUtils.emitActionToParty(io, partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, {playerState:'paused', timeInVideo})
+
             // Toggle 'waitingForReady' to 'true' so we know that this party is waiting for everyone to be ready
             party.toggleWaitingForPartyToBeReady(partyId, true)
         }
