@@ -14,7 +14,14 @@ export const user = {
         // If a user with the socketId doesn't exist yet -> create
         // a new user and add him to the activeUsers array
         if(!user.userExists(socketId)){
-            const newUser = { socketId, userName, 'playerStatus': null }
+            const newUser = {
+                socketId,
+                userName,
+                videoPlayerState :  {
+                            playerState: 'paused',
+                            timeInVideo: 0
+                        }
+            }
             cache.users.push(newUser)
         }
 	},
@@ -40,7 +47,9 @@ export const user = {
 
     /**
      * Returns true is user is authenticated
-     * (right now a user is authenticated if he/she simply has a username)
+     * (right now there is a VERY simple mechanism to determine if a user is authenticated:
+     * if he/she simply has a username: he/she is authenticated, as that's all we require
+     * at this point for this simple demo/P.O.C.)
      * @param socketId
      */
     isUserAuthenticated: (socketId) => {
@@ -151,6 +160,22 @@ export const user = {
                 io.sockets.in ( partyId ).emit ( 'action', { type: 'SET_USERS_IN_PARTY', payload: usersStillInParty } )
             } )
         }
+    },
+
+    /**
+     * Set / save the videoPlayers' state of a user
+     * ( We do this so we know if the user is ready to play, or i.e. still buffering a video )
+     * @param socketId
+     * @param videoPlayerState
+     * @returns {boolean}
+     */
+    setUserVideoPlayerState: (socketId, videoPlayerState) => {
+        const userForId = user.getUserForId(socketId)
+        if(!userForId){
+            return false
+        }
+
+        userForId.videoPlayerState = videoPlayerState
     },
 
 }

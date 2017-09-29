@@ -18,10 +18,7 @@ export default class VideoPlayer extends Component {
 	}
 
 	constructor(props) {
-		super(props);
-		this.state = {
-			playerStateModifiedExternally : false
-		}
+		super(props)
 	}
 
 	componentDidUpdate(prevProps, prevState){
@@ -29,16 +26,14 @@ export default class VideoPlayer extends Component {
 
 		// If the player state has been changed by someone else in the party and there is more than a 2 sec difference ->
 		// update the player position
-		if(prevProps.videoPlayer.playerState !== this.props.videoPlayer.playerState
-				|| (Math.abs(prevProps.videoPlayer.timeInVideo - this.props.videoPlayer.timeInVideo) > 2)){
+		if(prevProps.videoPlayer !== this.props.videoPlayer){
 
-			videoPlayer.seekTo(this.props.videoPlayer.timeInVideo)
-			if(this.props.videoPlayer.playerState !== 'playing'){
-				videoPlayer.pauseVideo()
-			}else{
-				videoPlayer.playVideo()
-			}
-
+            videoPlayer.seekTo(this.props.videoPlayer.timeInVideo)
+                if(this.props.videoPlayer.playerState !== 'playing'){
+                    videoPlayer.pauseVideo()
+                }else{
+                    videoPlayer.playVideo()
+                }
 		}
 
 	}
@@ -82,10 +77,10 @@ export default class VideoPlayer extends Component {
 				ref={e => this.videoPlayer = e}
 				onStateChange={
 					( event ) => {
-						onPlayerStateChange (
-						videoUtils.getYoutubePlayerState ( event ),
-						event.target.getCurrentTime (),
-						partyId )
+                            onPlayerStateChange (
+                                videoUtils.getYoutubePlayerState ( event ),
+                                event.target.getCurrentTime (),
+                                partyId )
 					}
 				}
 			/>

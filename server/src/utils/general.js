@@ -43,6 +43,18 @@ export const generalUtils = {
         if (minutes < 10) {minutes = "0"+minutes;}
         if (seconds < 10) {seconds = "0"+seconds;}
         return hours+':'+minutes+':'+seconds;
-    }
+    },
+
+    /**
+	 * Round a number to given amount of decimal places
+	 * (Written by m93a, found on Stack Overflow)
+     * @param x
+     * @param base
+     * @returns {number}
+     */
+    toFixedNumber: (number, decimals) => {
+    const pow = Math.pow(10, decimals)
+    return +( Math.round(number*pow) / pow )
+	}
 
 }

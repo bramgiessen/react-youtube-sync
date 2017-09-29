@@ -31,9 +31,11 @@ export const party = {
 				playerState: 'paused',
 				timeInVideo: 0
 			},
+            currentVideoPlayerAction: null,
             videoPlayerInterval: null,
             usersInParty:[],
-            messagesInParty:[]
+            messagesInParty:[],
+            waitingForReady: false
 		})
 
 		return partyId
@@ -58,6 +60,41 @@ export const party = {
 		return  cache.parties.find((activeParty) => activeParty.partyId && activeParty.partyId === partyId)
 	},
 
+	toggleWaitingForPartyToBeReady: (partyId, boolean) => {
+		const partyForId = party.getPartyById(partyId)
+        partyForId.waitingForReady = boolean
+	},
+
+	isWaitingToBeReady: (partyId) => {
+        const partyForId = party.getPartyById(partyId)
+		return partyForId.waitingForReady
+	},
+
+    isNewPlayerStateForParty: (partyId, newPlayerState, newTimeInVideo) => {
+		const validPlayerStates = ['playing', 'paused']
+		const videoPlayerForParty = party.getVideoPlayerForParty(partyId)
+		const currentPlayerState = videoPlayerForParty.playerState
+		const currentTimeInVideo = videoPlayerForParty.timeInVideo
+		const timeInVideoDiffers = currentTimeInVideo !== newTimeInVideo
+		const playerStateDiffers = currentPlayerState !== newPlayerState
+		const isValidPlayerState = validPlayerStates.indexOf(newPlayerState) !== -1
+
+		const isValidStateChange = !(currentPlayerState === 'playing'
+			&& newPlayerState === 'paused'
+			&& !timeInVideoDiffers)
+
+		return isValidPlayerState && isValidStateChange &&( timeInVideoDiffers || playerStateDiffers )
+	},
+
+    allUsersReady: (partyId) => {
+		const usersInParty = party.getUsersForParty(partyId)
+		const usersThatAreReady = usersInParty.filter((userInParty) => {
+			return userInParty.videoPlayerState.playerState === 'paused'
+		})
+
+		return usersInParty.length === usersThatAreReady.length
+	},
+
     /**
 	 * Get the selected video object for the party with given partyId
      * @param partyId
@@ -77,11 +114,9 @@ export const party = {
      */
     getVideoPlayerForParty: ( partyId ) => {
         const partyForId = party.getPartyById(partyId)
-		const videoPlayerForParty = partyForId && partyForId.videoPlayer
-			? cloneDeep(partyForId.videoPlayer)
-			: {}
-
-        return videoPlayerForParty
+		return partyForId && partyForId.videoPlayer
+            ? partyForId.videoPlayer
+            : {}
     },
 
     /**
@@ -133,23 +168,23 @@ export const party = {
 	},
 
     /**
-	 * Toggle the videoPlayer interval that keeps track of the time in the video
-	 * for the party based on the given playerState
-     * @param playerState ('paused' -> clear the interval | 'playing' -> start the interval)
+	 * Toggle the videoPlayer interval that keeps track of the time progression of the video
+	 * for the party
      * @param partyId
+	 * @param turnOn (false -> clear the interval | true -> start the interval)
      */
-	toggleVideoPlayerInterval: (playerState, partyId) => {
+	toggleVideoPlayerInterval: (partyId, turnOn) => {
         const partyForId = party.getPartyById( partyId )
         const videoPlayerForParty = party.getVideoPlayerForParty(partyId)
 
         // Keep track of the time in the video while the video is playing
-        if(playerState === 'playing') {
+        if(turnOn && !partyForId.videoPlayerInterval) {
             if(!partyForId.videoPlayerInterval){
                 partyForId.videoPlayerInterval = setInterval(() => {
                     videoPlayerForParty.timeInVideo += 1
                 }, 1000)
             }
-        } else if ((playerState === 'paused' || playerState === 'ended') && partyForId.videoPlayerInterval) {
+        } else if (partyForId.videoPlayerInterval) {
             clearInterval(partyForId.videoPlayerInterval)
             partyForId.videoPlayerInterval = null
         }
@@ -158,23 +193,15 @@ export const party = {
     /**
 	 * Update the videoPlayerState of a party ( to paused/playing )
      */
-	setPlayerState: debounce(( io, socket, playerState, timeInVideo, partyId, callback ) => {
+	setPlayerState: (playerState, timeInVideo, partyId ) => {
         const partyForId = party.getPartyById( partyId )
         const videoPlayerForParty = party.getVideoPlayerForParty(partyId)
 
 		// If the playerState has been changed to 'playing' or 'paused' -> let all clients in the party know
-		if ( playerState === 'playing' || playerState === 'paused' ) {
             videoPlayerForParty.playerState = playerState
             videoPlayerForParty.timeInVideo = timeInVideo
-		}
-
-		// Toggle the videoPlayer interval that keeps track of the time in the video
-		// for the party
-		party.toggleVideoPlayerInterval()
 
 		// Set the new videoPlayer state in the party object
 		partyForId.videoPlayer = videoPlayerForParty
-
-        callback()
-	}, 500)
+	},
 }
