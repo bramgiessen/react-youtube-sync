@@ -8,7 +8,8 @@ export const cache = {
             waitingForReady: false,
         	videoPlayer: {
          	playerState: 'paused',
-             timeInVideo : 0
+             timeInVideo : 0,
+                lastStateChangeInitiator: null
             },
          // 'currentVideoPlayerAction' contains the action
             // currently being executed to change the parties' videoPlayer state

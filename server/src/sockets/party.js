@@ -1,6 +1,6 @@
 // Libs & utils
 import { party, user } from '../core'
-import { socketUtils, messageUtils, generalUtils, videoPlayerUtils } from "../utils"
+import { socketUtils, messageUtils, generalUtils } from "../utils"
 
 // Constants
 import { ACTION_TYPES } from '../core/constants'
@@ -78,7 +78,7 @@ function setPartyVideoPlayerState (io, socket, payload) {
     // and the party was not waiting for a previous player state change to be completed
     // --> set a new playerState for the entire party
     if(!party.isWaitingToBeReady(partyId) && party.isNewPlayerStateForParty(partyId, playerState, timeInVideo)){
-        party.setPlayerState(playerState, timeInVideo, partyId)
+        party.setPlayerState(playerState, timeInVideo, partyId, socket.id)
 
         // Clear the current videoPlayer interval for this party
         party.toggleVideoPlayerInterval(partyId, false)
@@ -86,7 +86,14 @@ function setPartyVideoPlayerState (io, socket, payload) {
         // If a user is pausing the video -> broadcast this action to everyone else in the party,
         // no need to emit this action back to the initiating user as he already paused his videoPlayer
         if(playerState === 'paused'){
+            // Generate a message to let the rest of the party know that this user has paused the video
+            const userForSocketId = user.getUserForId(socket.id)
+            const playerStateChangeMessage = messageUtils.generatePlayerStateChangeMessage(userForSocketId.userName, playerState, timeInVideo)
+
+            // Broadcast the 'pause' action to the party
             socketUtils.broadcastActionToParty(socket, partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, {playerState:'paused', timeInVideo})
+            // Send a message to the party, letting them know that a user paused the video
+            party.sendMessageToParty(io, socket, playerStateChangeMessage, partyId, 'Server')
         }
 
         // If a user is playing the video/skipping to a new time in the video -> pause the video for
@@ -104,6 +111,7 @@ function setPartyVideoPlayerState (io, socket, payload) {
     if(party.isWaitingToBeReady(partyId) && party.allUsersReady(partyId)){
         const videoPlayerForParty = party.getVideoPlayerForParty(partyId)
         const partyTimeInVideo = videoPlayerForParty.timeInVideo
+        const actionInitiatingUser = videoPlayerForParty.lastStateChangeInitiator
 
         // Toggle 'waitingForReady' to 'false' so we know that this party is no longer waiting for everyone to be ready
         party.toggleWaitingForPartyToBeReady(partyId, false)
@@ -113,5 +121,14 @@ function setPartyVideoPlayerState (io, socket, payload) {
 
         // Emit the 'play' command/action to everyone in the party
         socketUtils.emitActionToParty(io, partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, {playerState:'playing', timeInVideo: partyTimeInVideo})
+
+        // Let the party know who started playing the video
+        if(actionInitiatingUser){
+            // Generate a message to let the rest of the party know who started playing the video
+            const userForSocketId = user.getUserForId(actionInitiatingUser)
+            const playerStateChangeMessage = messageUtils.generatePlayerStateChangeMessage(userForSocketId.userName, videoPlayerForParty.playerState, partyTimeInVideo)
+            // Send a message to the party, letting them know who started playing the video
+            party.sendMessageToParty(io, socket, playerStateChangeMessage, partyId, 'Server')
+        }
     }
 }

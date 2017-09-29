@@ -42,7 +42,6 @@ export const partyReducer = ( state = initialState, action ) => {
 			return Immutable.set ( state, 'messagesInParty', action.payload )
 
 		case partyActions.WS_TO_CLIENT_SET_PARTY_PLAYER_STATE:
-			console.log(action.payload)
 			return Immutable.set ( state, 'videoPlayer', action.payload )
 
 

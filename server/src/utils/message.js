@@ -25,7 +25,7 @@ export const messageUtils = {
 
         switch (playerState) {
             case 'paused':
-                playerStateChangeMessage = `${userName} paused the video`
+                playerStateChangeMessage = `${userName} paused the video at ${formattedTimeInVideo}`
                 break;
             case 'playing':
                 playerStateChangeMessage = `${userName} started playing the video at ${formattedTimeInVideo}`

@@ -66,7 +66,9 @@ function connectToParty ( io, socket, payload ) {
         socketUtils.emitActionToClient( socket, ACTION_TYPES.SET_SELECTED_VIDEO, videoForParty )
 
         // Let the client know what the current playerState is in the party ('playing', 'paused' etc.)
-        socketUtils.emitActionToClient( socket, ACTION_TYPES.SET_PARTY_PLAYER_STATE, videoPlayerForParty )
+        if(videoPlayerForParty.timeInVideo !== 0){
+            socketUtils.emitActionToClient( socket, ACTION_TYPES.SET_PARTY_PLAYER_STATE, videoPlayerForParty )
+        }
 
         // Let the client know which other users are currently connected to the party
         socketUtils.emitActionToParty(io, partyId, ACTION_TYPES.SET_USERS_IN_PARTY, usersInParty)

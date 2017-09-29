@@ -29,7 +29,8 @@ export const party = {
             selectedVideo: videoDetails,
 			videoPlayer: {
 				playerState: 'paused',
-				timeInVideo: 0
+				timeInVideo: 0,
+                lastStateChangeInitiator: null
 			},
             currentVideoPlayerAction: null,
             videoPlayerInterval: null,
@@ -193,13 +194,14 @@ export const party = {
     /**
 	 * Update the videoPlayerState of a party ( to paused/playing )
      */
-	setPlayerState: (playerState, timeInVideo, partyId ) => {
+	setPlayerState: (playerState, timeInVideo, partyId, initiatingUserId ) => {
         const partyForId = party.getPartyById( partyId )
         const videoPlayerForParty = party.getVideoPlayerForParty(partyId)
 
 		// If the playerState has been changed to 'playing' or 'paused' -> let all clients in the party know
-            videoPlayerForParty.playerState = playerState
-            videoPlayerForParty.timeInVideo = timeInVideo
+		videoPlayerForParty.playerState = playerState
+		videoPlayerForParty.timeInVideo = timeInVideo
+		videoPlayerForParty.lastStateChangeInitiator = initiatingUserId
 
 		// Set the new videoPlayer state in the party object
 		partyForId.videoPlayer = videoPlayerForParty

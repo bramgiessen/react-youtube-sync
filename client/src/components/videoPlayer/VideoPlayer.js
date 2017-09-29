@@ -17,10 +17,6 @@ export default class VideoPlayer extends Component {
         userName: PropTypes.string
 	}
 
-	constructor(props) {
-		super(props)
-	}
-
 	componentDidUpdate(prevProps, prevState){
 		const videoPlayer = this.videoPlayer && this.videoPlayer.internalPlayer
 
