@@ -8,18 +8,18 @@ const initialState = Immutable ( {
 	partyId: null,
 	partyState: 'active',
 	selectedVideo: {
-            id: '',
-            title: '',
-            description: '',
-            thumbnailSrc: '',
-            videoSource: ''
+		id: '',
+		title: '',
+		description: '',
+		thumbnailSrc: '',
+		videoSource: ''
 	},
 	usersInParty: [],
 	messagesInParty: [],
-    videoPlayer: {
-        playerState: 'paused',
-        playerInterval: null,
-        timeInVideo: 0
+	videoPlayer: {
+		playerState: 'paused',
+		playerInterval: null,
+		timeInVideo: 0
 	}
 } )
 
@@ -29,8 +29,8 @@ export const partyReducer = ( state = initialState, action ) => {
 		case partyActions.WS_TO_CLIENT_SET_PARTY_ID:
 			return Immutable.set ( state, 'partyId', action.payload )
 
-        case partyActions.WS_TO_CLIENT_SET_PARTY_STATE:
-            return Immutable.set ( state, 'partyState', action.payload )
+		case partyActions.WS_TO_CLIENT_SET_PARTY_STATE:
+			return Immutable.set ( state, 'partyState', action.payload )
 
 		case partyActions.WS_TO_CLIENT_SET_SELECTED_VIDEO:
 			return Immutable.set ( state, 'selectedVideo', action.payload )

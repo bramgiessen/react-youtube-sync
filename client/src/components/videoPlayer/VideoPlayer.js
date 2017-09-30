@@ -12,24 +12,24 @@ export default class VideoPlayer extends Component {
 		selectedVideo: PropTypes.object.isRequired,
 		onPlayerStateChange: PropTypes.func.isRequired,
 		partyId: PropTypes.string.isRequired,
-        videoPlayer: PropTypes.object.isRequired,
+		videoPlayer: PropTypes.object.isRequired,
 		fullWidth: PropTypes.bool,
-        userName: PropTypes.string
+		userName: PropTypes.string
 	}
 
-	componentDidUpdate(prevProps, prevState){
+	componentDidUpdate ( prevProps, prevState ) {
 		const videoPlayer = this.videoPlayer && this.videoPlayer.internalPlayer
 
 		// If the player state has been changed by someone else in the party and there is more than a 2 sec difference ->
 		// update the player position
-		if(prevProps.videoPlayer !== this.props.videoPlayer){
+		if ( prevProps.videoPlayer !== this.props.videoPlayer ) {
 
-            videoPlayer.seekTo(this.props.videoPlayer.timeInVideo)
-                if(this.props.videoPlayer.playerState !== 'playing'){
-                    videoPlayer.pauseVideo()
-                }else{
-                    videoPlayer.playVideo()
-                }
+			videoPlayer.seekTo ( this.props.videoPlayer.timeInVideo )
+			if ( this.props.videoPlayer.playerState !== 'playing' ) {
+				videoPlayer.pauseVideo ()
+			} else {
+				videoPlayer.playVideo ()
+			}
 		}
 
 	}
@@ -43,7 +43,7 @@ export default class VideoPlayer extends Component {
 	renderVideoPlayer = ( selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName ) => {
 		switch ( selectedVideo.videoSource ) {
 			case 'youtube':
-				return this.renderYoutubeVideoPlayer (selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName )
+				return this.renderYoutubeVideoPlayer ( selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName )
 			default:
 				return null
 		}
@@ -73,10 +73,10 @@ export default class VideoPlayer extends Component {
 				ref={e => this.videoPlayer = e}
 				onStateChange={
 					( event ) => {
-                            onPlayerStateChange (
-                                videoUtils.getYoutubePlayerState ( event ),
-                                event.target.getCurrentTime (),
-                                partyId )
+						onPlayerStateChange (
+							videoUtils.getYoutubePlayerState ( event ),
+							event.target.getCurrentTime (),
+							partyId )
 					}
 				}
 			/>
