@@ -1,6 +1,6 @@
 // Libs & utils
-import { party, user } from '../core'
-import { socketUtils, messageUtils, generalUtils } from "../utils"
+import { party } from '../core'
+import { socketUtils } from "../utils"
 
 // Constants
 import { ACTION_TYPES } from '../core/constants'

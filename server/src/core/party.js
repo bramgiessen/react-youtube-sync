@@ -1,5 +1,4 @@
 // Libs & utils
-import { debounce, cloneDeep } from 'lodash'
 import { cache, user } from './'
 import { generalUtils, socketUtils, messageUtils } from '../utils'
 
@@ -211,6 +210,63 @@ export const party = {
 	},
 
 	/**
+	 * Send all details of a party to a specified client
+	 * @param socket
+	 * @param partyId
+	 * @returns {boolean}
+	 */
+	sendPartyDetailsToClient: ( socket, partyId ) => {
+		if ( !party.partyExists ( partyId ) ) {
+			return false
+		}
+
+		// Gather the selected video details for the party
+		const videoForParty = party.getSelectedVideoForParty ( partyId )
+		// Get the current Video player state for the party
+		const videoPlayerForParty = party.getVideoPlayerForParty ( partyId )
+		const usersInParty = party.getUsersForParty ( partyId )
+		const messagesInParty = party.getMessagesInParty ( partyId )
+
+		// Let the client know which video is selected in the party:
+		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_SELECTED_VIDEO, videoForParty )
+
+		// Let the client know what the current playerState is in the party ('playing', 'paused' etc.)
+		if ( videoPlayerForParty.timeInVideo !== 0 ) {
+			socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_PARTY_PLAYER_STATE, videoPlayerForParty )
+		}
+
+		// Let the client know which other users are currently connected to the party
+		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_USERS_IN_PARTY, usersInParty )
+
+		// Send all messages that have been posted in the party to the client
+		socketUtils.emitActionToClient ( socket, ACTION_TYPES.PARTY_MESSAGE_RECEIVED, messagesInParty )
+	},
+
+	/**
+	 * Notify all clients in a party of a newly connected user
+	 * @param io
+	 * @param partyId
+	 * @param userName
+	 */
+	notifyPartyOfNewlyJoinedUser: ( io, partyId, userName ) => {
+		const usersInParty = party.getUsersForParty ( partyId )
+
+		// Gather all messages that have previously been posted in the party
+		// and add a new message to let everybody know that a new user just joined the party
+		const messagesInParty = party.getMessagesInParty ( partyId )
+		// Create a new message to let everybody know that a new user just joined the party
+		const userJoinedMessage = messageUtils.generateUserJoinedMessage ( userName, partyId )
+		messagesInParty.push ( userJoinedMessage )
+
+		// Let the client know which other users are currently connected to the party
+		socketUtils.emitActionToParty ( io, partyId, ACTION_TYPES.SET_USERS_IN_PARTY, usersInParty )
+
+		// Resend all messages that have been posted in the party to all clients in the party
+		// todo: optimize by sending ONLY NEW messages to already connected users instead of resending ALL messages
+		socketUtils.emitActionToParty ( io, partyId, ACTION_TYPES.PARTY_MESSAGE_RECEIVED, messagesInParty )
+	},
+
+	/**
 	 * Emit a message to a specific party
 	 * @param io
 	 * @param socket
@@ -221,7 +277,6 @@ export const party = {
 	sendMessageToParty: ( io, message, partyId, userName ) => {
 		// Read all messages in the party
 		const messagesInCurrentParty = party.getMessagesInParty ( partyId )
-
 		const messageWithUserName = { message, userName, partyId }
 
 		// Add the message to the messagesInCurrentParty array
