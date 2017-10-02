@@ -20,11 +20,11 @@ export const messageUtils = {
 	 * @param timeInVideo
 	 * @returns {string}
 	 */
-	generatePlayerStateChangeMessage: ( userName, playerState, timeInVideo ) => {
-		const formattedTimeInVideo = generalUtils.toHHMMSS ( timeInVideo )
+	generatePlayerStateChangeMessage: ( userName, videoPlayerState ) => {
+		const formattedTimeInVideo = generalUtils.toHHMMSS ( videoPlayerState.timeInVideo )
 		let playerStateChangeMessage = ''
 
-		switch ( playerState ) {
+		switch ( videoPlayerState.playerState ) {
 			case 'paused':
 				playerStateChangeMessage = `${userName} paused the video at ${formattedTimeInVideo}`
 				break;

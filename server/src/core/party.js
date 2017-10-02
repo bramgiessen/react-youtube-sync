@@ -1,7 +1,7 @@
 // Libs & utils
 import { debounce, cloneDeep } from 'lodash'
 import { cache, user } from './'
-import { generalUtils, socketUtils } from '../utils'
+import { generalUtils, socketUtils, messageUtils } from '../utils'
 
 // Constants
 import { ACTION_TYPES } from '../core/constants'
@@ -78,7 +78,7 @@ export const party = {
 	 */
 	isWaitingToBeReady: ( partyId ) => {
 		const partyForId = party.getPartyById ( partyId )
-		return partyForId.waitingForReady
+		return partyForId && partyForId.waitingForReady
 	},
 
 	/**
@@ -116,7 +116,7 @@ export const party = {
 	 * @param newPlayerState
 	 * @returns {boolean}
 	 */
-	isNewPlayerState: (currentPlayerState, newPlayerState) => {
+	isNewPlayerState: ( currentPlayerState, newPlayerState ) => {
 		const timeInVideoDiffers = currentPlayerState.timeInVideo !== newPlayerState.timeInVideo
 		const playerStateDiffers = currentPlayerState.playerState !== newPlayerState.playerState
 
@@ -125,17 +125,22 @@ export const party = {
 
 	/**
 	 * Returns true if the given new playerState is a valid, new playerState for the party with given partyId
+	 * and the party is currently not waiting for a previous stateChange to be completed
 	 * @param partyId
 	 * @param newPlayerState
 	 * @returns {boolean}
 	 */
 	isValidNewPlayerStateForParty: ( partyId, newPlayerState ) => {
+		const partyIsWaitingForPrevStateChange = party.isWaitingToBeReady ( partyId )
 		const currentVideoPlayerForParty = party.getVideoPlayerForParty ( partyId )
-		const isNewPlayerState = party.isNewPlayerState(currentVideoPlayerForParty, newPlayerState)
-		const isValidPlayerState = party.isValidPlayerState(newPlayerState)
-		const isValidStateChange = party.isValidPlayerStateChange(currentVideoPlayerForParty, newPlayerState)
+		const isNewPlayerState = party.isNewPlayerState ( currentVideoPlayerForParty, newPlayerState )
+		const isValidPlayerState = party.isValidPlayerState ( newPlayerState )
+		const isValidStateChange = party.isValidPlayerStateChange ( currentVideoPlayerForParty, newPlayerState )
 
-		return isValidPlayerState && isValidStateChange && isNewPlayerState
+		return !partyIsWaitingForPrevStateChange
+			&& isValidPlayerState
+			&& isValidStateChange
+			&& isNewPlayerState
 	},
 
 	/**
@@ -144,12 +149,14 @@ export const party = {
 	 * @returns {boolean}
 	 */
 	allUsersReady: ( partyId ) => {
+		const partyIsWaitingToBeReady = party.isWaitingToBeReady ( partyId )
 		const usersInParty = party.getUsersForParty ( partyId )
 		const usersThatAreReady = usersInParty.filter ( ( userInParty ) => {
 			return userInParty.videoPlayerState.playerState === 'paused'
 		} )
 
-		return usersInParty.length === usersThatAreReady.length
+		return partyIsWaitingToBeReady
+			&& usersInParty.length === usersThatAreReady.length
 	},
 
 	/**
@@ -183,7 +190,7 @@ export const party = {
 	 */
 	getUsersForParty: ( partyId ) => {
 		const partyForId = party.getPartyById ( partyId )
-		const userIdsInParty = partyForId ? partyForId.usersInParty : null
+		const userIdsInParty = partyForId ? partyForId.usersInParty : []
 
 		const usersInParty = userIdsInParty.map ( ( userId ) => {
 			return user.getUserForId ( userId )
@@ -204,14 +211,14 @@ export const party = {
 	},
 
 	/**
-	 * Broadcast a message to a specific party
+	 * Emit a message to a specific party
 	 * @param io
 	 * @param socket
 	 * @param message
 	 * @param partyId
 	 * @param userName
 	 */
-	sendMessageToParty: ( io, socket, message, partyId, userName ) => {
+	sendMessageToParty: ( io, message, partyId, userName ) => {
 		// Read all messages in the party
 		const messagesInCurrentParty = party.getMessagesInParty ( partyId )
 
@@ -248,16 +255,93 @@ export const party = {
 	},
 
 	/**
-	 * Update the videoPlayerState of a party ( to paused/playing )
+	 * Start playing the video for all clients in a party
+	 * @param io
+	 * @param partyId
 	 */
-	setPlayerState: ( playerState, timeInVideo, partyId, initiatingUserId ) => {
-		const partyForId = party.getPartyById ( partyId )
+	playVideoForParty: ( io, partyId ) => {
+		const videoPlayerForParty = party.getVideoPlayerForParty ( partyId )
+		const actionInitiatingUser = videoPlayerForParty.lastStateChangeInitiator
 
-		// Set the new videoPlayer state in the party object
-		partyForId.videoPlayer = {
-			playerState,
-			timeInVideo,
-			lastStateChangeInitiator: initiatingUserId
+		// Start a new interval that keeps track of the time progression of the video in the party
+		party.toggleVideoPlayerInterval ( partyId, true )
+
+		// Emit the 'play' command/action to everyone in the party
+		socketUtils.emitActionToParty ( io, partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, {
+			playerState: 'playing',
+			timeInVideo: videoPlayerForParty.timeInVideo
+		} )
+
+		// Let the party know who started playing the video
+		if ( actionInitiatingUser ) {
+			// Generate a message to let the rest of the party know who started playing the video
+			const userForSocketId = user.getUserForId ( actionInitiatingUser )
+			const playerStateChangeMessage = messageUtils.generatePlayerStateChangeMessage ( userForSocketId.userName, videoPlayerForParty )
+			// Send a message to the party, letting them know who started playing the video
+			party.sendMessageToParty ( io, playerStateChangeMessage, partyId, 'Server' )
 		}
 	},
+
+	/**
+	 * Pause the videoPlayer for all clients in a party with the option to exclude the
+	 * client that initiated the pause action for the party (as his videoPlayer will already be paused)
+	 * @param io
+	 * @param socket
+	 * @param partyId
+	 * @param videoPlayerState
+	 * @param includeInitiatingUser
+	 */
+	pauseVideoForParty: ( io, socket, partyId, videoPlayerState, includeInitiatingUser ) => {
+		const userForId = user.getUserForId ( socket.id )
+		const pausedVideoPlayerState = {
+			playerState: 'paused',
+			timeInVideo: videoPlayerState.timeInVideo
+		}
+
+		// Generate a message to let other users know who paused the video
+		const playerStateChangeMessage = messageUtils.generatePlayerStateChangeMessage ( userForId.userName, pausedVideoPlayerState )
+
+		if ( !includeInitiatingUser ) {
+			// Broadcast the 'pause' action to everyone in the party except the action initiator
+			socketUtils.broadcastActionToParty ( socket, partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, pausedVideoPlayerState )
+
+			// Send a message to the party, letting them know that a user paused the video
+			party.sendMessageToParty ( io, playerStateChangeMessage, partyId, 'Server' )
+		} else {
+			// Emit the 'pause' action to everyone in the party
+			socketUtils.emitActionToParty ( io, partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, pausedVideoPlayerState )
+		}
+	},
+
+	/**
+	 * Event handler for when the videoPlayer state for a party changes
+	 * @param io
+	 * @param socket
+	 * @param partyId
+	 * @param newPlayerState
+	 */
+	onNewPlayerStateForParty: ( io, socket, partyId, newPlayerState ) => {
+		const partyForId = party.getPartyById ( partyId )
+
+		// Clear the current videoPlayer interval for this party
+		party.toggleVideoPlayerInterval ( partyId, false )
+
+		// Set the new videoPlayer state in the party object
+		partyForId.videoPlayer = newPlayerState
+
+		// If the parties' videoPlayer state is being changed to playing -> start waiting for all
+		// clients to be done with buffering
+		if ( newPlayerState.playerState === 'playing' ) {
+			// Toggle 'waitingForReady' to 'true' so we know that this party is waiting for everyone to be ready
+			party.toggleWaitingForPartyToBeReady ( partyId, true )
+
+			// Pause the video for everyone in the party until all clients are done buffering
+			party.pauseVideoForParty ( io, socket, partyId, newPlayerState, true )
+		} else {
+			// Someone just paused the video -> pause the video for all clients except
+			// the client that initiated the pause action as his videoPlayer is already paused
+			party.pauseVideoForParty ( io, socket, partyId, newPlayerState, false )
+		}
+
+	}
 }
