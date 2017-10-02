@@ -142,6 +142,12 @@ export const party = {
 			&& isNewPlayerState
 	},
 
+	syncVideoForAllClientsInParty: (io, partyId) => {
+		const videoPlayerStateForParty = party.getVideoPlayerForParty ( partyId )
+		console.log(videoPlayerStateForParty)
+		socketUtils.emitActionToParty( io,partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, videoPlayerStateForParty )
+	},
+
 	/**
 	 * Returns true if all users in a party have status 'paused' (instead of 'buffering')
 	 * @param partyId
@@ -206,7 +212,7 @@ export const party = {
 	getMessagesInParty: ( partyId ) => {
 		const partyForId = cache.parties.find ( ( activeParty ) => activeParty.partyId === partyId )
 
-		return partyForId.messagesInParty
+		return partyForId && partyForId.messagesInParty ? partyForId.messagesInParty : []
 	},
 
 	/**

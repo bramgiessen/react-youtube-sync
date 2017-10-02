@@ -32,6 +32,6 @@ function sendMessageToParty ( io, socket, payload ) {
 	const { message, partyId, userName } = payload
 
 	if ( message && partyId && userName ) {
-		party.sendMessageToParty ( io, socket, message, partyId, userName )
+		party.sendMessageToParty ( io, message, partyId, userName )
 	}
 }

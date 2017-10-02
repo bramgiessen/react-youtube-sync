@@ -1,5 +1,11 @@
 import { cache } from './index'
-import { party } from "./party";
+import { party } from "./party"
+
+// Utils & libs
+import { socketUtils } from '../utils'
+
+// Constants
+import { ACTION_TYPES } from '../core/constants'
 
 export const user = {
 
@@ -43,6 +49,17 @@ export const user = {
 	 */
 	getUserForId: ( socketId ) => {
 		return cache.users.find ( ( activeUser ) => activeUser.socketId === socketId )
+	},
+
+	/**
+	 * Returns the videoPlayerState for a user
+	 * @param socketId
+	 * @returns {null}
+	 */
+	getVideoPlayerForUser: ( socketId ) => {
+		const userForId = user.getUserForId ( socketId )
+
+		return userForId && userForId.videoPlayerState ? userForId.videoPlayerState : null
 	},
 
 	/**
@@ -176,5 +193,18 @@ export const user = {
 
 		userForId.videoPlayerState = videoPlayerState
 	},
+
+	isInSyncWithParty: ( userId, partyId ) => {
+		const videoPlayerStateForUser = user.getVideoPlayerForUser ( userId )
+		const videoPlayerStateForParty = party.getVideoPlayerForParty ( partyId )
+		if ( !videoPlayerStateForParty || !videoPlayerStateForUser ) {
+			return false
+		}
+
+		console.log ( videoPlayerStateForParty.timeInVideo, videoPlayerStateForUser.timeInVideo )
+
+		return videoPlayerStateForParty.playerState === videoPlayerStateForUser.playerState
+			&& videoPlayerStateForParty.timeInVideo === videoPlayerStateForUser.timeInVideo
+	}
 
 }
