@@ -93,9 +93,6 @@ export const party = {
 
 	/**
 	 * Returns true if given newPlayerState is a valid change of playerState for the party
-	 * ( A parties playerState may not go from 'playing' to 'paused' at the exact same timeInVideo,
-	 *   as this is a default response from the clients' Youtube players' onStateChange event after the client
-	 *   receives a 'playing' command )
 	 * @param currentPlayerState
 	 * @param newPlayerState
 	 * @returns {boolean}
@@ -103,9 +100,13 @@ export const party = {
 	isValidPlayerStateChange: ( currentPlayerState, newPlayerState ) => {
 		const timeInVideoDiffers = currentPlayerState.timeInVideo !== newPlayerState.timeInVideo
 
-		return !(currentPlayerState.playerState === 'playing'
-		&& newPlayerState.playerState === 'paused'
-		&& !timeInVideoDiffers)
+		// Because the Youtube player by default sends out a 'paused' playerState right after playing a video,
+		// (it pauses while it waits to buffer) ignore this command if it comes right after we sent out a 'playing' command
+		const pausedRightAfterPlaying = currentPlayerState.playerState === 'playing'
+			&& newPlayerState.playerState === 'paused'
+			&& !timeInVideoDiffers
+
+		return !pausedRightAfterPlaying
 	},
 
 	/**
@@ -136,7 +137,13 @@ export const party = {
 		const isValidPlayerState = party.isValidPlayerState ( newPlayerState )
 		const isValidStateChange = party.isValidPlayerStateChange ( currentVideoPlayerForParty, newPlayerState )
 
-		return !partyIsWaitingForPrevStateChange
+		const timeInVideoDiffers = currentVideoPlayerForParty.timeInVideo !== newPlayerState.timeInVideo
+
+		// console.log('partyIsWaitingForPrevStateChange', partyIsWaitingForPrevStateChange)
+		// console.log(currentVideoPlayerForParty.playerState, currentVideoPlayerForParty.timeInVideo)
+		// console.log(newPlayerState.playerState, newPlayerState.timeInVideo)
+
+		return (!partyIsWaitingForPrevStateChange || timeInVideoDiffers )
 			&& isValidPlayerState
 			&& isValidStateChange
 			&& isNewPlayerState

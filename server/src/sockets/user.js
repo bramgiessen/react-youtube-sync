@@ -50,6 +50,7 @@ function connectToParty ( io, socket, payload ) {
  */
 function disconnectFromAllParties ( io, socket ) {
 	user.disconnectFromParty ( io, socket )
+	user.resetPlayerStateForUser ( socket )
 }
 
 /**
@@ -71,6 +72,10 @@ function setVideoPlayerState ( io, socket, payload ) {
 	// if this is a valid new playerState for the entire party -> update the playerState for the entire party
 	if ( user.isAuthorizedInParty ( userId, partyId ) && party.isValidNewPlayerStateForParty ( partyId, newVideoPlayerState ) ) {
 		party.onNewPlayerStateForParty ( io, socket, partyId, newVideoPlayerState )
+	}else{
+		if(playerState === 'playing'){
+			console.log(timeInVideo)
+		}
 	}
 
 	// If the party was waiting for a previous playerState change and all users are now done buffering ->

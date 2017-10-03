@@ -25,10 +25,11 @@ export default class VideoPlayer extends Component {
 		if ( prevProps.videoPlayer !== this.props.videoPlayer ) {
 
 			videoPlayer.seekTo ( this.props.videoPlayer.timeInVideo )
-			if ( this.props.videoPlayer.playerState !== 'playing' ) {
-				videoPlayer.pauseVideo ()
-			} else {
+			if ( this.props.videoPlayer.playerState === 'playing' ) {
+				console.log('Play!', this.props.videoPlayer.timeInVideo)
 				videoPlayer.playVideo ()
+			} else {
+				videoPlayer.pauseVideo ()
 			}
 		}
 

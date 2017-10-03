@@ -194,6 +194,17 @@ export const user = {
 		userForId.videoPlayerState = videoPlayerState
 	},
 
+	/**
+	 * Reset the playerState for a user back to it's initial value
+	 * @param socket
+	 */
+	resetPlayerStateForUser: ( socket ) => {
+		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_PARTY_PLAYER_STATE, {
+			playerState: 'paused',
+			timeInVideo: 0
+		} )
+	},
+
 	isInSyncWithParty: ( userId, partyId ) => {
 		const videoPlayerStateForUser = user.getVideoPlayerForUser ( userId )
 		const videoPlayerStateForParty = party.getVideoPlayerForParty ( partyId )
