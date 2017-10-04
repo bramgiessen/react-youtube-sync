@@ -1,6 +1,6 @@
 // Libs & utils
 import { party } from '../core'
-import { socketUtils } from "../utils"
+import { socketUtils, generalUtils } from "../utils"
 
 // Constants
 import { ACTION_TYPES } from '../core/constants'
@@ -8,6 +8,7 @@ import { ACTION_TYPES } from '../core/constants'
 export const partySocketHandlers = {
 	'WS_TO_SERVER_CREATE_PARTY': createParty,
 	'WS_TO_SERVER_SEND_MESSAGE_TO_PARTY': sendMessageToParty,
+	'WS_TO_SERVER_SET_VIDEO_PLAYER_STATE': setVideoPlayerStateForParty
 }
 
 /**
@@ -34,4 +35,15 @@ function sendMessageToParty ( io, socket, payload ) {
 	if ( message && partyId && userName ) {
 		party.sendMessageToParty ( io, message, partyId, userName )
 	}
+}
+
+function setVideoPlayerStateForParty (io, socket, payload) {
+	const { newPlayerState, partyId } = payload
+	const playerStateForParty = {
+		playerState: newPlayerState.playerState,
+		timeInVideo: generalUtils.toFixedNumber(newPlayerState.timeInVideo, 2),
+		stateChangeActionId: generalUtils.generateId(15)
+	}
+
+	party.onNewPlayerStateForParty(io, socket, partyId, playerStateForParty)
 }

@@ -19,11 +19,11 @@ export const generalUtils = {
 	 * Generate a random string
 	 * @returns {string}
 	 */
-	generateId: () => {
+	generateId: ( length = 5 ) => {
 		let text = ""
 		const possibleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
-		for ( let i = 0; i < 5; i++ )
+		for ( let i = 0; i < length; i++ )
 			text += possibleChars.charAt ( Math.floor ( Math.random () * possibleChars.length ) )
 
 		return text

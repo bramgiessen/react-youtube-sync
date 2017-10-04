@@ -23,8 +23,8 @@ export const user = {
 			const newUser = {
 				socketId,
 				userName,
-				videoPlayerState: {
-					playerState: 'paused',
+				readyToPlayState: {
+					clientIsReady: false,
 					timeInVideo: 0
 				}
 			}
@@ -179,30 +179,44 @@ export const user = {
 	},
 
 	/**
+	 * Reset the playerState for a user
+	 * @param socket
+	 */
+	resetPlayerStateForUser: ( socket ) => {
+		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_CLIENT_PLAYER_STATE, {
+			playerState: 'paused',
+			timeInVideo: 0,
+			stateChangeActionId: 0
+		} )
+	},
+
+	/**
 	 * Set / save the videoPlayers' state of a user
 	 * ( We do this so we know if the user is ready to play, or i.e. still buffering a video )
 	 * @param socketId
 	 * @param videoPlayerState
 	 * @returns {boolean}
 	 */
-	setUserVideoPlayerState: ( socketId, videoPlayerState ) => {
+	setUserReadyToPlayState: ( socketId, newReadyToPlayState ) => {
 		const userForId = user.getUserForId ( socketId )
 		if ( !userForId ) {
 			return false
 		}
 
-		userForId.videoPlayerState = videoPlayerState
+		userForId.readyToPlayState = newReadyToPlayState
 	},
 
 	/**
 	 * Reset the playerState for a user back to it's initial value
-	 * @param socket
+	 * @param userId
 	 */
-	resetPlayerStateForUser: ( socket ) => {
-		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_PARTY_PLAYER_STATE, {
-			playerState: 'paused',
+	resetReadyToPlayState: ( userId ) => {
+		const userForId = user.getUserForId ( userId )
+
+		userForId.readyToPlayState = {
+			clientIsReady: false,
 			timeInVideo: 0
-		} )
+		}
 	},
 
 	isInSyncWithParty: ( userId, partyId ) => {

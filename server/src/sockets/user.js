@@ -8,7 +8,7 @@ import { ACTION_TYPES } from '../core/constants'
 export const userSocketHandlers = {
 	'WS_TO_SERVER_CONNECT_TO_PARTY': connectToParty,
 	'WS_TO_SERVER_DISCONNECT_FROM_PARTY': disconnectFromAllParties,
-	'WS_TO_SERVER_SET_VIDEO_PLAYER_STATE': setVideoPlayerState,
+	'WS_TO_SERVER_SET_CLIENT_READY_STATE': setUserReadyState
 }
 
 /**
@@ -54,6 +54,45 @@ function disconnectFromAllParties ( io, socket ) {
 }
 
 /**
+ * Mark a user as readyToPlay [== done buffering] or not
+ * @param io
+ * @param socket
+ * @param payload
+ */
+function setUserReadyState ( io, socket, payload ) {
+	const partyIdForUser = user.getPartyIdsForUser ( socket.id )[ 0 ]
+	if ( !partyIdForUser ) {
+		return false
+	}
+	const partyForUser = party.getPartyById ( partyIdForUser )
+	const currentPlayerStateForParty = partyForUser.videoPlayer.playerState
+
+	const { clientIsReady, stateChangeActionId } = payload
+	const readyToPlayState = {
+		stateChangeActionId,
+		clientIsReady,
+		timeInVideo: generalUtils.toFixedNumber ( payload.timeInVideo, 2 )
+	}
+
+	console.log ( readyToPlayState )
+
+	// Store the new userReadyState for the user
+	user.setUserReadyToPlayState ( socket.id, readyToPlayState )
+
+	console.log(party.allUsersReady ( partyIdForUser ))
+
+	// If all users are ready, and the current parties' playerState is 'playing'
+	// -> play the video for all users
+	if ( party.allUsersReady ( partyIdForUser )
+		&& currentPlayerStateForParty === 'playing'
+		&& stateChangeActionId && stateChangeActionId === partyForUser.videoPlayer.stateChangeActionId ) {
+		party.resetStateChangeActionId ( partyIdForUser )
+		console.log ( party.allUsersReady ( partyIdForUser ) )
+		party.playVideoForParty ( io, partyIdForUser )
+	}
+}
+
+/**
  * Update a users' videoPlayer state, and if necessary, also the entire parties' videoPlayer state
  * @param io
  * @param socket
@@ -65,7 +104,7 @@ function setVideoPlayerState ( io, socket, payload ) {
 	const timeInVideo = generalUtils.toFixedNumber ( payload.timeInVideo, 1 )
 	const newVideoPlayerState = { playerState, timeInVideo, lastStateChangeInitiator: userId }
 
-	console.log(playerState)
+	console.log ( playerState )
 
 	// Set / save the videoPlayers' state of a user so we know if the user is i.e. buffering or ready to play
 	user.setUserVideoPlayerState ( userId, newVideoPlayerState )
@@ -73,7 +112,7 @@ function setVideoPlayerState ( io, socket, payload ) {
 	// If the user is authorized to update the playerState for the entire party AND
 	// if this is a valid new playerState for the entire party -> update the playerState for the entire party
 	if ( user.isAuthorizedInParty ( userId, partyId ) && party.isValidNewPlayerStateForParty ( partyId, newVideoPlayerState ) ) {
-		console.log('new state', playerState)
+		console.log ( 'new state', playerState )
 		party.onNewPlayerStateForParty ( io, socket, partyId, newVideoPlayerState )
 	}
 
