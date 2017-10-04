@@ -145,7 +145,7 @@ export const party = {
 
 		return (!partyIsWaitingForPrevStateChange || timeInVideoDiffers )
 			&& isValidPlayerState
-			&& isValidStateChange
+			// && isValidStateChange
 			&& isNewPlayerState
 	},
 
@@ -164,7 +164,7 @@ export const party = {
 		const partyIsWaitingToBeReady = party.isWaitingToBeReady ( partyId )
 		const usersInParty = party.getUsersForParty ( partyId )
 		const usersThatAreReady = usersInParty.filter ( ( userInParty ) => {
-			return userInParty.videoPlayerState.playerState === 'paused'
+			return userInParty.videoPlayerState.playerState === 'ready'
 		} )
 
 		return partyIsWaitingToBeReady
@@ -359,7 +359,7 @@ export const party = {
 	 * @param videoPlayerState
 	 * @param includeInitiatingUser
 	 */
-	pauseVideoForParty: ( io, socket, partyId, videoPlayerState, includeInitiatingUser ) => {
+	pauseVideoForParty: ( io, socket, partyId, videoPlayerState ) => {
 		const userForId = user.getUserForId ( socket.id )
 		const pausedVideoPlayerState = {
 			playerState: 'paused',
@@ -369,16 +369,11 @@ export const party = {
 		// Generate a message to let other users know who paused the video
 		const playerStateChangeMessage = messageUtils.generatePlayerStateChangeMessage ( userForId.userName, pausedVideoPlayerState )
 
-		if ( !includeInitiatingUser ) {
-			// Broadcast the 'pause' action to everyone in the party except the action initiator
-			socketUtils.broadcastActionToParty ( socket, partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, pausedVideoPlayerState )
-
-			// Send a message to the party, letting them know that a user paused the video
-			party.sendMessageToParty ( io, playerStateChangeMessage, partyId, 'Server' )
-		} else {
 			// Emit the 'pause' action to everyone in the party
 			socketUtils.emitActionToParty ( io, partyId, ACTION_TYPES.SET_PARTY_PLAYER_STATE, pausedVideoPlayerState )
-		}
+
+		// Send a message to the party, letting them know that a user paused the video
+		party.sendMessageToParty ( io, playerStateChangeMessage, partyId, 'Server' )
 	},
 
 	/**
@@ -402,14 +397,9 @@ export const party = {
 		if ( newPlayerState.playerState === 'playing' ) {
 			// Toggle 'waitingForReady' to 'true' so we know that this party is waiting for everyone to be ready
 			party.toggleWaitingForPartyToBeReady ( partyId, true )
-
-			// Pause the video for everyone in the party until all clients are done buffering
-			party.pauseVideoForParty ( io, socket, partyId, newPlayerState, true )
-		} else {
-			// Someone just paused the video -> pause the video for all clients except
-			// the client that initiated the pause action as his videoPlayer is already paused
-			party.pauseVideoForParty ( io, socket, partyId, newPlayerState, false )
 		}
 
+		// Pause the video for everyone in the party until all clients are done buffering
+		party.pauseVideoForParty ( io, socket, partyId, newPlayerState )
 	}
 }

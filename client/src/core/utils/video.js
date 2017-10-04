@@ -22,6 +22,21 @@ export const videoUtils = {
 	},
 
 	/**
+	 * Construct & return a video url based on the videoSource
+	 * @param videoSource
+	 * @param videoId
+	 * @returns {*}
+	 */
+	getVideoUrl: (videoSource, videoId) => {
+		switch ( videoSource ) {
+			case 'youtube':
+				return `https://www.youtube.com/watch?v=${videoId}&origin=http://192.168.1.19`
+			default:
+				return null
+		}
+	},
+
+	/**
 	 * Map Youtube player state to a human readable string
 	 * @param event
 	 * @returns {*}

@@ -138,7 +138,7 @@ const mapStateToProps = ( state ) => {
 const mapDispatchToProps = {
 	connectToParty: userActions.connectToParty,
 	sendMessageToParty: partyActions.sendMessageToParty,
-	setVideoPlayerState: partyActions.setVideoPlayerState
+	setVideoPlayerState: partyActions.setVideoPlayerState,
 }
 
 PartyPage = connect (
