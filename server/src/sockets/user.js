@@ -50,7 +50,7 @@ function connectToParty ( io, socket, payload ) {
  */
 function disconnectFromAllParties ( io, socket ) {
 	user.disconnectFromParty ( io, socket )
-	user.resetPlayerStateForUser ( socket )
+	user.resetClientToInitialState( socket )
 }
 
 /**
@@ -64,29 +64,23 @@ function setUserReadyState ( io, socket, payload ) {
 	if ( !partyIdForUser ) {
 		return false
 	}
-	const partyForUser = party.getPartyById ( partyIdForUser )
-	const currentPlayerStateForParty = partyForUser.videoPlayer.playerState
-
-	const { clientIsReady, stateChangeActionId } = payload
+	const partyForId = party.getPartyById ( partyIdForUser )
+	const currentPlayerStateForParty = partyForId.videoPlayer.playerState
+	const { clientIsReady } = payload
 	const readyToPlayState = {
-		stateChangeActionId,
 		clientIsReady,
 		timeInVideo: generalUtils.toFixedNumber ( payload.timeInVideo, 2 )
 	}
 
-	console.log ( readyToPlayState )
+	console.log(readyToPlayState)
 
 	// Store the new userReadyState for the user
 	user.setUserReadyToPlayState ( socket.id, readyToPlayState )
 
-	console.log(party.allUsersReady ( partyIdForUser ))
-
 	// If all users are ready, and the current parties' playerState is 'playing'
 	// -> play the video for all users
 	if ( party.allUsersReady ( partyIdForUser )
-		&& currentPlayerStateForParty === 'playing'
-		&& stateChangeActionId && stateChangeActionId === partyForUser.videoPlayer.stateChangeActionId ) {
-		party.resetStateChangeActionId ( partyIdForUser )
+		&& currentPlayerStateForParty === 'playing' ) {
 		console.log ( party.allUsersReady ( partyIdForUser ) )
 		party.playVideoForParty ( io, partyIdForUser )
 	}

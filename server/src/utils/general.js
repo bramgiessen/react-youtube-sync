@@ -31,7 +31,7 @@ export const generalUtils = {
 
 	/**
 	 * Convert amount of seconds to duration string in format of HH:MM:SS
-	 * @param seconds
+	 * @param amountOfSeconds
 	 * @returns {string}
 	 */
 	toHHMMSS: ( amountOfSeconds ) => {

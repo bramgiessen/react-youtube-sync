@@ -10,8 +10,7 @@ export const cache = {
 		// 	videoPlayer: {
 		// 		playerState: 'paused',
 		// 		timeInVideo: 0,
-		// 		lastStateChangeInitiator: null,
-		//      stateChangeActionId: 0
+		// 		lastStateChangeInitiator: null
 		// 	},
 		// 	videoPlayerInterval: null,
 		// 	usersInParty: [],

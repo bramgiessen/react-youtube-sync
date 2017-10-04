@@ -185,9 +185,23 @@ export const user = {
 	resetPlayerStateForUser: ( socket ) => {
 		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_CLIENT_PLAYER_STATE, {
 			playerState: 'paused',
-			timeInVideo: 0,
-			stateChangeActionId: 0
+			timeInVideo: 0
 		} )
+	},
+
+	resetSelectedVideoForUser: ( socket ) => {
+		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_SELECTED_VIDEO, {
+			id: '',
+			title: '',
+			description: '',
+			thumbnailSrc: '',
+			videoSource: ''
+		} )
+	},
+
+	resetClientToInitialState: ( socket ) => {
+		user.resetPlayerStateForUser ( socket )
+		user.resetSelectedVideoForUser( socket )
 	},
 
 	/**

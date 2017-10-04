@@ -29,8 +29,7 @@ export const party = {
 			videoPlayer: {
 				playerState: 'paused',
 				timeInVideo: 0,
-				lastStateChangeInitiator: null,
-				stateChangeActionId: 0
+				lastStateChangeInitiator: null
 			},
 			videoPlayerInterval: null,
 			usersInParty: [],
@@ -87,12 +86,6 @@ export const party = {
 		usersInParty.forEach ( ( userInParty ) => {
 			user.resetReadyToPlayState ( userInParty.socketId )
 		} )
-	},
-
-	resetStateChangeActionId: (partyId) => {
-		const partyForId = party.getPartyById ( partyId )
-
-		partyForId.videoPlayer.stateChangeActionId = null
 	},
 
 	/**
@@ -351,8 +344,7 @@ export const party = {
 		// Emit the 'play' command/action to everyone in the party
 		socketUtils.emitActionToParty ( io, partyId, ACTION_TYPES.SET_CLIENT_PLAYER_STATE, {
 			playerState: 'playing',
-			timeInVideo: videoPlayerForParty.timeInVideo,
-			stateChangeActionId: videoPlayerForParty.stateChangeActionId
+			timeInVideo: videoPlayerForParty.timeInVideo
 		} )
 
 		// Let the party know who started playing the video
@@ -378,8 +370,7 @@ export const party = {
 		const userForId = user.getUserForId ( socket.id )
 		const pausedVideoPlayerState = {
 			playerState: 'paused',
-			timeInVideo: videoPlayerState.timeInVideo,
-			stateChangeActionId: videoPlayerState.stateChangeActionId
+			timeInVideo: videoPlayerState.timeInVideo
 		}
 
 		// Generate a message to let other users know who paused the video
@@ -408,20 +399,18 @@ export const party = {
 		const newVideoPlayerStateForParty = {
 			lastStateChangeInitiator: socket.id,
 			playerState: newPlayerState.playerState,
-			timeInVideo: newPlayerState.timeInVideo,
-			stateChangeActionId: newPlayerState.stateChangeActionId
+			timeInVideo: newPlayerState.timeInVideo
 		}
 
 		// Set the new videoPlayer state in the party object
 		partyForId.videoPlayer = newVideoPlayerStateForParty
 
-		if(party.allUsersReady ( partyId ) && newPlayerState.playerState === 'playing'){
-			party.resetStateChangeActionId ( partyId )
-			party.playVideoForParty(io, partyId)
-		}else{
+		// if(party.allUsersReady ( partyId ) && newPlayerState.playerState === 'playing'){
+		// 	party.playVideoForParty(io, partyId)
+		// }else{
 			// Pause the video for everyone in the party until all clients are done buffering
 			party.pauseVideoForParty ( io, socket, partyId, newVideoPlayerStateForParty )
-		}
+		// }
 
 	}
 }

@@ -41,8 +41,7 @@ function setVideoPlayerStateForParty (io, socket, payload) {
 	const { newPlayerState, partyId } = payload
 	const playerStateForParty = {
 		playerState: newPlayerState.playerState,
-		timeInVideo: generalUtils.toFixedNumber(newPlayerState.timeInVideo, 2),
-		stateChangeActionId: generalUtils.generateId(15)
+		timeInVideo: generalUtils.toFixedNumber(newPlayerState.timeInVideo, 2)
 	}
 
 	party.onNewPlayerStateForParty(io, socket, partyId, playerStateForParty)
