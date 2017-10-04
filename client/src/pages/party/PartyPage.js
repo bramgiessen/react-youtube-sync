@@ -81,7 +81,7 @@ class PartyPage extends Component {
 	}
 
 	render () {
-		const { selectedVideo, partyState, usersInParty, setVideoPlayerState, videoPlayer, userName } = this.props
+		const { selectedVideo, partyState, usersInParty, emitNewPlayerStateForPartyToServer, emitClientReadyStateToServer, partyVideoPlayerState, userName } = this.props
 		const partyUrl = window.location.href.split ( '?' )[ 0 ]
 
 		return (
@@ -96,8 +96,9 @@ class PartyPage extends Component {
 									selectedVideo={selectedVideo}
 									partyId={this.partyId}
 									userName={userName}
-									onPlayerStateChange={setVideoPlayerState}
-									videoPlayer={videoPlayer}
+									emitClientReadyStateToServer={emitClientReadyStateToServer}
+									emitNewPlayerStateToServer={emitNewPlayerStateForPartyToServer}
+									partyVideoPlayerState={partyVideoPlayerState}
 								/>
 							</div>
 
@@ -131,14 +132,15 @@ const mapStateToProps = ( state ) => {
 		partyState: state.party.partyState,
 		usersInParty: state.party.usersInParty,
 		messagesInParty: state.party.messagesInParty,
-        videoPlayer: state.party.videoPlayer
+		partyVideoPlayerState: state.party.videoPlayerState
 	}
 }
 
 const mapDispatchToProps = {
 	connectToParty: userActions.connectToParty,
+	emitClientReadyStateToServer: userActions.emitClientReadyStateToServer,
 	sendMessageToParty: partyActions.sendMessageToParty,
-	setVideoPlayerState: partyActions.setVideoPlayerState,
+	emitNewPlayerStateForPartyToServer: partyActions.emitNewPlayerStateForPartyToServer,
 }
 
 PartyPage = connect (

@@ -16,7 +16,7 @@ const initialState = Immutable ( {
 	},
 	usersInParty: [],
 	messagesInParty: [],
-	videoPlayer: {
+	videoPlayerState: {
 		playerState: 'paused',
 		timeInVideo: 0
 	}
@@ -40,8 +40,8 @@ export const partyReducer = ( state = initialState, action ) => {
 		case partyActions.WS_TO_CLIENT_PARTY_MESSAGE_RECEIVED:
 			return Immutable.set ( state, 'messagesInParty', action.payload )
 
-		case partyActions.WS_TO_CLIENT_SET_PARTY_PLAYER_STATE:
-			return Immutable.set ( state, 'videoPlayer', action.payload )
+		case partyActions.WS_TO_CLIENT_SET_PLAYER_STATE:
+			return Immutable.set ( state, 'videoPlayerState', action.payload )
 
 
 		default:

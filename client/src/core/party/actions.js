@@ -15,7 +15,7 @@ export const partyActions = {
     WS_TO_CLIENT_SET_SELECTED_VIDEO: 'WS_TO_CLIENT_SET_SELECTED_VIDEO',
     WS_TO_CLIENT_PARTY_MESSAGE_RECEIVED: 'WS_TO_CLIENT_PARTY_MESSAGE_RECEIVED',
     WS_TO_CLIENT_SET_USERS_IN_PARTY: 'WS_TO_CLIENT_SET_USERS_IN_PARTY',
-    WS_TO_CLIENT_SET_PARTY_PLAYER_STATE: 'WS_TO_CLIENT_SET_PARTY_PLAYER_STATE',
+	WS_TO_CLIENT_SET_PLAYER_STATE: 'WS_TO_CLIENT_SET_PLAYER_STATE',
 
 	// OUTGOING TO SERVER
 	// Actions that after dispatching automatically get sent
@@ -34,9 +34,9 @@ export const partyActions = {
 		payload: { message, userName, partyId }
 	}),
 
-	setVideoPlayerState: ( playerState, timeInVideo, partyId ) => ({
+	emitNewPlayerStateForPartyToServer: ( newPlayerState, partyId ) => ({
 		type: partyActions.WS_TO_SERVER_SET_VIDEO_PLAYER_STATE,
-		payload: { playerState, timeInVideo, partyId }
+		payload: { newPlayerState, partyId }
 	})
 
 }

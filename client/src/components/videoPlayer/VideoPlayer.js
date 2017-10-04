@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
 import classNames from 'classnames'
+import { debounce } from 'lodash'
 import { videoUtils, generalUtils } from '../../core/utils'
 
 // CSS
@@ -11,9 +12,10 @@ import './VideoPlayer.css'
 export default class VideoPlayer extends Component {
 	static propTypes = {
 		selectedVideo: PropTypes.object.isRequired,
-		onPlayerStateChange: PropTypes.func.isRequired,
+		emitClientReadyStateToServer: PropTypes.func.isRequired,
+		emitNewPlayerStateToServer: PropTypes.func.isRequired,
 		partyId: PropTypes.string.isRequired,
-		videoPlayer: PropTypes.object.isRequired,
+		partyVideoPlayerState: PropTypes.object.isRequired,
 		fullWidth: PropTypes.bool,
 		userName: PropTypes.string
 	}
@@ -26,18 +28,26 @@ export default class VideoPlayer extends Component {
 		}
 	}
 
-	componentDidMount() {
+	componentDidMount () {
 
 	}
 
 	componentDidUpdate ( prevProps, prevState ) {
-		// console.log(this.videoPlayer.getInternalPlayer())
-		// const videoPlayer = this.videoPlayer && this.videoPlayer.internalPlayer
+		const prevPartyPlayerState = prevProps.partyVideoPlayerState
+		const currentPartyPlayerState = this.props.partyVideoPlayerState
+		const internalVideoPlayer = this.videoPlayer.getInternalPlayer ()
 
 		// If the player state has been changed by someone else in the party and there is more than a 2 sec difference ->
 		// update the player position
-		if ( prevProps.videoPlayer !== this.props.videoPlayer ) {
-			this.videoPlayer.seekTo ( this.props.videoPlayer.timeInVideo )
+		if ( prevPartyPlayerState !== currentPartyPlayerState ) {
+			this.videoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
+
+			// If the videoPlayer was already paused
+			if ( internalVideoPlayer
+				&& prevPartyPlayerState.playerState === 'paused' && currentPartyPlayerState.playerState === 'paused'
+				&& prevPartyPlayerState.timeInVideo === currentPartyPlayerState.timeInVideo ) {
+				this.props.emitClientReadyStateToServer ( {clientIsReady:true, timeInVideo:currentPartyPlayerState.timeInVideo } )
+			}
 		}
 
 	}
@@ -65,42 +75,70 @@ export default class VideoPlayer extends Component {
 		this.setState ( { videoPlayerIsMuted: !videoPlayerIsMuted } )
 	}
 
-	toggleVideoPlayerPlaying = ( currentPlayerState, currentTimeInVideo, onPlayerStateChange, partyId ) => {
-		if ( currentPlayerState === 'paused' ) {
-			onPlayerStateChange (
-				'playing',
-				currentTimeInVideo,
-				partyId )
-		} else {
-			onPlayerStateChange (
-				'paused',
-				currentTimeInVideo,
-				partyId )
+	/**
+	 * A client is ready [to play] if his playerState equals the parties' playerState
+	 * @param partyVideoPlayerState
+	 * @param userVideoPlayerState
+	 * @returns {{clientIsReady: boolean, timeInVideo: (*|number)}}
+	 */
+	determineClientReadyState = ( partyVideoPlayerState, userVideoPlayerState ) => {
+		const timeInVideo = userVideoPlayerState.timeInVideo
+		let clientIsReady = userVideoPlayerState.playerState === partyVideoPlayerState.playerState
+
+		return {
+			clientIsReady,
+			timeInVideo
 		}
 	}
 
-	setClientIsReadyToPlay = (bool, timeInVideo, notifyServer, partyId) => {
-		const clientStatus = bool ? 'ready' : 'buffering'
+	/**
+	 * Determine if this client is ready to play or not ( == done buffering ) and let the server know about this
+	 *
+	 * Reason for debouncing: because Youtube always fires a pause event right before a buffering event,
+	 * we want to ignore this first, useless pause event
+	 */
+	onPlayerStateChange = debounce ( ( partyVideoPlayerState, userVideoPlayerState, onClientReady ) => {
 
-		console.log(clientStatus)
-		notifyServer (
-			clientStatus,
-			timeInVideo,
-			partyId )
+		console.log ( userVideoPlayerState )
+
+		// If the users' videoPlayer somehow started playing, but the server is still telling us to pause
+		// -> pause the videoPlayer
+		if ( partyVideoPlayerState.playerState === 'paused' && userVideoPlayerState.playerState === 'playing' ) {
+			this.videoPlayer.player.player.pauseVideo ()
+		}
+		const clientReadyState = this.determineClientReadyState ( partyVideoPlayerState, userVideoPlayerState )
+
+
+		if ( !(partyVideoPlayerState.playerState === 'playing' && userVideoPlayerState.playerState === 'playing') ) {
+			onClientReady ( clientReadyState )
+		}
+
+	}, 50 )
+
+	/**
+	 * Returns a users' playerState object containing the playerState and timeInVideo
+	 * @param playerState
+	 * @param videoPlayer
+	 * @returns {{playerState: *, timeInVideo}}
+	 */
+	constructUserPlayerState = ( playerState, videoPlayer ) => {
+		return {
+			playerState,
+			timeInVideo: videoPlayer.getCurrentTime ()
+		}
 	}
 
 	/**
 	 * Render the right type of videoPlayer based on the videos' source
-	 * @param videoId
-	 * @param videoSource
+	 * @param selectedVideo
+	 * @param partyVideoPlayerState
+	 * @param onClientReady
 	 * @returns {XML | null}
 	 */
-	renderVideoPlayer = ( selectedVideo, videoPlayer, onPlayerStateChange, partyId ) => {
+	renderVideoPlayer = ( selectedVideo, partyVideoPlayerState, onClientReady ) => {
 		let videoUrl = videoUtils.getVideoUrl ( selectedVideo.videoSource, selectedVideo.id )
-		const videoIsPlaying = videoPlayer.playerState === 'playing'
+		const videoIsPlaying = partyVideoPlayerState.playerState === 'playing'
 		const playerIsMuted = this.state.videoPlayerIsMuted
-
-		console.log(videoIsPlaying)
 
 		return (
 			<ReactPlayer
@@ -110,18 +148,24 @@ export default class VideoPlayer extends Component {
 				muted={ playerIsMuted }
 				playing={ videoIsPlaying }
 				ref={e => this.videoPlayer = e}
-				onPlay={() => this.setClientIsReadyToPlay(
-					true,
-					this.videoPlayer.getCurrentTime (),
-					onPlayerStateChange,
-					partyId
+				onPlay={() => this.onPlayerStateChange (
+					partyVideoPlayerState,
+					this.constructUserPlayerState ( 'playing', this.videoPlayer ),
+					onClientReady
 				)}
-				onBuffer={() => this.setClientIsReadyToPlay(
-					false,
-					this.videoPlayer.getCurrentTime (),
-					onPlayerStateChange,
-					partyId
+				onPause={() => this.onPlayerStateChange (
+					partyVideoPlayerState,
+					this.constructUserPlayerState ( 'paused', this.videoPlayer ),
+					onClientReady
 				)}
+				onBuffer={() => this.onPlayerStateChange (
+					partyVideoPlayerState,
+					this.constructUserPlayerState ( 'buffering', this.videoPlayer ),
+					onClientReady
+				)}
+				onError={() => {
+					console.log ( 'onseek' )
+				}}
 				config={{
 					youtube: {
 						playerVars: { showinfo: 1 }
@@ -136,8 +180,9 @@ export default class VideoPlayer extends Component {
 	 * Render an overlay with custom videoPlayer controls
 	 * @returns {XML}
 	 */
-	renderVideoPlayerControlsOverlay = ( videoPlayer, onPlayerStateChange, partyId ) => {
-		const videoIsPlaying = videoPlayer.playerState === 'playing'
+	renderVideoPlayerControlsOverlay = ( partyVideoPlayerState, emitNewPlayerStateToServer, partyId ) => {
+		const videoIsPlaying = partyVideoPlayerState.playerState === 'playing'
+		// const videoIsPlaying = this.state.videoPlayerIsPlaying
 		const videoIsMuted = this.state.videoPlayerIsMuted
 		const videoIsMaximized = this.state.videoPlayerIsMaximized
 
@@ -157,14 +202,11 @@ export default class VideoPlayer extends Component {
 		return (
 			<div className="player-controls-overlay">
 				<div className="control-bar bottom">
-					<span className={playBtnClassNames}
-						  onClick={ () =>
-							  this.toggleVideoPlayerPlaying (
-								  videoPlayer.playerState,
-								  this.videoPlayer.getCurrentTime (),
-								  onPlayerStateChange,
-								  partyId
-							  )
+					<span className={ playBtnClassNames }
+						  onClick={ () => emitNewPlayerStateToServer ( {
+							  playerState: videoIsPlaying ? 'paused' : 'playing',
+							  timeInVideo: this.videoPlayer.getCurrentTime ()
+						  }, partyId )
 						  }/>
 					<span className={muteBtnClassNames} onClick={ this.toggleVideoPlayerMuted }/>
 
@@ -209,7 +251,7 @@ export default class VideoPlayer extends Component {
 	// }
 
 	render () {
-		const { selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName } = this.props
+		const { selectedVideo, partyVideoPlayerState, emitNewPlayerStateToServer, emitClientReadyStateToServer, partyId, userName } = this.props
 		const { videoPlayerIsMaximized } = this.state
 
 		const videoPlayerClassNames = classNames ( 'video-player', {
@@ -218,8 +260,8 @@ export default class VideoPlayer extends Component {
 
 		return (
 			<div className={videoPlayerClassNames}>
-				{this.renderVideoPlayer ( selectedVideo, videoPlayer, onPlayerStateChange, partyId )}
-				{this.renderVideoPlayerControlsOverlay ( videoPlayer, onPlayerStateChange, partyId )}
+				{this.renderVideoPlayer ( selectedVideo, partyVideoPlayerState, emitClientReadyStateToServer )}
+				{this.renderVideoPlayerControlsOverlay ( partyVideoPlayerState, emitNewPlayerStateToServer, partyId )}
 			</div>
 		)
 	}
