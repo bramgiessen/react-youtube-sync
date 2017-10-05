@@ -17,7 +17,7 @@ const initialState = Immutable ( {
 	usersInParty: [],
 	messagesInParty: [],
 	videoPlayerState: {
-		playerState: 'paused',
+		playerState: 'unstarted',
 		timeInVideo: 0
 	}
 } )

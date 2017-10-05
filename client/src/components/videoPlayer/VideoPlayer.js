@@ -25,31 +25,79 @@ export default class VideoPlayer extends Component {
 		this.state = {
 			videoPlayerIsMuted: false,
 			videoPlayerIsMaximized: false,
+			videoPlayerLoaded: false
 		}
-	}
-
-	componentDidMount () {
-
 	}
 
 	componentDidUpdate ( prevProps, prevState ) {
+		const { emitClientReadyStateToServer } = this.props
 		const prevPartyPlayerState = prevProps.partyVideoPlayerState
 		const currentPartyPlayerState = this.props.partyVideoPlayerState
 		const internalVideoPlayer = this.videoPlayer.getInternalPlayer ()
+		const videoPlayerLoaded = !!internalVideoPlayer
 
-		// If the player state has been changed by someone else in the party and there is more than a 2 sec difference ->
-		// update the player position
-		if ( prevPartyPlayerState !== currentPartyPlayerState ) {
-			this.videoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
-
-			// If the videoPlayer was already paused
-			if ( internalVideoPlayer
-				&& prevPartyPlayerState.playerState === 'paused' && currentPartyPlayerState.playerState === 'paused'
-				&& prevPartyPlayerState.timeInVideo === currentPartyPlayerState.timeInVideo ) {
-				this.props.emitClientReadyStateToServer ( {clientIsReady:true, timeInVideo:currentPartyPlayerState.timeInVideo } )
-			}
+		// As soon as the videoPlayer is loaded, start listening for playerState commands from the server
+		if ( videoPlayerLoaded ) {
+			this.handlePauseVideoCommandsFromServer ( currentPartyPlayerState, internalVideoPlayer )
+			this.handleSeekToCommandsFromServer ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer )
+			this.youtubePlayerReadyHotfix ( prevPartyPlayerState, currentPartyPlayerState, emitClientReadyStateToServer )
 		}
+	}
 
+	/**
+	 * Hotfix to force this client to tell the server that it is ready to play after a user tries
+	 * to resume playing after pausing a video.
+	 * @param prevPartyPlayerState
+	 * @param currentPartyPlayerState
+	 * @param emitClientReadyStateToServer
+	 */
+	youtubePlayerReadyHotfix = ( prevPartyPlayerState, currentPartyPlayerState, emitClientReadyStateToServer ) => {
+		const partyPlayerStateUpdated = prevPartyPlayerState !== currentPartyPlayerState
+		// Description of the fix:
+		//
+		// When a user tries to play a video, the server by default sends out a pause command to all users
+		// in the party. It then waits for all users to tell the server that they are done buffering before it sends
+		// out a final play command to all users in the party. However, if the video was already paused and a user
+		// tries to resume playing, the first pause command received by the server will be ignored as the Youtube
+		// player doesn't see this as a valid playerState change.
+		//
+		// Fix: always send out a 'clientIsReady' message to the server in this case
+		if ( partyPlayerStateUpdated && prevPartyPlayerState.playerState === 'paused'
+			&& currentPartyPlayerState.playerState === 'paused'
+			&& prevPartyPlayerState.timeInVideo === currentPartyPlayerState.timeInVideo ) {
+			emitClientReadyStateToServer ( {
+				clientIsReady: true,
+				timeInVideo: currentPartyPlayerState.timeInVideo
+			} )
+		}
+	}
+
+	/**
+	 * When the playerState for the party updates -> adjust this clients' videoPlayer to
+	 * match the timeInVideo of the party
+	 * @param prevPartyPlayerState
+	 * @param currentPartyPlayerState
+	 * @param internalVideoPlayer
+	 */
+	handleSeekToCommandsFromServer = ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer ) => {
+		const partyPlayerStateUpdated = prevPartyPlayerState !== currentPartyPlayerState
+		if ( partyPlayerStateUpdated ) {
+			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
+		}
+	}
+
+	/**
+	 * Handle pause commands that are received from the server
+	 * @param currentPartyPlayerState
+	 * @param internalVideoPlayer
+	 */
+	handlePauseVideoCommandsFromServer = ( currentPartyPlayerState, internalVideoPlayer ) => {
+		// If the server/party wants us to pause somewhere other than at the start of the video ->
+		// seek to the timeInVideo provided by the server and pause the video at that time
+		if ( currentPartyPlayerState.playerState === 'paused' && currentPartyPlayerState.timeInVideo !== 0 ) {
+			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
+			internalVideoPlayer.pauseVideo ()
+		}
 	}
 
 	/**
@@ -99,8 +147,6 @@ export default class VideoPlayer extends Component {
 	 */
 	onPlayerStateChange = debounce ( ( partyVideoPlayerState, userVideoPlayerState, onClientReady ) => {
 
-		console.log ( userVideoPlayerState )
-
 		// If the users' videoPlayer somehow started playing, but the server is still telling us to pause
 		// -> pause the videoPlayer
 		if ( partyVideoPlayerState.playerState === 'paused' && userVideoPlayerState.playerState === 'playing' ) {
@@ -108,12 +154,12 @@ export default class VideoPlayer extends Component {
 		}
 		const clientReadyState = this.determineClientReadyState ( partyVideoPlayerState, userVideoPlayerState )
 
+		// Only if the users' playerState differs from the parties' playerState -> let the server know
+		// if ( partyVideoPlayerState.playerState !== userVideoPlayerState.playerState ) {
+		onClientReady ( clientReadyState )
+		// }
 
-		if ( !(partyVideoPlayerState.playerState === 'playing' && userVideoPlayerState.playerState === 'playing') ) {
-			onClientReady ( clientReadyState )
-		}
-
-	}, 50 )
+	}, 500 )
 
 	/**
 	 * Returns a users' playerState object containing the playerState and timeInVideo
@@ -148,6 +194,7 @@ export default class VideoPlayer extends Component {
 				muted={ playerIsMuted }
 				playing={ videoIsPlaying }
 				ref={e => this.videoPlayer = e}
+				onReady={() => this.setState ( { videoPlayerLoaded: true } )}
 				onPlay={() => this.onPlayerStateChange (
 					partyVideoPlayerState,
 					this.constructUserPlayerState ( 'playing', this.videoPlayer ),
@@ -163,9 +210,6 @@ export default class VideoPlayer extends Component {
 					this.constructUserPlayerState ( 'buffering', this.videoPlayer ),
 					onClientReady
 				)}
-				onError={() => {
-					console.log ( 'onseek' )
-				}}
 				config={{
 					youtube: {
 						playerVars: { showinfo: 1 }

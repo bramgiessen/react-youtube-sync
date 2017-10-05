@@ -250,7 +250,6 @@ export const party = {
 		// Let the client know which video is selected in the party:
 		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_SELECTED_VIDEO, videoForParty )
 
-		console.log('ttttttt',videoPlayerForParty.timeInVideo)
 		// Let the client know what the current playerState is in the party ('playing', 'paused' etc.)
 		if ( videoPlayerForParty.timeInVideo !== 0 ) {
 			socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_CLIENT_PLAYER_STATE, videoPlayerForParty )

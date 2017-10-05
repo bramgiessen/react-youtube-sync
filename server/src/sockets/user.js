@@ -8,7 +8,8 @@ import { ACTION_TYPES } from '../core/constants'
 export const userSocketHandlers = {
 	'WS_TO_SERVER_CONNECT_TO_PARTY': connectToParty,
 	'WS_TO_SERVER_DISCONNECT_FROM_PARTY': disconnectFromAllParties,
-	'WS_TO_SERVER_SET_CLIENT_READY_STATE': setUserReadyState
+	'WS_TO_SERVER_SET_CLIENT_READY_STATE': setUserReadyState,
+	'WS_TO_SERVER_SET_CLIENT_VIDEOPLAYER_INITIALIZED': setUserReadyState,
 }
 
 /**
@@ -80,7 +81,6 @@ function setUserReadyState ( io, socket, payload ) {
 
 		// If a client reports to not be ready -> pause the video for everyone until everyone is ready again
 		if(!clientIsReady){
-			console.log('pause that shiiiit')
 			setTimeout(() => {
 				party.pauseVideoForParty(io, socket, partyIdForUser, readyToPlayState)
 			}, 500)
