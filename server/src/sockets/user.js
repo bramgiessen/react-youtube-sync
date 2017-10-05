@@ -65,6 +65,7 @@ function setUserReadyState ( io, socket, payload ) {
 		return false
 	}
 	const partyForId = party.getPartyById ( partyIdForUser )
+	const userForId = user.getUserForId ( socket.id )
 	const currentPlayerStateForParty = partyForId.videoPlayer.playerState
 	const { clientIsReady } = payload
 	const readyToPlayState = {
@@ -72,18 +73,31 @@ function setUserReadyState ( io, socket, payload ) {
 		timeInVideo: generalUtils.toFixedNumber ( payload.timeInVideo, 2 )
 	}
 
-	console.log(readyToPlayState)
 
-	// Store the new userReadyState for the user
-	user.setUserReadyToPlayState ( socket.id, readyToPlayState )
+	if(clientIsReady !== userForId.readyToPlayState.clientIsReady || !clientIsReady){
+		// Store the new userReadyState for the user
+		user.setUserReadyToPlayState ( socket.id, readyToPlayState )
 
-	// If all users are ready, and the current parties' playerState is 'playing'
-	// -> play the video for all users
-	if ( party.allUsersReady ( partyIdForUser )
-		&& currentPlayerStateForParty === 'playing' ) {
-		console.log ( party.allUsersReady ( partyIdForUser ) )
-		party.playVideoForParty ( io, partyIdForUser )
+		// If a client reports to not be ready -> pause the video for everyone until everyone is ready again
+		if(!clientIsReady){
+			console.log('pause that shiiiit')
+			setTimeout(() => {
+				party.pauseVideoForParty(io, socket, partyIdForUser, readyToPlayState)
+			}, 500)
+		}
+
+		// If all users are ready, and the current parties' playerState is 'playing'
+		// -> play the video for all users
+		else if ( party.allUsersReady ( partyIdForUser ) ) {
+			if(currentPlayerStateForParty === 'playing'){
+				party.playVideoForParty ( io, partyIdForUser )
+			}
+			else if(currentPlayerStateForParty === 'paused'){
+				party.pauseVideoForParty(io,socket,partyIdForUser,readyToPlayState)
+			}
+		}
 	}
+
 }
 
 /**

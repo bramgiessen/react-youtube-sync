@@ -250,6 +250,7 @@ export const party = {
 		// Let the client know which video is selected in the party:
 		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_SELECTED_VIDEO, videoForParty )
 
+		console.log('ttttttt',videoPlayerForParty.timeInVideo)
 		// Let the client know what the current playerState is in the party ('playing', 'paused' etc.)
 		if ( videoPlayerForParty.timeInVideo !== 0 ) {
 			socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_CLIENT_PLAYER_STATE, videoPlayerForParty )
@@ -395,6 +396,9 @@ export const party = {
 
 		// Clear the current videoPlayer interval for this party
 		party.toggleVideoPlayerInterval ( partyId, false )
+
+		// Reset the previous ready state for all users as were now waiting for them to be ready for a new action
+		party.resetAllUsersReadyState(partyId)
 
 		const newVideoPlayerStateForParty = {
 			lastStateChangeInitiator: socket.id,
