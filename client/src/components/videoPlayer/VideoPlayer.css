@@ -34,6 +34,7 @@
 }
 
 .video-player .player-controls-overlay:hover .control-bar {
+    cursor: default;
     opacity: 1;
 }
 
@@ -86,6 +87,7 @@
 }
 
 .player-controls-overlay .control-bar .player-btn:hover{
+    cursor: pointer;
     color: #fff;
 }
 
