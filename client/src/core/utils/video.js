@@ -27,13 +27,35 @@ export const videoUtils = {
 	 * @param videoId
 	 * @returns {*}
 	 */
-	getVideoUrl: (videoSource, videoId) => {
+	getVideoUrl: ( videoSource, videoId ) => {
 		switch ( videoSource ) {
 			case 'youtube':
 				return `https://www.youtube.com/watch?v=${videoId}&origin=http://192.168.1.19`
 			default:
 				return null
 		}
+	},
+
+	/**
+	 * Returns the number of seconds corresponding to the x-position in a video seek-bar element
+	 * @param xPos
+	 * @param elementWidth
+	 * @param videoDuration
+	 * @returns {number}
+	 */
+	pixelsToSeconds: ( xPos, elementWidth, videoDuration ) => {
+		return ( xPos / elementWidth ) * videoDuration
+	},
+
+	/**
+	 * Returns the amount of pixels in a seekbar element corresponding to a number of seconds in a video
+	 * @param seconds
+	 * @param elementWidth
+	 * @param videoDuration
+	 * @returns {number}
+	 */
+	secondsToPixels: ( seconds, elementWidth, videoDuration ) => {
+		return ( seconds / videoDuration ) * elementWidth
 	},
 
 	/**

@@ -25,7 +25,8 @@ export default class VideoPlayer extends Component {
 		this.state = {
 			videoPlayerIsMuted: false,
 			videoPlayerIsMaximized: false,
-			videoPlayerLoaded: false
+			videoPlayerLoaded: false,
+			videoProgress: 0
 		}
 	}
 
@@ -124,6 +125,23 @@ export default class VideoPlayer extends Component {
 	}
 
 	/**
+	 * Handle the event where a user clicks anywhere on the videoPlayers' seekbar
+	 * and seek to the corresponding time in the video
+	 */
+	handleSeekInVideo = ( clickEvent, videoDuration, videoIsPlaying, emitNewPlayerStateToServer, partyId ) => {
+		const parentLeftMargin = clickEvent.target.getBoundingClientRect ().left
+		const parentWidth = clickEvent.target.getBoundingClientRect ().width
+		const mouseX = clickEvent.clientX
+		const relativeMousePosition = mouseX - parentLeftMargin
+		const amountOfSecondsAtXPos = videoUtils.pixelsToSeconds ( relativeMousePosition, parentWidth, videoDuration )
+
+		emitNewPlayerStateToServer ( {
+			playerState: videoIsPlaying ? 'playing' : 'paused',
+			timeInVideo: amountOfSecondsAtXPos
+		}, partyId )
+	}
+
+	/**
 	 * A client is ready [to play] if his playerState equals the parties' playerState
 	 * @param partyVideoPlayerState
 	 * @param userVideoPlayerState
@@ -160,6 +178,12 @@ export default class VideoPlayer extends Component {
 		// }
 
 	}, 500 )
+
+	onPlayerProgress = ( event ) => {
+		const { playedSeconds } = event
+
+		this.setState ( { videoProgress: playedSeconds } )
+	}
 
 	/**
 	 * Returns a users' playerState object containing the playerState and timeInVideo
@@ -210,6 +234,7 @@ export default class VideoPlayer extends Component {
 					this.constructUserPlayerState ( 'buffering', this.videoPlayer ),
 					onClientReady
 				)}
+				onProgress={ this.onPlayerProgress }
 				config={{
 					youtube: {
 						playerVars: { showinfo: 1 }
@@ -220,15 +245,28 @@ export default class VideoPlayer extends Component {
 		)
 	}
 
+	handlePlayBtnPressed = ( emitNewPlayerStateToServer, progressInSeconds, videoIsPlaying, partyId ) => {
+		emitNewPlayerStateToServer ( {
+			playerState: videoIsPlaying ? 'paused' : 'playing',
+			timeInVideo: progressInSeconds
+		}, partyId )
+	}
+
 	/**
 	 * Render an overlay with custom videoPlayer controls
-	 * @returns {XML}
+	 * @returns {Boolean | XML}
 	 */
-	renderVideoPlayerControlsOverlay = ( partyVideoPlayerState, emitNewPlayerStateToServer, partyId ) => {
+	renderVideoPlayerControlsOverlay = ( videoPlayer, partyVideoPlayerState, emitNewPlayerStateToServer, partyId ) => {
+		if ( !videoPlayer ) {
+			return false
+		}
 		const videoIsPlaying = partyVideoPlayerState.playerState === 'playing'
-		// const videoIsPlaying = this.state.videoPlayerIsPlaying
 		const videoIsMuted = this.state.videoPlayerIsMuted
 		const videoIsMaximized = this.state.videoPlayerIsMaximized
+		const progressBarWidth = this.progressBar ? this.progressBar.offsetWidth : null
+		const progressInSeconds = this.state.videoProgress
+		const progressInPixels = videoUtils.secondsToPixels ( progressInSeconds, progressBarWidth, videoPlayer.getDuration () )
+		const formattedProgressString = generalUtils.toHHMMSS ( progressInSeconds )
 
 		const playBtnClassNames = classNames ( 'player-btn btn-left fa', {
 			'fa-pause': videoIsPlaying,
@@ -244,59 +282,50 @@ export default class VideoPlayer extends Component {
 		} )
 
 		return (
-			<div className="player-controls-overlay">
-				<div className="control-bar bottom">
-					<span className={ playBtnClassNames }
-						  onClick={ () => emitNewPlayerStateToServer ( {
-							  playerState: videoIsPlaying ? 'paused' : 'playing',
-							  timeInVideo: this.videoPlayer.getCurrentTime ()
-						  }, partyId )
-						  }/>
-					<span className={muteBtnClassNames} onClick={ this.toggleVideoPlayerMuted }/>
+			<div className="player-controls-overlay"
+				 onClick={ () => this.handlePlayBtnPressed ( emitNewPlayerStateToServer, progressInSeconds, videoIsPlaying, partyId )}>
 
-					<span className={maximizeBtnClassNames} onClick={ this.toggleVideoPlayerMaximized }/>
+				<div className="control-bar bottom" onClick={( event ) => event.stopPropagation ()}>
+
+					<div className="progress-bar" onClick={ ( event ) => {
+						this.handleSeekInVideo (
+							event,
+							videoPlayer.getDuration (),
+							videoIsPlaying,
+							emitNewPlayerStateToServer,
+							partyId
+						)
+					} } ref={e => {
+						this.progressBar = e
+					}}>
+						<div className="background-bar"></div>
+						<div className="progress-indicator" style={{ left: progressInPixels }}></div>
+					</div>
+
+					<div className="control-buttons">
+						<span className={ playBtnClassNames }
+							  onClick={ (  ) =>
+								  this.handlePlayBtnPressed (
+									  emitNewPlayerStateToServer,
+									  progressInSeconds,
+									  videoIsPlaying,
+									  partyId
+								  )
+							  }/>
+						<span className={muteBtnClassNames} onClick={ this.toggleVideoPlayerMuted }/>
+						<span className="current-time">{formattedProgressString}</span>
+
+						<span className={maximizeBtnClassNames} onClick={ this.toggleVideoPlayerMaximized }/>
+					</div>
 				</div>
 			</div>
 		)
 	}
 
-	/**
-	 * Render a Youtube video player
-	 * @param videoId
-	 * @returns {XML}
-	 */
-	// renderYoutubeVideoPlayer = ( selectedVideo, videoPlayer, onPlayerStateChange, partyId, userName ) => {
-	// 	const userIsLoggedIn = !!userName
-	//
-	// 	const opts = {
-	// 		height: '100%',
-	// 		width: '100%',
-	// 		playerVars: { // https://developers.google.com/youtube/player_parameters
-	// 			autoplay: videoPlayer.playerState === 'playing' ? 1 : 0,
-	// 			controls: userIsLoggedIn ? 1 : 0 // Only show controls if the user is logged in
-	// 		}
-	// 	}
-	//
-	// 	return (
-	// 		<YoutubePlayer
-	// 			videoId={selectedVideo.id}
-	// 			opts={opts}
-	// 			ref={e => this.videoPlayer = e}
-	// 			onStateChange={
-	// 				( event ) => {
-	// 					onPlayerStateChange (
-	// 						videoUtils.getYoutubePlayerState ( event ),
-	// 						event.target.getCurrentTime (),
-	// 						partyId )
-	// 				}
-	// 			}
-	// 		/>
-	// 	)
-	// }
-
 	render () {
 		const { selectedVideo, partyVideoPlayerState, emitNewPlayerStateToServer, emitClientReadyStateToServer, partyId, userName } = this.props
 		const { videoPlayerIsMaximized } = this.state
+		const videoPlayer = this.videoPlayer
 
 		const videoPlayerClassNames = classNames ( 'video-player', {
 			'maximized': videoPlayerIsMaximized
@@ -305,7 +334,7 @@ export default class VideoPlayer extends Component {
 		return (
 			<div className={videoPlayerClassNames}>
 				{this.renderVideoPlayer ( selectedVideo, partyVideoPlayerState, emitClientReadyStateToServer )}
-				{this.renderVideoPlayerControlsOverlay ( partyVideoPlayerState, emitNewPlayerStateToServer, partyId )}
+				{this.renderVideoPlayerControlsOverlay ( videoPlayer, partyVideoPlayerState, emitNewPlayerStateToServer, partyId )}
 			</div>
 		)
 	}
