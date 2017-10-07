@@ -2,14 +2,16 @@
 import { combineReducers } from 'redux'
 
 // Reducers
-import { appReducer } from './app/index'
-import { searchReducer } from './search/index'
-import { videoListReducer } from './videoList/index'
-import { userReducer } from './user/index'
-import { partyReducer } from './party/index'
+import { appReducer } from './app'
+import { searchReducer } from './search'
+import { videoPlayerReducer } from './videoPlayer'
+import { videoListReducer } from './videoList'
+import { userReducer } from './user'
+import { partyReducer } from './party'
 
 export default combineReducers ( {
 	app: appReducer,
+	videoPlayer: videoPlayerReducer,
 	videoList: videoListReducer,
 	user: userReducer,
 	search: searchReducer,
