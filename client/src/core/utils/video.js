@@ -37,6 +37,25 @@ export const videoUtils = {
 	},
 
 	/**
+	 * Get the amounts of seconds in a video corresponding to the x position of a mouseEvent in a DOM element
+	 * effectively making it possible to turn any DOM element into a video-seekbar
+	 * ( I.E. 342px X position in an element with a width of 1000px
+	 * corresponds to 171 seconds into a video with a videoDuration of 500 seconds )
+	 * @param clickEvent
+	 * @param videoDuration
+	 * @returns {*|number}
+	 */
+	getAmountOfSecondsAtXPos: (clickEvent, videoDuration) => {
+		const parentWidth = clickEvent.target.getBoundingClientRect ().width
+		const relativeMousePosition = {
+			relativeX: clickEvent.clientX - clickEvent.target.getBoundingClientRect ().left,
+			relativeY: clickEvent.clientY - clickEvent.target.getBoundingClientRect ().top
+		}
+
+		return videoUtils.pixelsToSeconds ( relativeMousePosition.relativeX, parentWidth, videoDuration )
+	},
+
+	/**
 	 * Returns the number of seconds corresponding to the x-position in a video seek-bar element
 	 * @param xPos
 	 * @param elementWidth

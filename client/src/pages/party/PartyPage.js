@@ -13,6 +13,7 @@ import ChatBox from '../../components/chatBox/ChatBox'
 // Actions
 import { partyActions } from '../../core/party'
 import { userActions } from '../../core/user'
+import { videoPlayerActions } from '../../core/videoPlayer'
 
 class PartyPage extends Component {
 	// todo: make all proptypes match actual proptypes
@@ -81,7 +82,24 @@ class PartyPage extends Component {
 	}
 
 	render () {
-		const { selectedVideo, partyState, usersInParty, emitNewPlayerStateForPartyToServer, emitClientReadyStateToServer, partyVideoPlayerState, userName } = this.props
+		const {
+			selectedVideo,
+			partyState,
+			setPlayerProgress,
+			videoPlayerIsLoaded,
+			videoPlayerIsMuted,
+			videoPlayerIsMaximized,
+			usersInParty,
+			emitNewPlayerStateForPartyToServer,
+			emitClientReadyStateToServer,
+			partyVideoPlayerState,
+			setPlayerMutedState,
+			setPlayerIsLoadedState,
+			handleMaximizeBtnPressed,
+			videoProgress,
+			userName
+		} = this.props
+
 		const partyUrl = window.location.href.split ( '?' )[ 0 ]
 
 		return (
@@ -96,9 +114,17 @@ class PartyPage extends Component {
 									selectedVideo={selectedVideo}
 									partyId={this.partyId}
 									userName={userName}
+									videoPlayerIsMuted={videoPlayerIsMuted}
+									videoPlayerIsMaximized={videoPlayerIsMaximized}
+									videoPlayerIsLoaded={videoPlayerIsLoaded}
+									videoProgress={videoProgress}
+									partyVideoPlayerState={partyVideoPlayerState}
 									emitClientReadyStateToServer={emitClientReadyStateToServer}
 									emitNewPlayerStateToServer={emitNewPlayerStateForPartyToServer}
-									partyVideoPlayerState={partyVideoPlayerState}
+									setPlayerMutedState={setPlayerMutedState}
+									setPlayerProgress={setPlayerProgress}
+									setPlayerIsLoadedState={setPlayerIsLoadedState}
+									handleMaximizeBtnPressed={handleMaximizeBtnPressed}
 								/>
 							</div>
 
@@ -132,7 +158,11 @@ const mapStateToProps = ( state ) => {
 		partyState: state.party.partyState,
 		usersInParty: state.party.usersInParty,
 		messagesInParty: state.party.messagesInParty,
-		partyVideoPlayerState: state.party.videoPlayerState
+		partyVideoPlayerState: state.party.videoPlayerState,
+		videoPlayerIsMuted: state.videoPlayer.videoPlayerIsMuted,
+		videoProgress: state.videoPlayer.videoProgress,
+		videoPlayerIsMaximized: state.videoPlayer.videoPlayerIsMaximized,
+		videoPlayerIsLoaded: state.videoPlayer.videoPlayerIsLoaded,
 	}
 }
 
@@ -141,6 +171,10 @@ const mapDispatchToProps = {
 	emitClientReadyStateToServer: userActions.emitClientReadyStateToServer,
 	sendMessageToParty: partyActions.sendMessageToParty,
 	emitNewPlayerStateForPartyToServer: partyActions.emitNewPlayerStateForPartyToServer,
+	setPlayerMutedState: videoPlayerActions.setPlayerMutedState,
+	setPlayerIsLoadedState: videoPlayerActions.setPlayerIsLoadedState,
+	handleMaximizeBtnPressed: videoPlayerActions.handleMaximizeBtnPressed,
+	setPlayerProgress: videoPlayerActions.setPlayerProgress
 }
 
 PartyPage = connect (

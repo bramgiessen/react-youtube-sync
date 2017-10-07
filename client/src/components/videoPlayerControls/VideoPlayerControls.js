@@ -16,10 +16,8 @@ export default class VideoPlayerControls extends Component {
 		videoPlayerIsMaximized: PropTypes.bool.isRequired,
 		videoProgress: PropTypes.number.isRequired,
 		videoDuration: PropTypes.number,
-		handlePlayBtnPressed: PropTypes.func.isRequired,
 		handleMuteBtnPressed: PropTypes.func.isRequired,
 		handleMaximizeBtnPressed: PropTypes.func.isRequired,
-		handleSeekInVideo: PropTypes.func.isRequired,
 	}
 
 	render () {
@@ -31,10 +29,8 @@ export default class VideoPlayerControls extends Component {
 			videoPlayerIsMaximized,
 			videoProgress,
 			videoDuration,
-			handlePlayBtnPressed,
 			handleMuteBtnPressed,
-			handleMaximizeBtnPressed,
-			handleSeekInVideo,
+			handleMaximizeBtnPressed
 		} = this.props
 
 		if ( !videoDuration ) {
@@ -63,19 +59,21 @@ export default class VideoPlayerControls extends Component {
 
 		return (
 			<div className="player-controls-overlay"
-				 onClick={ () => handlePlayBtnPressed ( emitNewPlayerStateToServer, progressInSeconds, videoIsPlaying, partyId )}>
+				 onClick={ () =>
+					 emitNewPlayerStateToServer ( {
+						 playerState: videoIsPlaying ? 'paused' : 'playing',
+						 timeInVideo: progressInSeconds
+					 }, partyId )
+				 }>
 
 				<div className="control-bar bottom" onClick={( event ) => event.stopPropagation ()}>
 
 					<div className="progress-bar" ref={ e => { this.progressBar = e } }
 						 onClick={ ( event ) => {
-							 handleSeekInVideo (
-								 event,
-								 videoDuration,
-								 videoIsPlaying,
-								 emitNewPlayerStateToServer,
-								 partyId
-							 )
+							 emitNewPlayerStateToServer ( {
+								 playerState: videoIsPlaying ? 'playing' : 'paused',
+								 timeInVideo: videoUtils.getAmountOfSecondsAtXPos(event, videoDuration)
+							 }, partyId )
 						 } }>
 						<div className="background-bar"></div>
 						<div className="progress-indicator" style={{ left: progressInPixels }}></div>
@@ -84,12 +82,10 @@ export default class VideoPlayerControls extends Component {
 					<div className="control-buttons">
 						<span className={ playBtnClassNames }
 							  onClick={ () =>
-								  handlePlayBtnPressed (
-									  emitNewPlayerStateToServer,
-									  progressInSeconds,
-									  videoIsPlaying,
-									  partyId
-								  )
+								  emitNewPlayerStateToServer ( {
+									  playerState: videoIsPlaying ? 'paused' : 'playing',
+									  timeInVideo: progressInSeconds
+								  }, partyId )
 							  }/>
 						<span className={muteBtnClassNames} onClick={ handleMuteBtnPressed }/>
 						<span className="current-time">{formattedProgressString}</span>
