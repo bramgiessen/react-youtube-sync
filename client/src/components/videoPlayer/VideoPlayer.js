@@ -1,11 +1,10 @@
 // Libs & utils
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
 import classNames from 'classnames'
 import { debounce } from 'lodash'
-import { videoUtils, generalUtils } from '../../core/utils'
+import { videoUtils } from '../../core/utils'
 
 // CSS
 import './VideoPlayer.css'
@@ -32,46 +31,29 @@ export default class VideoPlayer extends Component {
 		handleMaximizeBtnPressed: PropTypes.func.isRequired,
 	}
 
-	componentDidUpdate ( prevProps, prevState ) {
-		const { emitClientReadyStateToServer } = this.props
-		const prevPartyPlayerState = prevProps.partyVideoPlayerState
-		const currentPartyPlayerState = this.props.partyVideoPlayerState
-		const internalVideoPlayer = this.videoPlayer.getInternalPlayer ()
-		const videoPlayerIsLoaded = !!internalVideoPlayer
+	constructor (props) {
+		super (props)
+		const { setPlayerIsLoadedState } = props
 
-		// As soon as the videoPlayer is loaded, start listening for playerState commands from the server
-		if ( videoPlayerIsLoaded ) {
-			this.handlePauseVideoCommandsFromServer ( currentPartyPlayerState, internalVideoPlayer )
-			this.handleSeekToCommandsFromServer ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer )
-			this.youtubePlayerReadyHotfix ( prevPartyPlayerState, currentPartyPlayerState, emitClientReadyStateToServer )
+		// Initially -> always make sure that the videoPlayerLoaded state is
+		// reset to false
+		setPlayerIsLoadedState ( false )
+
+		this.state = {
+			userVideoPlayerState : {playerState:'unstarted'}
 		}
 	}
 
-	/**
-	 * Hotfix to force this client to tell the server that it is ready to play after a user tries
-	 * to resume playing after pausing a video.
-	 * @param prevPartyPlayerState
-	 * @param currentPartyPlayerState
-	 * @param emitClientReadyStateToServer
-	 */
-	youtubePlayerReadyHotfix = ( prevPartyPlayerState, currentPartyPlayerState, emitClientReadyStateToServer ) => {
-		const partyPlayerStateUpdated = prevPartyPlayerState !== currentPartyPlayerState
-		// Description of the fix:
-		//
-		// When a user tries to play a video, the server by default sends out a pause command to all users
-		// in the party. It then waits for all users to tell the server that they are done buffering before it sends
-		// out a final play command to all users in the party. However, if the video was already paused and a user
-		// tries to resume playing, the first pause command received by the server will be ignored as the Youtube
-		// player doesn't see this as a valid playerState change.
-		//
-		// Fix: always send out a 'clientIsReady' message to the server in this case
-		if ( partyPlayerStateUpdated && prevPartyPlayerState.playerState === 'paused'
-			&& currentPartyPlayerState.playerState === 'paused'
-			&& prevPartyPlayerState.timeInVideo === currentPartyPlayerState.timeInVideo ) {
-			emitClientReadyStateToServer ( {
-				clientIsReady: true,
-				timeInVideo: currentPartyPlayerState.timeInVideo
-			} )
+	componentDidUpdate ( prevProps, prevState ) {
+		const { videoPlayerIsLoaded } = this.props
+		const prevPartyPlayerState = prevProps.partyVideoPlayerState
+		const currentPartyPlayerState = this.props.partyVideoPlayerState
+		const internalVideoPlayer = this.videoPlayer.getInternalPlayer ()
+
+		// As soon as the videoPlayer is loaded, start listening for playerState commands from the server
+		if ( videoPlayerIsLoaded && internalVideoPlayer) {
+			this.handlePauseVideoCommandsFromServer ( currentPartyPlayerState, internalVideoPlayer )
+			this.handleSeekToCommandsFromServer ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer )
 		}
 	}
 
@@ -84,7 +66,7 @@ export default class VideoPlayer extends Component {
 	 */
 	handleSeekToCommandsFromServer = ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer ) => {
 		const partyPlayerStateUpdated = prevPartyPlayerState !== currentPartyPlayerState
-		if ( partyPlayerStateUpdated ) {
+		if ( this.state.userVideoPlayerState.playerState !== 'buffering' && partyPlayerStateUpdated && currentPartyPlayerState.timeInVideo !== 0  ) {
 			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
 		}
 	}
@@ -98,7 +80,7 @@ export default class VideoPlayer extends Component {
 	handlePauseVideoCommandsFromServer = ( currentPartyPlayerState, internalVideoPlayer ) => {
 		// If the server/party wants us to pause somewhere other than at the start of the video ->
 		// seek to the timeInVideo provided by the server and pause the video at that time
-		if ( currentPartyPlayerState.playerState === 'paused' && currentPartyPlayerState.timeInVideo !== 0 ) {
+		if ( this.state.userVideoPlayerState.playerState !== 'buffering' && currentPartyPlayerState.playerState === 'paused' && currentPartyPlayerState.timeInVideo !== 0 ) {
 			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
 			internalVideoPlayer.pauseVideo ()
 		}
@@ -113,7 +95,7 @@ export default class VideoPlayer extends Component {
 	 */
 	determineClientReadyState = ( partyVideoPlayerState, userVideoPlayerState ) => {
 		const timeInVideo = userVideoPlayerState.timeInVideo
-		let clientIsReady = userVideoPlayerState.playerState === partyVideoPlayerState.playerState
+		let clientIsReady = userVideoPlayerState.playerState !== 'buffering'
 
 		return {
 			clientIsReady,
@@ -149,6 +131,7 @@ export default class VideoPlayer extends Component {
 		if ( partyVideoPlayerState.playerState === 'paused' && userVideoPlayerState.playerState === 'playing' ) {
 			this.videoPlayer.getInternalPlayer ().pauseVideo ()
 		}
+		this.setState({userVideoPlayerState})
 
 		const clientReadyState = this.determineClientReadyState ( partyVideoPlayerState, userVideoPlayerState )
 		onClientReadyStateChange ( clientReadyState )
@@ -167,7 +150,6 @@ export default class VideoPlayer extends Component {
 	renderVideoPlayer = ( selectedVideo, videoPlayerIsMuted, partyVideoPlayerState, onClientReadyStateChange, onPlayerProgress, setPlayerIsLoadedState ) => {
 		let videoUrl = videoUtils.getVideoUrl ( selectedVideo.videoSource, selectedVideo.id )
 		const videoIsPlaying = partyVideoPlayerState.playerState === 'playing'
-
 		return (
 			<ReactPlayer
 				url={ videoUrl }
@@ -221,7 +203,7 @@ export default class VideoPlayer extends Component {
 		} = this.props
 
 		const videoPlayer = this.videoPlayer
-		const videoDuration = videoPlayerIsLoaded ? videoPlayer.getDuration () : null
+		const videoDuration = videoPlayer && videoPlayerIsLoaded ? videoPlayer.getDuration () : null
 		const videoPlayerClassNames = classNames ( 'video-player', {
 			'maximized': videoPlayerIsMaximized
 		} )

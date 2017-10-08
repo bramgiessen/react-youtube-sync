@@ -373,6 +373,9 @@ export const party = {
 			timeInVideo: videoPlayerState.timeInVideo
 		}
 
+		// Stop the videoInterval
+		party.toggleVideoPlayerInterval ( partyId, false )
+
 		// Generate a message to let other users know who paused the video
 		const playerStateChangeMessage = messageUtils.generatePlayerStateChangeMessage ( userForId.userName, pausedVideoPlayerState )
 
@@ -408,11 +411,18 @@ export const party = {
 		// Set the new videoPlayer state in the party object
 		partyForId.videoPlayer = newVideoPlayerStateForParty
 
+
+		if(newPlayerState.playerState === 'playing'){
+				party.playVideoForParty(io, partyId)
+		}else{
+			party.pauseVideoForParty ( io, socket, partyId, newVideoPlayerStateForParty )
+		}
+
 		// if(party.allUsersReady ( partyId ) && newPlayerState.playerState === 'playing'){
 		// 	party.playVideoForParty(io, partyId)
 		// }else{
 			// Pause the video for everyone in the party until all clients are done buffering
-			party.pauseVideoForParty ( io, socket, partyId, newVideoPlayerStateForParty )
+			// party.pauseVideoForParty ( io, socket, partyId, newVideoPlayerStateForParty )
 		// }
 
 	}

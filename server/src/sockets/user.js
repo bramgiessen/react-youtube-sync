@@ -80,17 +80,20 @@ function setUserReadyState ( io, socket, payload ) {
 		user.setUserReadyToPlayState ( socket.id, readyToPlayState )
 
 		// If a client reports to not be ready -> pause the video for everyone until everyone is ready again
-		if(!clientIsReady){
-			setTimeout(() => {
-				party.pauseVideoForParty(io, socket, partyIdForUser, readyToPlayState)
-			}, 500)
+		// ( We're using a timeOut because otherwise the client's Youtube player can get stuck in an
+		//   infinite 'buffering' state )
+
+		// Only pause the video if this isnt the initial video play command as the video was still paused at this
+		// point (otherwise will trigger infinite buffer bug)
+		if(!clientIsReady && readyToPlayState.timeInVideo !== 0){
+			party.pauseVideoForParty(io, socket, partyIdForUser, readyToPlayState)
 		}
 
 		// If all users are ready, and the current parties' playerState is 'playing'
 		// -> play the video for all users
 		else if ( party.allUsersReady ( partyIdForUser ) ) {
 			if(currentPlayerStateForParty === 'playing'){
-				party.playVideoForParty ( io, partyIdForUser )
+					party.playVideoForParty ( io, partyIdForUser )
 			}
 			else if(currentPlayerStateForParty === 'paused'){
 				party.pauseVideoForParty(io,socket,partyIdForUser,readyToPlayState)
@@ -98,39 +101,4 @@ function setUserReadyState ( io, socket, payload ) {
 		}
 	}
 
-}
-
-/**
- * Update a users' videoPlayer state, and if necessary, also the entire parties' videoPlayer state
- * @param io
- * @param socket
- * @param payload
- */
-function setVideoPlayerState ( io, socket, payload ) {
-	const userId = socket.id
-	const { playerState, partyId } = payload
-	const timeInVideo = generalUtils.toFixedNumber ( payload.timeInVideo, 1 )
-	const newVideoPlayerState = { playerState, timeInVideo, lastStateChangeInitiator: userId }
-
-	console.log ( playerState )
-
-	// Set / save the videoPlayers' state of a user so we know if the user is i.e. buffering or ready to play
-	user.setUserVideoPlayerState ( userId, newVideoPlayerState )
-
-	// If the user is authorized to update the playerState for the entire party AND
-	// if this is a valid new playerState for the entire party -> update the playerState for the entire party
-	if ( user.isAuthorizedInParty ( userId, partyId ) && party.isValidNewPlayerStateForParty ( partyId, newVideoPlayerState ) ) {
-		console.log ( 'new state', playerState )
-		party.onNewPlayerStateForParty ( io, socket, partyId, newVideoPlayerState )
-	}
-
-	// If the party was waiting for a previous playerState change and all users are now done buffering ->
-	// play the video for everyone in the party
-	if ( party.allUsersReady ( partyId ) ) {
-		// Toggle 'waitingForReady' to 'false' so we know that this party is no longer waiting for everyone to be ready
-		party.toggleWaitingForPartyToBeReady ( partyId, false )
-
-		// Play the video for everyone in the party
-		party.playVideoForParty ( io, partyId )
-	}
 }
