@@ -400,7 +400,7 @@ export const party = {
 		party.toggleVideoPlayerInterval ( partyId, false )
 
 		// Reset the previous ready state for all users as were now waiting for them to be ready for a new action
-		party.resetAllUsersReadyState(partyId)
+		// party.resetAllUsersReadyState(partyId)
 
 		const newVideoPlayerStateForParty = {
 			lastStateChangeInitiator: socket.id,
@@ -417,13 +417,6 @@ export const party = {
 		}else{
 			party.pauseVideoForParty ( io, socket, partyId, newVideoPlayerStateForParty )
 		}
-
-		// if(party.allUsersReady ( partyId ) && newPlayerState.playerState === 'playing'){
-		// 	party.playVideoForParty(io, partyId)
-		// }else{
-			// Pause the video for everyone in the party until all clients are done buffering
-			// party.pauseVideoForParty ( io, socket, partyId, newVideoPlayerStateForParty )
-		// }
 
 	}
 }

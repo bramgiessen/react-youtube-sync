@@ -76,6 +76,7 @@ function setUserReadyState ( io, socket, payload ) {
 
 
 	if(clientIsReady !== userForId.readyToPlayState.clientIsReady || !clientIsReady){
+
 		// Store the new userReadyState for the user
 		user.setUserReadyToPlayState ( socket.id, readyToPlayState )
 
