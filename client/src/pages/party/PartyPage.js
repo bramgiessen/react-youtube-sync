@@ -85,14 +85,15 @@ class PartyPage extends Component {
 		const {
 			selectedVideo,
 			partyState,
-			setPlayerProgress,
 			videoPlayerIsLoaded,
 			videoPlayerIsMuted,
 			videoPlayerIsMaximized,
 			usersInParty,
 			emitNewPlayerStateForPartyToServer,
-			emitClientReadyStateToServer,
+			onPlayerStateChange,
 			partyVideoPlayerState,
+			userVideoPlayerState,
+			setPlayerProgress,
 			setPlayerMutedState,
 			setPlayerIsLoadedState,
 			handleMaximizeBtnPressed,
@@ -118,8 +119,9 @@ class PartyPage extends Component {
 									videoPlayerIsMaximized={videoPlayerIsMaximized}
 									videoPlayerIsLoaded={videoPlayerIsLoaded}
 									videoProgress={videoProgress}
+									userVideoPlayerState={userVideoPlayerState}
 									partyVideoPlayerState={partyVideoPlayerState}
-									emitClientReadyStateToServer={emitClientReadyStateToServer}
+									onPlayerStateChange={onPlayerStateChange}
 									emitNewPlayerStateToServer={emitNewPlayerStateForPartyToServer}
 									setPlayerMutedState={setPlayerMutedState}
 									setPlayerProgress={setPlayerProgress}
@@ -159,6 +161,7 @@ const mapStateToProps = ( state ) => {
 		usersInParty: state.party.usersInParty,
 		messagesInParty: state.party.messagesInParty,
 		partyVideoPlayerState: state.party.videoPlayerState,
+		userVideoPlayerState: state.videoPlayer.videoPlayerState,
 		videoPlayerIsMuted: state.videoPlayer.videoPlayerIsMuted,
 		videoProgress: state.videoPlayer.videoProgress,
 		videoPlayerIsMaximized: state.videoPlayer.videoPlayerIsMaximized,
@@ -168,9 +171,9 @@ const mapStateToProps = ( state ) => {
 
 const mapDispatchToProps = {
 	connectToParty: userActions.connectToParty,
-	emitClientReadyStateToServer: userActions.emitClientReadyStateToServer,
 	sendMessageToParty: partyActions.sendMessageToParty,
 	emitNewPlayerStateForPartyToServer: partyActions.emitNewPlayerStateForPartyToServer,
+	onPlayerStateChange: videoPlayerActions.onPlayerStateChange,
 	setPlayerMutedState: videoPlayerActions.setPlayerMutedState,
 	setPlayerIsLoadedState: videoPlayerActions.setPlayerIsLoadedState,
 	handleMaximizeBtnPressed: videoPlayerActions.handleMaximizeBtnPressed,

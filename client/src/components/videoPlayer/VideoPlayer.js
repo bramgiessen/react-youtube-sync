@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
 import classNames from 'classnames'
-import { debounce } from 'lodash'
 import { videoUtils } from '../../core/utils'
 
 // CSS
@@ -22,8 +21,9 @@ export default class VideoPlayer extends Component {
 		videoPlayerIsMaximized: PropTypes.bool,
 		videoPlayerIsLoaded: PropTypes.bool,
 		videoProgress: PropTypes.number.isRequired,
+		userVideoPlayerState: PropTypes.object.isRequired,
 		partyVideoPlayerState: PropTypes.object.isRequired,
-		emitClientReadyStateToServer: PropTypes.func.isRequired,
+		onPlayerStateChange: PropTypes.func.isRequired,
 		emitNewPlayerStateToServer: PropTypes.func.isRequired,
 		setPlayerMutedState: PropTypes.func.isRequired,
 		setPlayerProgress: PropTypes.func.isRequired,
@@ -38,20 +38,17 @@ export default class VideoPlayer extends Component {
 		// Initially -> always make sure that the videoPlayerLoaded state is
 		// reset to false
 		setPlayerIsLoadedState ( false )
-
-		this.state = {
-			userVideoPlayerState : {playerState:'unstarted'}
-		}
 	}
 
 	componentDidUpdate ( prevProps, prevState ) {
-		const { videoPlayerIsLoaded } = this.props
+		const { videoPlayerIsLoaded, userVideoPlayerState } = this.props
 		const prevPartyPlayerState = prevProps.partyVideoPlayerState
 		const currentPartyPlayerState = this.props.partyVideoPlayerState
+		const userIsBuffering = userVideoPlayerState.playerState === 'buffering'
 		const internalVideoPlayer = this.videoPlayer.getInternalPlayer ()
 
 		// As soon as the videoPlayer is loaded, start listening for playerState commands from the server
-		if ( videoPlayerIsLoaded && internalVideoPlayer) {
+		if ( videoPlayerIsLoaded && internalVideoPlayer && !userIsBuffering ) {
 			this.handlePauseVideoCommandsFromServer ( currentPartyPlayerState, internalVideoPlayer )
 			this.handleSeekToCommandsFromServer ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer )
 		}
@@ -66,7 +63,7 @@ export default class VideoPlayer extends Component {
 	 */
 	handleSeekToCommandsFromServer = ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer ) => {
 		const partyPlayerStateUpdated = prevPartyPlayerState !== currentPartyPlayerState
-		if ( this.state.userVideoPlayerState.playerState !== 'buffering' && partyPlayerStateUpdated && currentPartyPlayerState.timeInVideo !== 0  ) {
+		if ( partyPlayerStateUpdated && currentPartyPlayerState.timeInVideo !== 0  ) {
 			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
 		}
 	}
@@ -80,29 +77,11 @@ export default class VideoPlayer extends Component {
 	handlePauseVideoCommandsFromServer = ( currentPartyPlayerState, internalVideoPlayer ) => {
 		// If the server/party wants us to pause somewhere other than at the start of the video ->
 		// seek to the timeInVideo provided by the server and pause the video at that time
-		if ( this.state.userVideoPlayerState.playerState !== 'buffering' && currentPartyPlayerState.playerState === 'paused' && currentPartyPlayerState.timeInVideo !== 0 ) {
+		if ( currentPartyPlayerState.playerState === 'paused' && currentPartyPlayerState.timeInVideo !== 0 ) {
 			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
 			internalVideoPlayer.pauseVideo ()
 		}
 	}
-
-	/**
-	 * Determine if this client is ready to play or not
-	 * ( a client is ready [to play] if his playerState is equal to the parties' playerState )
-	 * @param partyVideoPlayerState
-	 * @param userVideoPlayerState
-	 * @returns {{clientIsReady: boolean, timeInVideo: (*|number)}}
-	 */
-	determineClientReadyState = ( partyVideoPlayerState, userVideoPlayerState ) => {
-		const timeInVideo = userVideoPlayerState.timeInVideo
-		let clientIsReady = userVideoPlayerState.playerState !== 'buffering'
-
-		return {
-			clientIsReady,
-			timeInVideo
-		}
-	}
-
 
 	/**
 	 * Returns a users' playerState object containing the playerState and timeInVideo
@@ -118,26 +97,6 @@ export default class VideoPlayer extends Component {
 	}
 
 	/**
-	 * Event listener for when this users' playerState changes
-	 *
-	 * 1. Determine if this client is ready to play or not ( == done buffering )
-	 * 2. Let the server know if this client is ready to play or not by emitting an event
-	 * Reason for debouncing: because Youtube always fires a pause event right before a buffering event,
-	 * we want to ignore this first, useless pause event
-	 */
-	onPlayerStateChange = debounce ( ( partyVideoPlayerState, userVideoPlayerState, onClientReadyStateChange ) => {
-		// If this users' videoPlayer somehow started playing, but the server is still telling us to pause
-		// -> pause the videoPlayer for this user
-		if ( partyVideoPlayerState.playerState === 'paused' && userVideoPlayerState.playerState === 'playing' ) {
-			this.videoPlayer.getInternalPlayer ().pauseVideo ()
-		}
-		this.setState({userVideoPlayerState})
-
-		const clientReadyState = this.determineClientReadyState ( partyVideoPlayerState, userVideoPlayerState )
-		onClientReadyStateChange ( clientReadyState )
-	}, 500 )
-
-	/**
 	 * Render the videoPlayer
 	 * @param selectedVideo
 	 * @param videoPlayerIsMuted
@@ -147,7 +106,7 @@ export default class VideoPlayer extends Component {
 	 * @param setPlayerIsLoadedState
 	 * @returns {XML}
 	 */
-	renderVideoPlayer = ( selectedVideo, videoPlayerIsMuted, partyVideoPlayerState, onClientReadyStateChange, onPlayerProgress, setPlayerIsLoadedState ) => {
+	renderVideoPlayer = ( selectedVideo, videoPlayerIsMuted, partyVideoPlayerState, onPlayerStateChange, onPlayerProgress, setPlayerIsLoadedState ) => {
 		let videoUrl = videoUtils.getVideoUrl ( selectedVideo.videoSource, selectedVideo.id )
 		const videoIsPlaying = partyVideoPlayerState.playerState === 'playing'
 		return (
@@ -159,20 +118,14 @@ export default class VideoPlayer extends Component {
 				playing={ videoIsPlaying }
 				ref={e => this.videoPlayer = e}
 				onReady={() => setPlayerIsLoadedState ( true )}
-				onPlay={() => this.onPlayerStateChange (
-					partyVideoPlayerState,
+				onPlay={() => onPlayerStateChange (
 					this.constructUserPlayerState ( 'playing', this.videoPlayer ),
-					onClientReadyStateChange
 				)}
-				onPause={() => this.onPlayerStateChange (
-					partyVideoPlayerState,
+				onPause={() => onPlayerStateChange (
 					this.constructUserPlayerState ( 'paused', this.videoPlayer ),
-					onClientReadyStateChange
 				)}
-				onBuffer={() => this.onPlayerStateChange (
-					partyVideoPlayerState,
+				onBuffer={() => onPlayerStateChange (
 					this.constructUserPlayerState ( 'buffering', this.videoPlayer ),
-					onClientReadyStateChange
 				)}
 				onProgress={ onPlayerProgress }
 				config={{
@@ -190,7 +143,7 @@ export default class VideoPlayer extends Component {
 			selectedVideo,
 			partyVideoPlayerState,
 			emitNewPlayerStateToServer,
-			emitClientReadyStateToServer,
+			onPlayerStateChange,
 			setPlayerProgress,
 			videoPlayerIsMuted,
 			videoPlayerIsMaximized,
@@ -214,7 +167,7 @@ export default class VideoPlayer extends Component {
 					selectedVideo,
 					videoPlayerIsMuted,
 					partyVideoPlayerState,
-					emitClientReadyStateToServer,
+					onPlayerStateChange,
 					setPlayerProgress,
 					setPlayerIsLoadedState ) }
 

@@ -1,7 +1,7 @@
 // API
 import { youtubeApi } from '../api/index'
 
-// import external actions
+// Import external actions
 import { partyActions } from '../party/index'
 
 export const videoListActions = {

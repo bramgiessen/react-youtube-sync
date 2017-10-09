@@ -399,9 +399,6 @@ export const party = {
 		// Clear the current videoPlayer interval for this party
 		party.toggleVideoPlayerInterval ( partyId, false )
 
-		// Reset the previous ready state for all users as were now waiting for them to be ready for a new action
-		// party.resetAllUsersReadyState(partyId)
-
 		const newVideoPlayerStateForParty = {
 			lastStateChangeInitiator: socket.id,
 			playerState: newPlayerState.playerState,

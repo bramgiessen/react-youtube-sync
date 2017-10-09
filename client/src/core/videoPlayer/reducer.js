@@ -8,6 +8,10 @@ const initialState = Immutable ( {
 	videoPlayerIsMuted: false,
 	videoPlayerIsMaximized: false,
 	videoPlayerIsLoaded: false,
+	videoPlayerState: {
+		playerState: 'unstarted',
+		timeInVideo: 0
+	},
 	videoProgress: 0
 } )
 
@@ -22,6 +26,9 @@ export const videoPlayerReducer = ( state = initialState, action ) => {
 
 		case videoPlayerActions.SET_PLAYER_MAXIMIZED_STATE:
 			return Immutable.set ( state, 'videoPlayerIsMaximized', action.payload )
+
+		case videoPlayerActions.SET_USER_PLAYER_STATE:
+			return Immutable.set ( state, 'videoPlayerState', action.payload )
 
 		case videoPlayerActions.SET_PLAYER_PROGRESS:
 			return Immutable.set ( state, 'videoProgress', action.payload )
