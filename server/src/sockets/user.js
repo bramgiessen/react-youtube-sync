@@ -5,9 +5,10 @@ import { socketUtils, generalUtils } from "../utils"
 // Constants
 import { ACTION_TYPES } from '../core/constants'
 
+// Bind incoming action types to handler functions
 export const userSocketHandlers = {
 	'WS_TO_SERVER_CONNECT_TO_PARTY': connectToParty,
-	'WS_TO_SERVER_DISCONNECT_FROM_PARTY': disconnectFromAllParties,
+	'WS_TO_SERVER_DISCONNECT_FROM_PARTY': disconnectFromParty,
 	'WS_TO_SERVER_SET_CLIENT_READY_STATE': setUserReadyState,
 	'WS_TO_SERVER_SET_CLIENT_VIDEOPLAYER_INITIALIZED': setUserReadyState,
 }
@@ -20,10 +21,11 @@ export const userSocketHandlers = {
  * @param payload
  */
 function connectToParty ( io, socket, payload ) {
+	const userId = socket.id
 	const { userName, partyId } = payload
 
 	// Make sure the party we are trying to join actually exists
-	// if not -> let the client know that the party he is trying to join doesn't exist
+	// if not -> let the user know that the party he is trying to join doesn't exist
 	if ( !party.partyExists ( partyId ) ) {
 		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_PARTY_STATE, 'inactive' )
 		return false
@@ -38,8 +40,8 @@ function connectToParty ( io, socket, payload ) {
 	// Send all necessary party details to the user that just joined
 	party.sendPartyDetailsToClient ( socket, partyId )
 
-	// Only notify the party that a new user has joined if the joining user is authorized to be in the party
-	if ( user.isAuthorizedInParty ( socket.id, partyId ) ) {
+	// Only notify the party that a new user has joined if the joining user is authenticated
+	if ( user.isUserAuthenticated ( userId ) ) {
 		party.notifyPartyOfNewlyJoinedUser ( io, partyId, userName )
 	}
 }
@@ -49,57 +51,46 @@ function connectToParty ( io, socket, payload ) {
  * @param io
  * @param socket
  */
-function disconnectFromAllParties ( io, socket ) {
+function disconnectFromParty ( io, socket ) {
 	user.disconnectFromParty ( io, socket )
-	user.resetClientToInitialState( socket )
+	user.resetClientToInitialState ( socket )
 }
 
 /**
- * Mark a user as readyToPlay [== done buffering] or not
+ * Mark a user as readyToPlay [== done buffering] or !readyToPlay [== buffering]
  * @param io
  * @param socket
  * @param payload
  */
 function setUserReadyState ( io, socket, payload ) {
-	const partyIdForUser = user.getPartyIdsForUser ( socket.id )[ 0 ]
+	const userId = socket.id
+	const partyIdForUser = user.getPartyIdForUser ( userId )
+	// Don't continue if this user is not a member of any parties
 	if ( !partyIdForUser ) {
 		return false
 	}
-	const partyForId = party.getPartyById ( partyIdForUser )
-	const userForId = user.getUserForId ( socket.id )
-	const currentPlayerStateForParty = partyForId.videoPlayer.playerState
+
 	const { clientIsReady } = payload
+	const userForId = user.getUserForId ( userId )
+	const isNewReadyStateForClient = clientIsReady !== userForId.readyToPlayState.clientIsReady
 	const readyToPlayState = {
 		clientIsReady,
 		timeInVideo: generalUtils.toFixedNumber ( payload.timeInVideo, 2 )
 	}
 
-
-	if(clientIsReady !== userForId.readyToPlayState.clientIsReady || !clientIsReady){
-
+	// If the user previously was not ready to play and is now ready
+	// OR if this client is not ready to play anymore (because he/she is buffering)
+	// -> store that readyToPlay state for the user
+	if ( isNewReadyStateForClient || !clientIsReady ) {
 		// Store the new userReadyState for the user
-		user.setUserReadyToPlayState ( socket.id, readyToPlayState )
-
-		// If a client reports to not be ready -> pause the video for everyone until everyone is ready again
-		// ( We're using a timeOut because otherwise the client's Youtube player can get stuck in an
-		//   infinite 'buffering' state )
-
-		// Only pause the video if this isnt the initial video play command as the video was still paused at this
-		// point (otherwise will trigger infinite buffer bug)
-		if(!clientIsReady && readyToPlayState.timeInVideo !== 0){
-			party.pauseVideoForParty(io, socket, partyIdForUser, readyToPlayState)
-		}
-
-		// If all users are ready, and the current parties' playerState is 'playing'
-		// -> play the video for all users
-		else if ( party.allUsersReady ( partyIdForUser ) ) {
-			if(currentPlayerStateForParty === 'playing'){
-					party.playVideoForParty ( io, partyIdForUser )
-			}
-			else if(currentPlayerStateForParty === 'paused'){
-				party.pauseVideoForParty(io,socket,partyIdForUser,readyToPlayState)
-			}
-		}
+		user.setUserReadyToPlayState ( userId, readyToPlayState )
 	}
 
+	if ( !clientIsReady ) {
+		// If the user is not ready to play -> pause the video for everyone in the party until this user is ready
+		party.handleUserInPartyNotReady ( io, userId, partyIdForUser )
+	} else if ( isNewReadyStateForClient && party.allUsersReady ( partyIdForUser ) ) {
+		// If all users are now ready -> play the video for everyone in the party
+		party.handleAllUsersInPartyReady ( io, partyIdForUser )
+	}
 }

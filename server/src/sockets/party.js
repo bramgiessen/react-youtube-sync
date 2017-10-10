@@ -1,10 +1,12 @@
 // Libs & utils
 import { party } from '../core'
 import { socketUtils, generalUtils } from "../utils"
+import { user } from "../core/user"
 
 // Constants
 import { ACTION_TYPES } from '../core/constants'
 
+// Bind incoming action types to handler functions
 export const partySocketHandlers = {
 	'WS_TO_SERVER_CREATE_PARTY': createParty,
 	'WS_TO_SERVER_SEND_MESSAGE_TO_PARTY': sendMessageToParty,
@@ -37,12 +39,22 @@ function sendMessageToParty ( io, socket, payload ) {
 	}
 }
 
-function setVideoPlayerStateForParty (io, socket, payload) {
+/**
+ * Set a videoPlayer state for an entire party
+ * ( Triggered when a user in a party i.e. pauses, seeks in or plays the video )
+ * @param io
+ * @param socket
+ * @param payload
+ */
+function setVideoPlayerStateForParty ( io, socket, payload ) {
+	const userId = socket.id
 	const { newPlayerState, partyId } = payload
 	const playerStateForParty = {
 		playerState: newPlayerState.playerState,
-		timeInVideo: generalUtils.toFixedNumber(newPlayerState.timeInVideo, 2)
+		timeInVideo: generalUtils.toFixedNumber ( newPlayerState.timeInVideo, 2 )
 	}
 
-	party.onNewPlayerStateForParty(io, socket, partyId, playerStateForParty)
+	if ( user.isUserAuthenticated ( userId ) ) {
+		party.onNewPlayerStateForParty ( io, socket, partyId, playerStateForParty )
+	}
 }

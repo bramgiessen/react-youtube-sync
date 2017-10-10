@@ -10,5 +10,11 @@ export const ACTION_TYPES = {
 	SET_CLIENT_PLAYER_STATE: 'WS_TO_CLIENT_SET_PLAYER_STATE',
 	SET_USERS_IN_PARTY: 'WS_TO_CLIENT_SET_USERS_IN_PARTY',
 	PARTY_MESSAGE_RECEIVED: 'WS_TO_CLIENT_PARTY_MESSAGE_RECEIVED'
-
 }
+
+//=====================================
+//  VARIOUS
+//-------------------------------------
+// The username shown in the chatlog when the server emits an informative message
+// to a party
+export const serverUserName = 'Video Party'

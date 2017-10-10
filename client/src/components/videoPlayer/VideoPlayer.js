@@ -5,6 +5,9 @@ import ReactPlayer from 'react-player'
 import classNames from 'classnames'
 import { videoUtils } from '../../core/utils'
 
+// Constants
+import { videoPlayerConfig } from '../../core/constants'
+
 // CSS
 import './VideoPlayer.css'
 
@@ -47,7 +50,7 @@ export default class VideoPlayer extends Component {
 		const userIsBuffering = userVideoPlayerState.playerState === 'buffering'
 		const internalVideoPlayer = this.videoPlayer.getInternalPlayer ()
 
-		// As soon as the videoPlayer is loaded, start listening for playerState commands from the server
+		// As soon as the videoPlayer is loaded, start listening for playerStateChange commands from the server
 		if ( videoPlayerIsLoaded && internalVideoPlayer && !userIsBuffering ) {
 			this.handlePauseVideoCommandsFromServer ( currentPartyPlayerState, internalVideoPlayer )
 			this.handleSeekToCommandsFromServer ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer )
@@ -96,48 +99,6 @@ export default class VideoPlayer extends Component {
 		}
 	}
 
-	/**
-	 * Render the videoPlayer
-	 * @param selectedVideo
-	 * @param videoPlayerIsMuted
-	 * @param partyVideoPlayerState
-	 * @param onClientReadyStateChange
-	 * @param onPlayerProgress
-	 * @param setPlayerIsLoadedState
-	 * @returns {XML}
-	 */
-	renderVideoPlayer = ( selectedVideo, videoPlayerIsMuted, partyVideoPlayerState, onPlayerStateChange, onPlayerProgress, setPlayerIsLoadedState ) => {
-		let videoUrl = videoUtils.getVideoUrl ( selectedVideo.videoSource, selectedVideo.id )
-		const videoIsPlaying = partyVideoPlayerState.playerState === 'playing'
-		return (
-			<ReactPlayer
-				url={ videoUrl }
-				width={ '100%' }
-				height={ '100%' }
-				muted={ videoPlayerIsMuted }
-				playing={ videoIsPlaying }
-				ref={e => this.videoPlayer = e}
-				onReady={() => setPlayerIsLoadedState ( true )}
-				onPlay={() => onPlayerStateChange (
-					this.constructUserPlayerState ( 'playing', this.videoPlayer ),
-				)}
-				onPause={() => onPlayerStateChange (
-					this.constructUserPlayerState ( 'paused', this.videoPlayer ),
-				)}
-				onBuffer={() => onPlayerStateChange (
-					this.constructUserPlayerState ( 'buffering', this.videoPlayer ),
-				)}
-				onProgress={ onPlayerProgress }
-				config={{
-					youtube: {
-						playerVars: { showinfo: 1 }
-					}
-				}}
-				style={ { position: 'absolute' } }
-			/>
-		)
-	}
-
 	render () {
 		const {
 			selectedVideo,
@@ -156,20 +117,36 @@ export default class VideoPlayer extends Component {
 		} = this.props
 
 		const videoPlayer = this.videoPlayer
+		const videoUrl = videoUtils.getVideoUrl ( selectedVideo.videoSource, selectedVideo.id )
 		const videoDuration = videoPlayer && videoPlayerIsLoaded ? videoPlayer.getDuration () : null
+		const videoIsPlaying = partyVideoPlayerState.playerState === 'playing'
 		const videoPlayerClassNames = classNames ( 'video-player', {
 			'maximized': videoPlayerIsMaximized
 		} )
 
 		return (
 			<div className={videoPlayerClassNames}>
-				{ this.renderVideoPlayer (
-					selectedVideo,
-					videoPlayerIsMuted,
-					partyVideoPlayerState,
-					onPlayerStateChange,
-					setPlayerProgress,
-					setPlayerIsLoadedState ) }
+				<ReactPlayer
+					url={ videoUrl }
+					width={ '100%' }
+					height={ '100%' }
+					muted={ videoPlayerIsMuted }
+					playing={ videoIsPlaying }
+					ref={e => this.videoPlayer = e}
+					onReady={() => setPlayerIsLoadedState ( true )}
+					onPlay={() => onPlayerStateChange (
+						this.constructUserPlayerState ( 'playing', videoPlayer ),
+					)}
+					onPause={() => onPlayerStateChange (
+						this.constructUserPlayerState ( 'paused', videoPlayer ),
+					)}
+					onBuffer={() => onPlayerStateChange (
+						this.constructUserPlayerState ( 'buffering', videoPlayer ),
+					)}
+					onProgress={ setPlayerProgress }
+					config={ videoPlayerConfig }
+					style={ { position: 'absolute' } }
+				/>
 
 				<VideoPlayerControls
 					partyVideoPlayerState={ partyVideoPlayerState }

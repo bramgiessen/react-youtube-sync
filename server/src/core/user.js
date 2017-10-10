@@ -10,6 +10,25 @@ import { ACTION_TYPES } from '../core/constants'
 export const user = {
 
 	/**
+	 * Returns the user that belongs to the specified socketId
+	 * ( returns undefined if user doesn't exist )
+	 * @param socketId
+	 * @returns {*}
+	 */
+	getUserForId: ( socketId ) => {
+		return cache.users.find ( ( activeUser ) => activeUser.socketId === socketId )
+	},
+
+	/**
+	 * Returns true if a user with given socketId exists in the activeUsers array
+	 * @param socketId
+	 * @returns {*}
+	 */
+	userExists: ( socketId ) => {
+		return !!user.getUserForId ( socketId )
+	},
+
+	/**
 	 * Create a new user if a user with the given socketId doesn't already exist
 	 * @param socket
 	 * @param userName
@@ -33,113 +52,6 @@ export const user = {
 	},
 
 	/**
-	 * Returns true if a user with given socketId exists in the activeUsers array
-	 * @param socketId
-	 * @returns {*}
-	 */
-	userExists: ( socketId ) => {
-		return !!user.getUserForId ( socketId )
-	},
-
-	/**
-	 * Returns the user that belongs to the specified socketId
-	 * ( returns undefined if user doesn't exist )
-	 * @param socketId
-	 * @returns {*}
-	 */
-	getUserForId: ( socketId ) => {
-		return cache.users.find ( ( activeUser ) => activeUser.socketId === socketId )
-	},
-
-	/**
-	 * Returns the videoPlayerState for a user
-	 * @param socketId
-	 * @returns {null}
-	 */
-	getVideoPlayerForUser: ( socketId ) => {
-		const userForId = user.getUserForId ( socketId )
-
-		return userForId && userForId.videoPlayerState ? userForId.videoPlayerState : null
-	},
-
-	/**
-	 * Returns true is user is authenticated
-	 * (right now there is a VERY simple mechanism to determine if a user is authenticated:
-	 * if he/she simply has a username: he/she is authenticated, as that's all we require
-	 * at this point for this simple demo/P.O.C.)
-	 * @param socketId
-	 */
-	isUserAuthenticated: ( socketId ) => {
-		const userForId = user.getUserForId ( socketId )
-
-		return userForId && userForId.userName
-	},
-
-	/**
-	 * Retrieve all the party ids from all parties a user ( referenced by socketId ) is currently in
-	 * @param socketId
-	 * @returns {Array}
-	 */
-	getPartyIdsForUser: ( socketId ) => {
-		return cache.parties.filter ( ( activeParty ) => {
-			return activeParty.usersInParty.find ( ( userId ) => userId === socketId )
-		} ).map ( ( activeParty ) => activeParty.partyId )
-	},
-
-	/**
-	 * Returns true if given user is in a party with given partyId
-	 * @param user
-	 * @param partyId
-	 * @returns {*|Array|boolean}
-	 */
-	isUserInParty: ( socketId, partyId ) => {
-		const partyIdsForUser = user.getPartyIdsForUser ( socketId )
-
-		return partyIdsForUser && (partyIdsForUser.indexOf ( partyId ) !== -1)
-	},
-
-	/**
-	 * Returns true if the given user is a member of the given party and is authenticated (has a userName)
-	 * @param socketId
-	 * @param partyId
-	 * @returns {*|Array|boolean}
-	 */
-	isAuthorizedInParty: ( socketId, partyId ) => {
-		return user.isUserInParty ( socketId, partyId ) && user.isUserAuthenticated ( socketId )
-	},
-
-	/**
-	 * Make given socket/user leave all socketIo managed rooms it is currently in
-	 * @param io
-	 * @param socket
-	 */
-	leaveSocketIoRooms: ( io, socket ) => {
-		const roomsForSocket = io.sockets.adapter.sids[ socket.id ]
-		for ( const room in roomsForSocket ) {
-			socket.leave ( room )
-		}
-	},
-
-	/**
-	 * Remove a user from all parties it is currently in
-	 * @param io
-	 * @param socket
-	 */
-	removeUserFromParties: ( io, socket ) => {
-		const socketId = socket.id
-
-		// Make sure the user isn't in any server managed parties anymore
-		cache.parties.forEach ( ( activeParty ) => {
-			activeParty.usersInParty = activeParty.usersInParty.filter ( ( userId ) => {
-				return userId !== socketId
-			} )
-		} )
-
-		// Disconnect the socket from the parties / rooms managed by socketIo
-		user.leaveSocketIoRooms ( io, socket )
-	},
-
-	/**
 	 * Add a user to a specific party
 	 * @param io
 	 * @param socket
@@ -160,21 +72,78 @@ export const user = {
 	},
 
 	/**
+	 * Returns true is user is authenticated
+	 * (right now there is a VERY simple mechanism to determine if a user is authenticated:
+	 * if he/she simply has a username: he/she is authenticated, as that's all we require
+	 * at this point for this simple demo/P.O.C.)
+	 * @param socketId
+	 */
+	isUserAuthenticated: ( socketId ) => {
+		const userForId = user.getUserForId ( socketId )
+
+		return userForId && userForId.userName
+	},
+
+	/**
+	 * Retrieve all the party ids from all parties a user ( referenced by socketId ) is currently in
+	 * @param socketId
+	 * @returns {Array}
+	 */
+	getPartyIdForUser: ( socketId ) => {
+		const partyIdsForUser = cache.parties.filter ( ( activeParty ) => {
+			return activeParty.usersInParty.find ( ( userId ) => userId === socketId )
+		} ).map ( ( activeParty ) => activeParty.partyId )
+
+		return partyIdsForUser && partyIdsForUser.length ? partyIdsForUser[ 0 ] : null
+	},
+
+	/**
+	 * Make given socket/user leave all socketIo managed rooms it is currently in
+	 * @param io
+	 * @param socket
+	 */
+	leaveSocketIoRooms: ( io, socket ) => {
+		const roomsForSocket = io.sockets.adapter.sids[ socket.id ]
+		for ( const room in roomsForSocket ) {
+			socket.leave ( room )
+		}
+	},
+
+	/**
+	 * Remove a user from the party he is in,
+	 * making sure he isn't accidentally stuck in any parties at all
+	 * @param io
+	 * @param socket
+	 */
+	removeUserFromParties: ( io, socket ) => {
+		const socketId = socket.id
+
+		// Make sure the user isn't in any server managed parties anymore
+		cache.parties.forEach ( ( activeParty ) => {
+			activeParty.usersInParty = activeParty.usersInParty.filter ( ( userId ) => {
+				return userId !== socketId
+			} )
+		} )
+
+		// Disconnect the socket from the parties / rooms managed by socketIo
+		user.leaveSocketIoRooms ( io, socket )
+	},
+
+	/**
 	 * 1. Removes a user from all parties it is currently in
 	 * 2. Notifies all other clients in these parties that the user has been disconnected
 	 * @param io
 	 * @param socket
 	 */
 	disconnectFromParty: ( io, socket ) => {
-		const currentPartyIds = user.getPartyIdsForUser ( socket.id )
+		const userId = socket.id
+		const partyIdForUser = user.getPartyIdForUser ( userId )
 		user.removeUserFromParties ( io, socket )
 
-		// user was still in parties, remove him from these parties
-		if ( currentPartyIds ) {
-			currentPartyIds.forEach ( ( partyId ) => {
-				const usersStillInParty = party.getUsersForParty ( partyId )
-				io.sockets.in ( partyId ).emit ( 'action', { type: 'SET_USERS_IN_PARTY', payload: usersStillInParty } )
-			} )
+		// Notify all users still in the party that this user has left the party
+		if ( partyIdForUser ) {
+			const usersStillInParty = party.getUsersForParty ( partyIdForUser )
+			socketUtils.emitActionToParty ( io, partyIdForUser, ACTION_TYPES.SET_USERS_IN_PARTY, usersStillInParty )
 		}
 	},
 
@@ -189,6 +158,10 @@ export const user = {
 		} )
 	},
 
+	/**
+	 * Reset the selected video for a user
+	 * @param socket
+	 */
 	resetSelectedVideoForUser: ( socket ) => {
 		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_SELECTED_VIDEO, {
 			id: '',
@@ -199,16 +172,20 @@ export const user = {
 		} )
 	},
 
+	/**
+	 * Reset both the playerState and the selected video for a user
+	 * @param socket
+	 */
 	resetClientToInitialState: ( socket ) => {
 		user.resetPlayerStateForUser ( socket )
-		user.resetSelectedVideoForUser( socket )
+		user.resetSelectedVideoForUser ( socket )
 	},
 
 	/**
 	 * Set / save the videoPlayers' state of a user
 	 * ( We do this so we know if the user is ready to play, or i.e. still buffering a video )
 	 * @param socketId
-	 * @param videoPlayerState
+	 * @param newReadyToPlayState
 	 * @returns {boolean}
 	 */
 	setUserReadyToPlayState: ( socketId, newReadyToPlayState ) => {
@@ -218,32 +195,5 @@ export const user = {
 		}
 
 		userForId.readyToPlayState = newReadyToPlayState
-	},
-
-	/**
-	 * Reset the playerState for a user back to it's initial value
-	 * @param userId
-	 */
-	resetReadyToPlayState: ( userId ) => {
-		const userForId = user.getUserForId ( userId )
-
-		userForId.readyToPlayState = {
-			clientIsReady: false,
-			timeInVideo: 0
-		}
-	},
-
-	isInSyncWithParty: ( userId, partyId ) => {
-		const videoPlayerStateForUser = user.getVideoPlayerForUser ( userId )
-		const videoPlayerStateForParty = party.getVideoPlayerForParty ( partyId )
-		if ( !videoPlayerStateForParty || !videoPlayerStateForUser ) {
-			return false
-		}
-
-		console.log ( videoPlayerStateForParty.timeInVideo, videoPlayerStateForUser.timeInVideo )
-
-		return videoPlayerStateForParty.playerState === videoPlayerStateForUser.playerState
-			&& videoPlayerStateForParty.timeInVideo === videoPlayerStateForUser.timeInVideo
 	}
-
 }

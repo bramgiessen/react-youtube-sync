@@ -6,7 +6,7 @@ export const cache = {
 		// {
 		// 	partyId: 0,
 		// 	selectedVideo: {},
-		// 	waitingForReady: false,
+		// 	waitingForAllUsersToBeReady: false,
 		// 	videoPlayer: {
 		// 		playerState: 'paused',
 		// 		timeInVideo: 0,

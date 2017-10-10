@@ -9,8 +9,8 @@ export const messageUtils = {
 	 * @param partyId
 	 * @returns {{message: string, userName: string, partyId: *}}
 	 */
-	generateUserJoinedMessage: ( userName, partyId ) => {
-		return { message: `${userName} joined the party`, userName: 'Server', partyId }
+	generateUserJoinedMessage: ( userName, partyId, serverUserName ) => {
+		return { message: `${userName} joined the party`, userName: serverUserName, partyId }
 	},
 
 	/**

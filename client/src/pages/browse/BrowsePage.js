@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import './BrowsePage.css'
 
 // Constants
-import { introductionText } from '../../core/constants'
+import { introductionText, initialVideoQuery } from '../../core/constants'
 
 // Actions
 import { appActions } from '../../core/app'
@@ -33,7 +33,7 @@ class BrowsePage extends Component {
 		}
 
 		// Load an initial set of movies from Youtube into Redux store
-		this.props.loadYoutubeVideos ( 'documentary', 'movie' )
+		this.props.loadYoutubeVideos ( initialVideoQuery.query, initialVideoQuery.videoType )
 
 		// Disconnect from any parties the user was still connected to
 		this.props.disconnectFromAllParties()
