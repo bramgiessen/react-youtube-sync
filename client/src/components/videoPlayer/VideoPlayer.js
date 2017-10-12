@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
 import classNames from 'classnames'
-import { videoUtils } from '../../core/utils'
+import { videoUtils, generalUtils } from '../../core/utils'
 
 // Constants
 import { videoPlayerConfig } from '../../core/constants'
@@ -13,6 +13,7 @@ import './VideoPlayer.css'
 
 // Components
 import VideoPlayerControls from '../videoPlayerControls/VideoPlayerControls'
+import MobileDevicePlayerDialog from '../mobileDevicePlayerDialog/MobileDevicePlayerDialog'
 
 export default class VideoPlayer extends Component {
 
@@ -138,7 +139,9 @@ export default class VideoPlayer extends Component {
 					muted={ videoPlayerIsMuted }
 					playing={ videoIsPlaying }
 					ref={e => this.videoPlayer = e}
-					onReady={() => {setPlayerIsLoadedState ( true )}}
+					onReady={() => {
+						setPlayerIsLoadedState ( true )
+					}}
 					onPlay={() => {
 						// Make sure that if this onPlay handler is called accidentally while the server is still
 						// telling us to pause, that we DO actually remain paused
@@ -174,6 +177,16 @@ export default class VideoPlayer extends Component {
 						document.getElementsByClassName ( 'video-player' )[ 0 ]
 					) }
 				/>
+
+				{generalUtils.isMobileDevice () &&
+				<MobileDevicePlayerDialog
+					partyId={partyId}
+					videoPlayer={videoPlayer}
+					videoPlayerIsLoaded={videoPlayerIsLoaded}
+					partyVideoPlayerState={partyVideoPlayerState}
+					emitNewPlayerStateToServer={emitNewPlayerStateToServer}
+				/>}
+
 			</div>
 		)
 	}

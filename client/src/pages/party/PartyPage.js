@@ -37,7 +37,6 @@ class PartyPage extends Component {
 		if ( userName ) {
 			connectToParty ( userName, this.partyId )
 		}
-
 	}
 
 	componentDidUpdate ( prevProps, prevState ) {
@@ -47,14 +46,18 @@ class PartyPage extends Component {
 		}
 	}
 
-	render () {
+	/**
+	 * Render the party page
+	 * @param props
+	 * @returns {XML}
+	 */
+	renderPartyPage = ( props ) => {
 		const {
 			selectedVideo,
 			videoPlayerIsLoaded,
 			videoPlayerIsMuted,
 			videoPlayerIsMaximized,
 			usersInParty,
-			partyState,
 			emitNewPlayerStateForPartyToServer,
 			onPlayerStateChange,
 			partyVideoPlayerState,
@@ -65,55 +68,74 @@ class PartyPage extends Component {
 			handleMaximizeBtnPressed,
 			videoProgress,
 			userName
-		} = this.props
+		} = props
 		const partyUrl = window.location.href.split ( '?' )[ 0 ]
 
-		if(partyState === 'active') {
-			return (
-				<div className="party-page">
-					<div className="g-row">
-						<div className="g-col">
-							<ShareablePartyUrl partyUrl={partyUrl}/>
+		return (
+			<div className="party-page">
+				<div className="g-row">
+					<div className="g-col">
+						<ShareablePartyUrl partyUrl={partyUrl}/>
 
-							<div className="content-flex-horizontal">
-								<div className="player-container">
-									<VideoPlayer
-										selectedVideo={selectedVideo}
-										partyId={this.partyId}
-										userName={userName}
-										videoPlayerIsMuted={videoPlayerIsMuted}
-										videoPlayerIsMaximized={videoPlayerIsMaximized}
-										videoPlayerIsLoaded={videoPlayerIsLoaded}
-										videoProgress={videoProgress}
-										userVideoPlayerState={userVideoPlayerState}
-										partyVideoPlayerState={partyVideoPlayerState}
-										onPlayerStateChange={onPlayerStateChange}
-										emitNewPlayerStateToServer={emitNewPlayerStateForPartyToServer}
-										setPlayerMutedState={setPlayerMutedState}
-										setPlayerProgress={setPlayerProgress}
-										setPlayerIsLoadedState={setPlayerIsLoadedState}
-										handleMaximizeBtnPressed={handleMaximizeBtnPressed}
-									/>
-								</div>
-
-								<UserList users={usersInParty}/>
+						<div className="content-flex-horizontal">
+							<div className="player-container">
+								<VideoPlayer
+									selectedVideo={selectedVideo}
+									partyId={this.partyId}
+									userName={userName}
+									videoPlayerIsMuted={videoPlayerIsMuted}
+									videoPlayerIsMaximized={videoPlayerIsMaximized}
+									videoPlayerIsLoaded={videoPlayerIsLoaded}
+									videoProgress={videoProgress}
+									userVideoPlayerState={userVideoPlayerState}
+									partyVideoPlayerState={partyVideoPlayerState}
+									onPlayerStateChange={onPlayerStateChange}
+									emitNewPlayerStateToServer={emitNewPlayerStateForPartyToServer}
+									setPlayerMutedState={setPlayerMutedState}
+									setPlayerProgress={setPlayerProgress}
+									setPlayerIsLoadedState={setPlayerIsLoadedState}
+									handleMaximizeBtnPressed={handleMaximizeBtnPressed}
+								/>
 							</div>
 
-							<ChatBox
-								onMessageSend={this.props.sendMessageToParty}
-								partyId={this.partyId}
-								userName={userName}
-								messagesInParty={this.props.messagesInParty}
-							/>
-
+							<UserList users={usersInParty}/>
 						</div>
+
+						<ChatBox
+							onMessageSend={this.props.sendMessageToParty}
+							partyId={this.partyId}
+							userName={userName}
+							messagesInParty={this.props.messagesInParty}
+						/>
+
 					</div>
 				</div>
-			)
-		}else{
-			return (
-				<span>NOPE</span>
-			)
+			</div>
+		)
+	}
+
+	/**
+	 * Renders a message letting the user know that the requested party does not exist
+	 * @returns {XML}
+	 */
+	renderPartyNotFoundMessage = () => {
+		return (
+			<div className="party-not-found-container">
+				<h1 className="header">Whoops..</h1>
+				<span className="description">The requested party with id <b>"{this.partyId}"</b>
+					does not seem to exist (anymore).. sorry! Could you check if you entered the right party-url?</span>
+				<div className="back-btn" onClick={() => this.props.router.push ( '/' )}>Return</div>
+			</div>
+		)
+	}
+
+	render () {
+		const { partyState } = this.props
+
+		if ( partyState === 'active' ) {
+			return this.renderPartyPage ( this.props )
+		} else {
+			return this.renderPartyNotFoundMessage ()
 		}
 	}
 }

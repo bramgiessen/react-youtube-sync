@@ -1,0 +1,23 @@
+.users-in-party-list {
+    flex: 1;
+    margin: 0 0 0 10px;
+    max-height: 253px;
+    background: #1d1e1f;
+    padding: 10px;
+}
+
+.users-in-party-list .title {
+    margin: 0 0 5px 0;
+    font-size: 1.25rem;
+    font-weight: 400;
+    border-bottom: 1px solid #424242;
+}
+
+.users-in-party-list .user {
+    padding-left: 10px;
+    width: 100%;
+}
+
+.users-in-party-list .user .user-name {
+    font-size: 1rem;
+}

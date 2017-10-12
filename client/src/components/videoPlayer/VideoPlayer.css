@@ -106,3 +106,59 @@
 .control-bar .btn-right:not(:last-child){
     margin: 0 20px 0 0;
 }
+
+.video-player .mobile-device-dialog-wrapper{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1;
+}
+
+.video-player .mobile-device-dialog{
+    position: relative;
+    width: 70%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.video-player .mobile-device-dialog .header{
+    font-size: 2em;
+}
+
+.video-player .mobile-device-dialog .description{
+    font-size: .875rem;
+}
+
+.video-player .mobile-device-dialog .start-player-btn{
+    opacity: 0.7;
+    display: table;
+    padding: 10px;
+    color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+    margin: 25px auto;
+    font-size: 1.5vw;
+}
+.video-player .mobile-device-dialog .start-player-btn:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 46.25em) {
+    .video-player .mobile-device-dialog .header{
+        font-size: 1.4rem;
+    }
+
+    .video-player .mobile-device-dialog .start-player-btn {
+        font-size: 1rem;
+    }
+
+    .video-player .mobile-device-dialog .description{
+        font-size: .875rem;
+    }
+}
