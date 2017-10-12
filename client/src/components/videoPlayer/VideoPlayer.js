@@ -34,8 +34,8 @@ export default class VideoPlayer extends Component {
 		handleMaximizeBtnPressed: PropTypes.func.isRequired,
 	}
 
-	constructor (props) {
-		super (props)
+	constructor ( props ) {
+		super ( props )
 		const { setPlayerIsLoadedState } = props
 
 		// Initially -> always make sure that the videoPlayerLoaded state is
@@ -52,8 +52,24 @@ export default class VideoPlayer extends Component {
 
 		// As soon as the videoPlayer is loaded, start listening for playerStateChange commands from the server
 		if ( videoPlayerIsLoaded && internalVideoPlayer && !userIsBuffering ) {
-			this.handlePauseVideoCommandsFromServer ( currentPartyPlayerState, internalVideoPlayer )
+			// Handle initial synchronization of our videoPlayer with the rest of the party when we first join a party
+			this.handleInitialPlayerStateSynchronization ( currentPartyPlayerState, internalVideoPlayer )
+
+			// Handle when a user 'seeks' in a video
 			this.handleSeekToCommandsFromServer ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer )
+		}
+	}
+
+	/**
+	 * When we join a party, make sure that our videoPlayer is at the same time in the video as the rest of the party
+	 * @param currentPartyPlayerState
+	 * @param internalVideoPlayer
+	 */
+	handleInitialPlayerStateSynchronization = ( currentPartyPlayerState, internalVideoPlayer ) => {
+		const isInitialPlayerStateForParty = currentPartyPlayerState.timeInVideo === 0
+		const isInitialPlayerStateForUser = internalVideoPlayer.getCurrentTime () === 0
+		if ( !isInitialPlayerStateForParty && isInitialPlayerStateForUser ) {
+			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
 		}
 	}
 
@@ -66,23 +82,12 @@ export default class VideoPlayer extends Component {
 	 */
 	handleSeekToCommandsFromServer = ( prevPartyPlayerState, currentPartyPlayerState, internalVideoPlayer ) => {
 		const partyPlayerStateUpdated = prevPartyPlayerState !== currentPartyPlayerState
-		if ( partyPlayerStateUpdated && currentPartyPlayerState.timeInVideo !== 0  ) {
-			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
-		}
-	}
+		const isInitialPlayerStateForParty = currentPartyPlayerState.timeInVideo === 0
+		const isNewPlayerState = prevPartyPlayerState.playerState !== currentPartyPlayerState.playerState ||
+			prevPartyPlayerState.timeInVideo !== currentPartyPlayerState.timeInVideo
 
-	/**
-	 * Handle pause commands that are received from the server
-	 * ( these are pause commands that originate from another users' pause action )
-	 * @param currentPartyPlayerState
-	 * @param internalVideoPlayer
-	 */
-	handlePauseVideoCommandsFromServer = ( currentPartyPlayerState, internalVideoPlayer ) => {
-		// If the server/party wants us to pause somewhere other than at the start of the video ->
-		// seek to the timeInVideo provided by the server and pause the video at that time
-		if ( currentPartyPlayerState.playerState === 'paused' && currentPartyPlayerState.timeInVideo !== 0 ) {
-			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo )
-			internalVideoPlayer.pauseVideo ()
+		if ( partyPlayerStateUpdated && isNewPlayerState && !isInitialPlayerStateForParty ) {
+			internalVideoPlayer.seekTo ( currentPartyPlayerState.timeInVideo + 0.1 )
 		}
 	}
 
@@ -103,12 +108,12 @@ export default class VideoPlayer extends Component {
 		const {
 			selectedVideo,
 			partyVideoPlayerState,
-			emitNewPlayerStateToServer,
-			onPlayerStateChange,
-			setPlayerProgress,
 			videoPlayerIsMuted,
 			videoPlayerIsMaximized,
 			videoPlayerIsLoaded,
+			emitNewPlayerStateToServer,
+			onPlayerStateChange,
+			setPlayerProgress,
 			setPlayerMutedState,
 			setPlayerIsLoadedState,
 			handleMaximizeBtnPressed,
@@ -134,14 +139,21 @@ export default class VideoPlayer extends Component {
 					playing={ videoIsPlaying }
 					ref={e => this.videoPlayer = e}
 					onReady={() => setPlayerIsLoadedState ( true )}
-					onPlay={() => onPlayerStateChange (
-						this.constructUserPlayerState ( 'playing', videoPlayer ),
-					)}
+					onPlay={() => {
+						// Make sure that if this onPlay handler is called accidentally while the server is still
+						// telling us to pause, that we DO actually remain paused
+						if ( !videoIsPlaying ) {
+							videoPlayer.getInternalPlayer ().pauseVideo ()
+						}
+						onPlayerStateChange (
+							this.constructUserPlayerState ( 'playing', videoPlayer )
+						)
+					}}
 					onPause={() => onPlayerStateChange (
-						this.constructUserPlayerState ( 'paused', videoPlayer ),
+						this.constructUserPlayerState ( 'paused', videoPlayer )
 					)}
 					onBuffer={() => onPlayerStateChange (
-						this.constructUserPlayerState ( 'buffering', videoPlayer ),
+						this.constructUserPlayerState ( 'buffering', videoPlayer )
 					)}
 					onProgress={ setPlayerProgress }
 					config={ videoPlayerConfig }

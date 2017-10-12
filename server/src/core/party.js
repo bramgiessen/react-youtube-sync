@@ -296,13 +296,13 @@ export const party = {
 		const partyForId = party.getPartyById ( partyId )
 		const currentlyWaitingToBeReady = partyForId.waitingForAllUsersToBeReady
 
-		// If the party was currently waiting to be ready and is now ready
+		// If the party was previously waiting to be ready and is now ready
 		if ( currentlyWaitingToBeReady && !isNowWaitingForAllUsersToBeReady ) {
-			party.sendMessageToParty ( io, 'All users in the party are done with buffering !', partyId, serverUserName )
+			party.sendMessageToParty ( io, 'Everybody is done with buffering !', partyId, serverUserName )
 		}
-		// If the party was not currently waiting to be ready but is now waiting for some users to be ready to play
+		// If the party was not previously waiting to be ready but now IS waiting for some users to be ready to play
 		else if ( !currentlyWaitingToBeReady && isNowWaitingForAllUsersToBeReady ) {
-			party.sendMessageToParty ( io, 'Waiting for all users to be done with buffering ..', partyId, serverUserName )
+			party.sendMessageToParty ( io, 'Waiting for everyone to be done with buffering ..', partyId, serverUserName )
 		}
 
 		partyForId.waitingForAllUsersToBeReady = isNowWaitingForAllUsersToBeReady
@@ -343,6 +343,9 @@ export const party = {
 		if ( !isInitialReadyStateForClient ) {
 			party.pauseVideoForParty ( io, partyIdForUser, readyToPlayStateForUser )
 			party.togglePartyWaitingToBeReady ( io, partyIdForUser, true )
+		} else if ( isInitialReadyStateForClient ) {
+			// Stop the videoInterval
+			party.toggleVideoPlayerInterval ( partyIdForUser, false )
 		}
 	},
 

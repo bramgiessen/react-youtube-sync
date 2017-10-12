@@ -13,6 +13,18 @@ export const generalUtils = {
 	},
 
 	/**
+	 * Round a number to given amount of decimal places
+	 * (Written by m93a, found on Stack Overflow)
+	 * @param number
+	 * @param decimals
+	 * @returns {number}
+	 */
+	toFixedNumber: ( number, decimals ) => {
+		const pow = Math.pow ( 10, decimals )
+		return +( Math.round ( number * pow ) / pow )
+	},
+
+	/**
 	 * Convert amount of seconds to duration string in format of HH:MM:SS
 	 * @param amountOfSeconds
 	 * @returns {string}

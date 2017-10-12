@@ -70,12 +70,12 @@ function setUserReadyState ( io, socket, payload ) {
 		return false
 	}
 
-	const { clientIsReady } = payload
+	const { clientIsReady, timeInVideo } = payload
 	const userForId = user.getUserForId ( userId )
 	const isNewReadyStateForClient = clientIsReady !== userForId.readyToPlayState.clientIsReady
 	const readyToPlayState = {
 		clientIsReady,
-		timeInVideo: generalUtils.toFixedNumber ( payload.timeInVideo, 2 )
+		timeInVideo: generalUtils.toFixedNumber ( timeInVideo, 2 )
 	}
 
 	// If the user previously was not ready to play and is now ready

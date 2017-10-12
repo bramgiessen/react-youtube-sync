@@ -45,7 +45,7 @@ export const videoUtils = {
 	 * @param videoDuration
 	 * @returns {*|number}
 	 */
-	getAmountOfSecondsAtXPos: (clickEvent, videoDuration) => {
+	getAmountOfSecondsAtXPos: ( clickEvent, videoDuration ) => {
 		const parentWidth = clickEvent.target.getBoundingClientRect ().width
 		const relativeMousePosition = {
 			relativeX: clickEvent.clientX - clickEvent.target.getBoundingClientRect ().left,
@@ -75,38 +75,6 @@ export const videoUtils = {
 	 */
 	secondsToPixels: ( seconds, elementWidth, videoDuration ) => {
 		return ( seconds / videoDuration ) * elementWidth
-	},
-
-	/**
-	 * Map Youtube player state to a human readable string
-	 * @param event
-	 * @returns {*}
-	 */
-	getYoutubePlayerState: ( event ) => {
-		let state = ''
-		switch ( event.data ) {
-			case -1:
-				state = 'unstarted'
-				break;
-			case 0:
-				state = 'ended'
-				break;
-			case 1:
-				state = 'playing'
-				break;
-			default:
-			case 2:
-				state = 'paused'
-				break;
-			case 3:
-				state = 'buffering'
-				break;
-			case 5:
-				state = 'video cued'
-				break;
-		}
-
-		return state
 	}
 }
 

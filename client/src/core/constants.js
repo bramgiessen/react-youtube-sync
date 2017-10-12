@@ -4,7 +4,7 @@ import React from 'react'
 //=====================================
 //  BACKEND / WEBSOCKET SERVER
 //-------------------------------------
-export const WEBSOCKET_URL = 'http://192.168.1.19:9000'
+export const WEBSOCKET_URL = 'http://172.20.10.7:9000'
 
 //=====================================
 //  YOUTUBE API
@@ -29,7 +29,7 @@ export const videoPlayerConfig = {
 
 // Initial query for videos to display on the browse page
 export const initialVideoQuery = {
-	query: 'beautiful Copenhagen',
+	query: 'Sneezing bunny',
 	videoType: 'any'
 }
 
