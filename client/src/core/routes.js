@@ -1,5 +1,4 @@
 import App from '../components/app/App'
-import HomePage from '../pages/home/HomePage'
 import BrowsePage from '../pages/browse/BrowsePage'
 import PartyPage from '../pages/party/PartyPage'
 import SearchPage from '../pages/search/SearchPage'
@@ -11,12 +10,8 @@ export const routes = {
 	childRoutes: [
 		{
 			indexRoute: {
-				component: HomePage
+				component: BrowsePage
 			}
-		},
-		{
-			path: '/browse',
-			component: BrowsePage
 		},
 		{
 			path: '/party/:partyId',

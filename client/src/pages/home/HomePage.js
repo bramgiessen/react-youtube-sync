@@ -7,7 +7,7 @@ import './HomePage.css'
 
 // Components
 import AppDescription from '../../components/appDescription/AppDescription'
-import SetUserNameForm from '../../components/setUserNameForm/SetUserNameForm'
+import SetUserNameForm from '../../components/setUserNamePopup/SetUserNameForm'
 
 // Actions
 import { userActions } from "../../core/user/index"

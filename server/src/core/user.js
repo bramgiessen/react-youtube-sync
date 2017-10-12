@@ -33,14 +33,12 @@ export const user = {
 	 * @param socket
 	 * @param userName
 	 */
-	createNewUser: ( socket, userName ) => {
-		const socketId = socket.id
-
+	createNewUser: ( userId, userName ) => {
 		// If a user with the socketId doesn't exist yet -> create
 		// a new user and add him to the activeUsers array
-		if ( !user.userExists ( socketId ) ) {
+		if ( !user.userExists ( userId ) ) {
 			const newUser = {
-				socketId,
+				socketId: userId,
 				userName,
 				readyToPlayState: {
 					clientIsReady: false,
@@ -48,6 +46,13 @@ export const user = {
 				}
 			}
 			cache.users.push ( newUser )
+		}
+	},
+
+	updateUserNameForUser: (userId, userName) => {
+		if ( user.userExists ( userId ) ) {
+			const userForId = user.getUserForId(userId)
+			userForId.userName = userName
 		}
 	},
 
@@ -81,7 +86,7 @@ export const user = {
 	isUserAuthenticated: ( socketId ) => {
 		const userForId = user.getUserForId ( socketId )
 
-		return userForId && userForId.userName
+		return !!(userForId && userForId.userName)
 	},
 
 	/**

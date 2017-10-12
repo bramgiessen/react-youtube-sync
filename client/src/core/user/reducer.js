@@ -16,9 +16,12 @@ export const userReducer = ( state = initialState, action ) => {
 	switch ( action.type ) {
 
 		case userActions.SET_USER_NAME:
-			// Save / overwrite the username in localstorage && on the server
-			persistUtils.saveProperty('userName', action.payload)
-			return Immutable.set ( state, 'userName', action.payload )
+			if ( action.payload && action.payload.length ) {
+				// Save / overwrite the username in localstorage && on the server
+				persistUtils.saveProperty('userName', action.payload)
+				return Immutable.set ( state, 'userName', action.payload )
+			}
+			break;
 
 		default:
 			return state

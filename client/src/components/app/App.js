@@ -8,10 +8,12 @@ import 'font-awesome/css/font-awesome.min.css'
 
 // Components
 import AppHeader from '../appHeader/AppHeader'
+import SetUserNamePopup from '../setUserNamePopup/SetUserNamePopup'
 
 // Actions
-import { appActions } from "../../core/app/index"
-import { searchActions } from "../../core/search/index"
+import { appActions } from "../../core/app"
+import { searchActions } from "../../core/search"
+import { userActions } from "../../core/user"
 
 class App extends Component {
 
@@ -22,9 +24,9 @@ class App extends Component {
 		}
 
 		// If the partyId changes -> navigate to new party
-		if( nextProps.party.partyId !== this.props.party.partyId) {
+		if ( nextProps.party.partyId !== this.props.party.partyId ) {
 			// Navigate to newly created party
-			this.props.navigateToPath(`/party/${nextProps.party.partyId}`)
+			this.props.navigateToPath ( `/party/${nextProps.party.partyId}` )
 		}
 	}
 
@@ -38,6 +40,11 @@ class App extends Component {
 					toggleSearch={this.props.toggleSearch}
 					handleSearch={this.props.handleSearch}
 					router={this.props.router}
+				/>
+
+				<SetUserNamePopup
+					isVisible={!this.props.user || !this.props.user.userName}
+					handleSetUserName={this.props.setUserName}
 				/>
 
 				<main className="main">
@@ -67,7 +74,8 @@ const mapDispatchToProps = {
 	navigateToPath: appActions.navigateToPath,
 	setWebsocketConnection: appActions.setWebsocketConnection,
 	handleSearch: searchActions.handleSearch,
-	toggleSearch: searchActions.toggleSearchField
+	toggleSearch: searchActions.toggleSearchField,
+	setUserName: userActions.setUserName
 }
 
 App = connect ( mapStateToProps, mapDispatchToProps ) ( App )

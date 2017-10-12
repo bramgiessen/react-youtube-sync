@@ -29,7 +29,7 @@ export const videoPlayerConfig = {
 
 // Initial query for videos to display on the browse page
 export const initialVideoQuery = {
-	query: 'brambo48',
+	query: 'city guide',
 	videoType: 'any'
 }
 

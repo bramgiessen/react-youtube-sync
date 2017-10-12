@@ -2,31 +2,3 @@
     position: absolute;
     width: 100%;
 }
-
-/*==================================*/
-/* Media queries */
-/*----------------------------------*/
-
-@media screen and (max-width: 800px){
-    .home-page .app-description-block .welcome-header,
-    .home-page .create-party-block .create-party-header,
-    .home-page .create-username-block .create-username-header
-    {
-        font-size: 20px;
-    }
-
-    .home-page .app-description-block .tagline,
-    .home-page .app-description-block .start-button,
-    .home-page .app-description-block .tutorial .tutorial-steps,
-    .home-page .app-description-block .tutorial .tutorial-header,
-    .home-page .create-party-block .create-party-description,
-    .home-page .create-party-block .button,
-    .home-page .create-party-block .input,
-    .home-page .create-username-block .create-username-description,
-    .home-page .create-username-block .input,
-    .home-page .create-username-block .button
-    {
-        font-size: 15px;
-    }
-
-}

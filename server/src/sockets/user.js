@@ -29,10 +29,12 @@ function connectToParty ( io, socket, payload ) {
 	if ( !party.partyExists ( partyId ) ) {
 		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_PARTY_STATE, 'inactive' )
 		return false
+	}else{
+		socketUtils.emitActionToClient ( socket, ACTION_TYPES.SET_PARTY_STATE, 'active' )
 	}
 
-	// Create a new user if the user doesn't already exists
-	user.createNewUser ( socket, userName )
+	// Create a new user if the user doesn't already exists, otherwise update the users' userName
+	user.createNewUser ( userId, userName )
 
 	// Add the user to the party
 	user.addUserToParty ( io, socket, partyId, userName )
