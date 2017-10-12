@@ -138,7 +138,7 @@ export default class VideoPlayer extends Component {
 					muted={ videoPlayerIsMuted }
 					playing={ videoIsPlaying }
 					ref={e => this.videoPlayer = e}
-					onReady={() => setPlayerIsLoadedState ( true )}
+					onReady={() => {setPlayerIsLoadedState ( true )}}
 					onPlay={() => {
 						// Make sure that if this onPlay handler is called accidentally while the server is still
 						// telling us to pause, that we DO actually remain paused
