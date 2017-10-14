@@ -37,6 +37,10 @@
 .app-header .header-title-wrapper span {
     font-size: .95rem;
     margin-top: 21px;
+    position: absolute;
+    display: inline-block;
+    width: calc(100% - 150px);
+    word-break: normal;
 }
 
 .app-header .header-actions {

@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import './BrowsePage.css'
 
 // Constants
-import { introductionText, initialVideoQuery } from '../../core/constants'
+import { initialVideoQuery } from '../../core/constants'
 
 // Actions
 import { appActions } from '../../core/app'
@@ -36,7 +36,7 @@ class BrowsePage extends Component {
 		this.props.loadYoutubeVideos ( initialVideoQuery.query, initialVideoQuery.videoType )
 
 		// Disconnect from any parties the user was still connected to
-		this.props.disconnectFromAllParties()
+		this.props.disconnectFromAllParties ()
 	}
 
 	render () {
@@ -48,18 +48,24 @@ class BrowsePage extends Component {
 				<PageHeader
 					titleLeader='Hi'
 					titleMain={user.userName}
-					titleAfter={', It\'s partytime!'}
-					descriptionText={introductionText}
+					titleAfter={'watch any Youtube video in sync together with your friends!'}
 				/>
 
 				<div className="g-row">
+					<div className="introduction-text">
+						<p>3 easy steps to watch any Youtube video together with a friend:</p>
+						<ol>
+							<li>Search for & select any Youtube video</li>
+							<li>Share the custom generated party URL with your friends</li>
+							<li>Watch the video together in perfect sync!</li>
+						</ol>
+					</div>
 
 					<VideoList
 						showLoadingAnimation={isFetchingVideos}
 						youtubeVideos={youtubeVideos}
 						handleVideoSelection={handleVideoSelection}
 					/>
-
 				</div>
 			</div>
 		)

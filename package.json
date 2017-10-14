@@ -1,5 +1,5 @@
 {
-  "name": "youtube-video-sync",
+  "name": "react-youtube-sync",
   "version": "1.0.0",
   "description": "A socket.io server & React client providing synchronized playback of youtube videos between multiple users",
   "homepage": "http://bramgiessen.com",

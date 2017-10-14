@@ -8,13 +8,12 @@ import './PageHeader.css'
 export default class PageHeader extends Component {
 	static propTypes = {
 		titleLeader: PropTypes.string.isRequired,
-		titleMain: PropTypes.string.isRequired,
+		titleMain: PropTypes.string,
 		titleAfter: PropTypes.string,
-		descriptionText: PropTypes.object,
 	}
 
 	render () {
-		const { descriptionText, titleLeader, titleMain, titleAfter } = this.props
+		const { titleLeader, titleMain, titleAfter } = this.props
 
 		return (
 			<div className="page-header">
@@ -25,8 +24,6 @@ export default class PageHeader extends Component {
 						<span className="title-main">{titleMain}</span>
 						{ titleAfter ? <span className="title-after">{titleAfter}</span> : null }
 					</div>
-
-					{descriptionText ? <div className="page-header-description">{descriptionText}</div> : null }
 
 				</div>
 			</div>

@@ -1,2 +1,43 @@
 .browse-page{}
 
+.browse-page .introduction-text {
+    margin-top: 30px;
+    padding: 0 10px;
+    line-height: 1.1;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.browse-page .introduction-text ol {
+    list-style: none;
+}
+.browse-page .introduction-text li {
+    counter-increment: item;
+    margin-bottom: 5px;
+    margin-left: -30px;
+}
+.browse-page .introduction-text li:before {
+    margin-right: 10px;
+    padding: 1px 0;
+    content: counter(item);
+    background: #232424;
+    border: 1px solid #d4d4d4;
+    border-radius: 100%;
+    color: white;
+    width: 1.2em;
+    text-align: center;
+    display: inline-block;
+}
+
+
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 46.25em){
+    .browse-page .introduction-text {
+        margin-top: 20px;
+        font-size: 0.7rem;
+    }
+}
