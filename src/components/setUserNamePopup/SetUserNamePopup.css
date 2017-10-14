@@ -1,0 +1,103 @@
+.set-username-popup-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    visibility: visible;
+    opacity: 1;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.9);
+    transition: opacity 0.5s ease;
+    transition-delay: 0.3s;
+}
+
+.set-username-popup-wrapper.hidden {
+    visibility: hidden;
+    opacity: 0;
+    position: fixed;
+}
+
+.set-username-popup {
+    position: relative;
+    width: 70%;
+    margin: 15vh auto;
+}
+
+.set-username-popup .create-username-header {
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 2.5vw;
+    font-weight: 300;
+    display: block;
+}
+
+.set-username-popup .create-username-description {
+    font-size: 1.2vw;
+    margin-top: 25px;
+}
+
+.set-username-popup .username-details {
+    width: 100%;
+    border-top: 1px solid hsla(0, 0%, 100%, .05);
+    border-bottom: 1px solid hsla(0, 0%, 100%, .05);
+    padding: 10px 0;
+    margin: 10px 0;
+}
+
+.set-username-popup .input {
+    width: 100%;
+    height: 2em;
+    background: #666;
+    border: 1px solid transparent;
+    padding: .2em .6em;
+    color: #fff;
+    font-size: 1.3vw;
+    box-sizing: border-box;
+    margin: 5px 0;
+}
+
+.set-username-popup .button {
+    float: left;
+    opacity: 0.7;
+    display: table;
+    padding: 10px;
+    color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+    margin-top: 5px;
+    font-size: 1.3vw;
+}
+
+.set-username-popup .button.create-username {
+    color: #262728;
+    background: #ffffff;
+}
+
+.set-username-popup .button.cancel-username {
+    margin-left: 5px;
+}
+
+.set-username-popup .button:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 800px){
+    .set-username-popup .create-username-header
+    {
+        font-size: 20px;
+    }
+
+    .set-username-popup .create-username-description,
+    .set-username-popup .input,
+    .set-username-popup .button
+    {
+        font-size: 15px;
+    }
+
+}

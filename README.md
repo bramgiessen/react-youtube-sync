@@ -1,0 +1,1 @@
+React + Redux app that lets the user watch youtube videos together with other people amongst different computers in sync

@@ -1,0 +1,89 @@
+.app-header {
+    position: fixed;
+    left: 0;
+    top: 0;
+    min-height: 60px;
+    width: 100%;
+    overflow: hidden;
+    background: #1d1e1f;
+    box-shadow: 0 3px 0 0 rgba(0,0,0,.08);
+    z-index: 1;
+}
+
+.app-header .header-title-wrapper {
+    float: left;
+    height: 70px;
+}
+
+.app-header .header-title-wrapper:hover{
+    cursor: pointer;
+}
+
+.app-header .header-title-wrapper .content {
+    font-size: 1rem;
+    float: left;
+    margin-right: 15px;
+}
+
+.app-header .header-title-wrapper:hover .content{
+    color: #ffffff;
+}
+
+.app-header .header-title-wrapper .logo {
+    height: 50px;
+    margin-top: 5px;
+}
+
+.app-header .header-title-wrapper span {
+    font-size: .95rem;
+    margin-top: 21px;
+}
+
+.app-header .header-actions {
+    float: right;
+    margin: 0;
+    padding-top: 20px;
+    padding-left: 0;
+    height: 70px;
+}
+
+.app-header .header-actions li:first-of-type {
+    margin-left: 0;
+    border: none;
+    padding-left: 0;
+}
+
+.app-header .header-actions li {
+    float: left;
+    margin-left: 12px;
+    border-left: 1px solid #38393a;
+    padding-left: 12px;
+    height: 24px;
+    list-style: none
+}
+
+.app-header .header-actions li a {
+    color: inherit;
+}
+
+.app-header .header-actions .btn {
+    cursor: pointer;
+}
+
+.app-header .header-actions .btn-icon {
+    font-size: 1.4rem;
+}
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 46.25em){
+    .app-header .header-title-wrapper .content{
+        font-size: 0.75rem;
+    }
+
+    .app-header .header-actions .btn-icon{
+        font-size: 1rem;
+    }
+}

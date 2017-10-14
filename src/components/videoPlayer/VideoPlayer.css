@@ -1,0 +1,164 @@
+.video-player {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.video-player.maximized{
+    top: 0;
+    left: 0;
+    z-index: 9;
+    position: fixed;
+}
+
+.video-player .player-controls-overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.video-player .player-controls-overlay .control-bar {
+    opacity: 0;
+    width: 100%;
+    position: absolute;
+    background: linear-gradient(to top,
+        rgba(0, 0, 0, 0.6) 20%,
+        rgba(255, 255, 255, 0) 80%
+    );
+    box-sizing: border-box;
+    padding: 6px 12px;
+    height: 35px;
+    transition: opacity 0.3s;
+}
+
+.video-player .player-controls-overlay:hover .control-bar {
+    cursor: default;
+    opacity: 1;
+}
+
+.player-controls-overlay .control-bar.bottom {
+    bottom: 0;
+}
+
+.video-player .player-controls-overlay .progress-bar{
+    width: 100%;
+    height: 3px;
+    clear: both;
+    margin: -10px 0 0 0;
+    position: relative;
+}
+
+.player-controls-overlay .progress-bar .background-bar{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6);
+    z-index: 1;
+}
+
+.player-controls-overlay .progress-bar .progress-indicator{
+    width: 12px;
+    height: 12px;
+    border-radius: 10px;
+    position: absolute;
+    background: #355d5f;
+    z-index: 2;
+    margin: -4px 0 0 -6px;
+}
+
+.control-buttons{
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 10px;
+    margin: 7px 0 0 0;
+}
+
+.player-controls-overlay .control-bar .current-time{
+    float: left;
+    color: #ffffff;
+    margin: 2px 25px;
+}
+
+.player-controls-overlay .control-bar .player-btn{
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.player-controls-overlay .control-bar .player-btn:hover{
+    cursor: pointer;
+    color: #fff;
+}
+
+.control-bar .player-btn.btn-left{
+    float: left;
+}
+
+.control-bar .btn-left:not(:first-child){
+    margin: 0 0 0 20px;
+}
+
+.control-bar .player-btn.btn-right{
+    float: right;
+}
+
+.control-bar .btn-right:not(:last-child){
+    margin: 0 20px 0 0;
+}
+
+.video-player .mobile-device-dialog-wrapper{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1;
+}
+
+.video-player .mobile-device-dialog{
+    position: relative;
+    width: 70%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.video-player .mobile-device-dialog .header{
+    font-size: 2em;
+}
+
+.video-player .mobile-device-dialog .description{
+    font-size: .875rem;
+}
+
+.video-player .mobile-device-dialog .start-player-btn{
+    opacity: 0.7;
+    display: table;
+    padding: 10px;
+    color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+    margin: 25px auto;
+    font-size: 1.5vw;
+}
+.video-player .mobile-device-dialog .start-player-btn:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 46.25em) {
+    .video-player .mobile-device-dialog .header{
+        font-size: 1.4rem;
+    }
+
+    .video-player .mobile-device-dialog .start-player-btn {
+        font-size: 1rem;
+    }
+
+    .video-player .mobile-device-dialog .description{
+        font-size: .875rem;
+    }
+}

@@ -1,0 +1,74 @@
+.party-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.party-page .player-container {
+    width: 450px;
+    height: 253px;
+}
+
+.party-not-found-container {
+    position: relative;
+    margin: 0 auto;
+    width: 70%;
+}
+
+.party-not-found-container .header{
+    display: inline-block;
+}
+
+.party-not-found-container .description{
+    display: inline-block;
+}
+
+.party-not-found-container .back-btn{
+    opacity: 0.7;
+    display: table;
+    padding: 10px;
+    color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+    margin-top: 15px;
+    font-size: 1.5vw;
+}
+
+.party-not-found-container .back-btn:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 46.25em) {
+    .party-page .share-party-url .title,
+    .party-page .share-party-url input,
+    .party-page .users-in-party-list .title,
+    .party-page .users-in-party-list .user .user-name {
+        font-size: 0.75rem;
+    }
+
+    .party-page .share-party-url input {
+        margin: 5px 0 5px 10px;
+    }
+
+    .party-page .player-container {
+        width: 100%;
+    }
+
+    .party-page .users-in-party-list {
+        margin: 10px 0 0 0;
+    }
+
+    .party-not-found-container .header{
+        font-size: 1.3rem;
+    }
+
+    .party-not-found-container .description,
+    .party-not-found-container .back-btn {
+        font-size: 0.7rem;
+    }
+
+}

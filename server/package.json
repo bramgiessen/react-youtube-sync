@@ -4,7 +4,7 @@
   "description": "A socket.io server proving synchronisation of a youtube video player between multiple clients",
   "main": "./src/server.js",
   "scripts": {
-    "start": "nodemon --require reify ./src/main.js",
+    "start": "nodemon --require reify ./main.js",
     "lint": "esw *.js src --color",
     "lint:init": "eslint --init",
     "lint:watch": "npm run lint -- --watch",
@@ -25,7 +25,8 @@
     "eslint-plugin-promise": "3.4.0",
     "eslint-plugin-standard": "2.0.1",
     "eslint-watch": "2.1.14",
-    "nodemon": "1.11.0"
+    "nodemon": "1.11.0",
+    "npm-run-all": "4.0.2"
   },
   "engines": {
     "node": ">=7.x",

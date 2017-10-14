@@ -1,0 +1,41 @@
+.search-bar {
+    height: 0;
+    overflow: hidden;
+    transition: height .16s ease-in-out;
+}
+
+.search-bar.open {
+    height: 90px;
+}
+
+.search-bar .search-form {
+    border-top: 1px solid hsla(0, 0%, 100%, .05);
+}
+
+.search-bar .search-form .input {
+    outline: none;
+    border: 0;
+    padding: 0;
+    width: 100%;
+    height: 65px;
+    color: #f0f0f0;
+    font-family: inherit;
+    font-size: 1.875rem;
+    font-weight: 300;
+    background: transparent;
+    -webkit-font-smoothing: antialiased;
+}
+
+/*==================================*/
+/* Media queries */
+/*----------------------------------*/
+
+@media screen and (max-width: 46.25em){
+    .search-bar .search-form .input {
+        font-size: 1.3rem;
+    }
+
+    .search-bar.open {
+        height: 70px;
+    }
+}
