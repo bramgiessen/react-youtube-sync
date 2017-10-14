@@ -1,5 +1,6 @@
 //=====================================
 //  BACKEND / WEBSOCKET SERVER ADDRESS (BY DEFAULT ON SAME HOST AS FRONTEND)
+//  Intended for when you want to run the server on a different host than the front-end
 //-------------------------------------
 export const WEBSOCKET_URL = '/'
 

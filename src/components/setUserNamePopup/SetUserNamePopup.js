@@ -9,7 +9,7 @@ import './SetUserNamePopup.css'
 export default class SetUserNamePopup extends Component {
 	static propTypes = {
 		isVisible: PropTypes.bool.isRequired,
-		handleSetUserName: PropTypes.func.isRequired,
+		handleSetUserName: PropTypes.func.isRequired
 	}
 
 	render () {

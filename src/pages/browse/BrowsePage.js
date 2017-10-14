@@ -1,6 +1,7 @@
 // Libs & utils
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 
 // CSS
 import './BrowsePage.css'
@@ -18,20 +19,17 @@ import PageHeader from '../../components/pageHeader/PageHeader'
 import VideoList from '../../components/videoList/VideoList'
 
 class BrowsePage extends Component {
-
-	constructor ( props ) {
-		super ( props )
-		this.state = {}
+	static propTypes = {
+		isFetchingVideos: PropTypes.bool.isRequired,
+		youtubeVideos: PropTypes.array.isRequired,
+		user: PropTypes.object.isRequired,
+		navigateToPath: PropTypes.func.isRequired,
+		disconnectFromAllParties: PropTypes.func.isRequired,
+		loadYoutubeVideos: PropTypes.func.isRequired,
+		handleVideoSelection: PropTypes.func.isRequired,
 	}
 
 	componentDidMount () {
-		// Read userName from localStorage, if it doesn't exist -> redirect to the home page
-		// so the user can set a username from here
-		const userName = this.props.user.userName
-		if ( !userName ) {
-			this.props.navigateToPath ( '/' )
-		}
-
 		// Load an initial set of movies from Youtube into Redux store
 		this.props.loadYoutubeVideos ( initialVideoQuery.query, initialVideoQuery.videoType )
 

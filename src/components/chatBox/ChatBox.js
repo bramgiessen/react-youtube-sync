@@ -23,18 +23,17 @@ export default class ChatBox extends Component {
 	}
 
 	renderMessages = ( messages ) => {
-		const {userName} = this.props
+		const { userName } = this.props
 
 		return (
 			<div className="messages-wrapper">
 
-				{messages.map((message, index) => {
-
+				{messages.map ( ( message, index ) => {
 					const cssClasses = classNames ( 'message', {
 						'self': userName === message.userName
 					} )
 
-					return(
+					return (
 						<div className="message-wrapper" key={index}>
 							<div className={cssClasses}>
 								<span className="username">{message.userName}: </span>
@@ -42,7 +41,7 @@ export default class ChatBox extends Component {
 							</div>
 						</div>
 					)
-				})}
+				} )}
 
 			</div>
 		)

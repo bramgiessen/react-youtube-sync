@@ -1,5 +1,5 @@
 //=====================================
-//  video.js : Containing utils related to video objects
+//  video.js : Containing util functions for anything video(player) related
 //-------------------------------------
 
 export const videoUtils = {

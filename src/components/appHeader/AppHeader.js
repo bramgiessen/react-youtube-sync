@@ -17,6 +17,7 @@ export default class AppHeader extends Component {
 		user: PropTypes.object.isRequired,
 		toggleSearch: PropTypes.func.isRequired,
 		handleSearch: PropTypes.func.isRequired,
+		router: PropTypes.object.isRequired,
 	}
 
 	/**
@@ -31,16 +32,16 @@ export default class AppHeader extends Component {
 	 * @param bool
 	 * @returns {*}
 	 */
-	renderSearchButton = (bool) => {
+	renderSearchButton = ( bool ) => {
 		return bool ? (
-			<li>
-				<span className="btn btn-icon fa fa-search" onClick={this.props.toggleSearch}/>
-			</li>
+				<li>
+					<span className="btn btn-icon fa fa-search" onClick={this.props.toggleSearch}/>
+				</li>
 			) : null
 	}
 
 	render () {
-		const {search, handleSearch, user} = this.props
+		const { search, handleSearch, user } = this.props
 
 		return (
 			<div className="app-header">
@@ -53,16 +54,17 @@ export default class AppHeader extends Component {
 						</div>
 
 						<ul className="header-actions">
-							{this.renderSearchButton(user.userName)}
+							{this.renderSearchButton ( user.userName )}
 							<li>
 								<a title="Visit my portfolio site" href="http://bramgiessen.com" target="_blank"
-									 rel="noopener noreferrer">
+								   rel="noopener noreferrer">
 									<span className="btn btn-icon fa fa-globe"/>
 								</a>
 							</li>
 							<li>
-								<a title="Open this project on Github" href="https://github.com/brambo48/react-youtube-sync"
-									 target="_blank" rel="noopener noreferrer">
+								<a title="Open this project on Github"
+								   href="https://github.com/brambo48/react-youtube-sync"
+								   target="_blank" rel="noopener noreferrer">
 									<span className="btn btn-icon fa fa-github"/>
 								</a>
 							</li>

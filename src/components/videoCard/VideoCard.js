@@ -11,7 +11,7 @@ export default class VideoCard extends Component {
 	static propTypes = {
 		video: PropTypes.object.isRequired,
 		videoSource: PropTypes.string.isRequired,
-		handleVideoSelection: PropTypes.func.isRequired,
+		handleVideoSelection: PropTypes.func.isRequired
 	}
 
 
@@ -21,10 +21,10 @@ export default class VideoCard extends Component {
 
 		return (
 			<div className="video-card g-col card"
-					 title={videoDetails.title}
-					 onClick={() => {
-						 handleVideoSelection (videoDetails, videoSource)
-					 }}>
+				 title={videoDetails.title}
+				 onClick={() => {
+					 handleVideoSelection ( videoDetails, videoSource )
+				 }}>
 
 				<div className="card-content">
 

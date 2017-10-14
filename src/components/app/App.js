@@ -1,6 +1,7 @@
 // Libs & utils
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 
 // CSS
 import './App.css'
@@ -16,6 +17,16 @@ import { searchActions } from "../../core/search"
 import { userActions } from "../../core/user"
 
 class App extends Component {
+	static propTypes = {
+		search: PropTypes.object.isRequired,
+		user: PropTypes.object.isRequired,
+		app: PropTypes.object.isRequired,
+		party: PropTypes.object.isRequired,
+		navigateToPath: PropTypes.func.isRequired,
+		handleSearch: PropTypes.func.isRequired,
+		toggleSearch: PropTypes.func.isRequired,
+		setUserName: PropTypes.func.isRequired
+	}
 
 	componentWillUpdate ( nextProps ) {
 		// Check if the current path has been changed, if so -> navigate to new path
@@ -72,7 +83,6 @@ const mapStateToProps = ( state ) => {
 
 const mapDispatchToProps = {
 	navigateToPath: appActions.navigateToPath,
-	setWebsocketConnection: appActions.setWebsocketConnection,
 	handleSearch: searchActions.handleSearch,
 	toggleSearch: searchActions.toggleSearchField,
 	setUserName: userActions.setUserName

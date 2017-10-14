@@ -13,7 +13,7 @@ export default class VideoList extends Component {
 	static propTypes = {
 		youtubeVideos: PropTypes.array.isRequired,
 		showLoadingAnimation: PropTypes.bool.isRequired,
-		handleVideoSelection: PropTypes.func.isRequired,
+		handleVideoSelection: PropTypes.func.isRequired
 	}
 
 	/**

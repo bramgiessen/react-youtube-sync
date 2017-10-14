@@ -1,6 +1,7 @@
 // Libs & utils
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 
 // CSS
 import './SearchPage.css'
@@ -13,6 +14,13 @@ import PageHeader from '../../components/pageHeader/PageHeader'
 import VideoList from '../../components/videoList/VideoList'
 
 class SearchPage extends Component {
+	static propTypes = {
+		isFetchingVideos: PropTypes.bool.isRequired,
+		youtubeVideos: PropTypes.array.isRequired,
+		user: PropTypes.object.isRequired,
+		loadYoutubeVideos: PropTypes.func.isRequired,
+		handleVideoSelection: PropTypes.func.isRequired
+	}
 
 	constructor ( props ) {
 		super ( props )
@@ -20,13 +28,6 @@ class SearchPage extends Component {
 	}
 
 	componentDidMount () {
-		// Read userName from localStorage, if it doesn't exist -> redirect to the home page
-		// so the user can set a username from here first
-		const userName = this.props.user.userName
-		if ( !userName ) {
-			this.props.router.push ( '/' )
-		}
-
 		// Load Youtube video search results into Redux store
 		this.props.loadYoutubeVideos ( this.props.params.query )
 	}
@@ -51,13 +52,11 @@ class SearchPage extends Component {
 				/>
 
 				<div className="g-row">
-
 					<VideoList
 						showLoadingAnimation={this.props.isFetchingVideos}
 						youtubeVideos={this.props.youtubeVideos}
 						handleVideoSelection={handleVideoSelection}
 					/>
-
 				</div>
 			</div>
 		)

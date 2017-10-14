@@ -18,11 +18,27 @@ import { userActions } from '../../core/user'
 import { videoPlayerActions } from '../../core/videoPlayer'
 
 class PartyPage extends Component {
-	// todo: make all proptypes match actual proptypes
 	static propTypes = {
 		selectedVideo: PropTypes.object.isRequired,
+		userName: PropTypes.string,
+		partyId: PropTypes.string,
+		partyState: PropTypes.string.isRequired,
+		usersInParty: PropTypes.array.isRequired,
+		messagesInParty: PropTypes.array.isRequired,
+		partyVideoPlayerState: PropTypes.object.isRequired,
+		userVideoPlayerState: PropTypes.object.isRequired,
+		videoPlayerIsMuted: PropTypes.bool.isRequired,
+		videoProgress: PropTypes.number.isRequired,
+		videoPlayerIsMaximized: PropTypes.bool.isRequired,
+		videoPlayerIsLoaded: PropTypes.bool.isRequired,
 		connectToParty: PropTypes.func.isRequired,
-		userName: PropTypes.string
+		sendMessageToParty: PropTypes.func.isRequired,
+		emitNewPlayerStateForPartyToServer: PropTypes.func.isRequired,
+		onPlayerStateChange: PropTypes.func.isRequired,
+		setPlayerMutedState: PropTypes.func.isRequired,
+		setPlayerIsLoadedState: PropTypes.func.isRequired,
+		handleMaximizeBtnPressed: PropTypes.func.isRequired,
+		setPlayerProgress: PropTypes.func.isRequired
 	}
 
 	constructor ( props ) {

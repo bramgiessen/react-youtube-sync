@@ -68,11 +68,13 @@ export default class VideoPlayerControls extends Component {
 
 				<div className="control-bar bottom" onClick={( event ) => event.stopPropagation ()}>
 
-					<div className="progress-bar" ref={ e => { this.progressBar = e } }
+					<div className="progress-bar" ref={ e => {
+						this.progressBar = e
+					} }
 						 onClick={ ( event ) => {
 							 emitNewPlayerStateToServer ( {
 								 playerState: videoIsPlaying ? 'playing' : 'paused',
-								 timeInVideo: videoUtils.getAmountOfSecondsAtXPos(event, videoDuration)
+								 timeInVideo: videoUtils.getAmountOfSecondsAtXPos ( event, videoDuration )
 							 }, partyId )
 						 } }>
 						<div className="background-bar"></div>
