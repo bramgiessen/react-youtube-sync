@@ -24,10 +24,9 @@ export const videoPlayerConfig = {
 //=====================================
 //  VARIOUS
 //-------------------------------------
-
 // Initial query for videos to display on the browse page
 export const initialVideoQuery = {
-	query: 'city guide',
+	query: 'beautiful destinations',
 	videoType: 'any'
 }
 
