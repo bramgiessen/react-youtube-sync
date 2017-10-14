@@ -17,4 +17,4 @@ export const ACTION_TYPES = {
 //-------------------------------------
 // The username shown in the chatlog when the server emits an informative message
 // to a party
-export const serverUserName = 'Video Party'
+export const serverUserName = 'Party'

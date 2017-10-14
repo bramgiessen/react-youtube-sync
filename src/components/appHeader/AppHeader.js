@@ -49,7 +49,7 @@ export default class AppHeader extends Component {
 
 						<div className="header-title-wrapper" onClick={this.navigateToHomePage}>
 							<img src={logo} className="content logo" alt="bramgiessen.com logo"/>
-							<span className="content">Youtube Video Party • React & Redux</span>
+							<span className="content">Youtube Video Sync • React & Redux</span>
 						</div>
 
 						<ul className="header-actions">
