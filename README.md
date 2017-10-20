@@ -73,7 +73,7 @@ Depoyment
 
 *Prerequisites: basic knowledge of [Heroku](https://www.heroku.com/).*
 
-** Setup your Heroku account and Heroku CLI **
+**Setup your Heroku account and Heroku CLI**
 
 For installing the CLI tool, see [this article](https://devcenter.heroku.com/articles/heroku-command-line).
 
