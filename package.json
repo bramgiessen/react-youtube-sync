@@ -11,6 +11,7 @@
     "name": "Bram van der Giessen",
     "email": "bramgiessen2@hotmail.com"
   },
+  "type": "module",
   "license": "MIT",
   "private": true,
   "engines": {
