@@ -3,4 +3,5 @@ import pathConfig from './paths.cjs';
 // so we can import them all from the same file in other places
 export { appConfig } from './app.js'
 export { routeConfig } from './routes.js'
-export { pathConfig }
+export const pathConfig = pathConfig;
+console.log(pathConfig);
