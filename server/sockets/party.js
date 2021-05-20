@@ -1,7 +1,7 @@
 // Libs & utils
-import { party } from '../core'
-import { socketUtils, generalUtils } from "../utils"
-import { user } from "../core/user"
+import { party } from '../core/index.js'
+import { socketUtils, generalUtils } from "../utils/index.js"
+import { user } from "../core/user.js"
 
 // Constants
 import { ACTION_TYPES } from '../core/constants'

@@ -1,9 +1,9 @@
 // Libs & utils
-import { party, user } from '../core'
-import { socketUtils, generalUtils } from "../utils"
+import { party, user } from '../core/index.js'
+import { socketUtils, generalUtils } from "../utils/index.js"
 
 // Constants
-import { ACTION_TYPES } from '../core/constants'
+import { ACTION_TYPES } from '../core/constants.js'
 
 // Bind incoming action types to handler functions
 export const userSocketHandlers = {

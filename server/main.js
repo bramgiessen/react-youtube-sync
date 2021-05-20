@@ -1,16 +1,15 @@
-require("reify");
 // Libs & utils
 import express from 'express'
 import http from 'http'
 import socketIo from 'socket.io'
 import debugFactory from 'debug'
-import { generalUtils } from './utils/index'
+import { generalUtils } from './utils/index.js'
 
 // Socket handlers
-import { partySocketHandlers, userSocketHandlers } from './sockets'
+import { partySocketHandlers, userSocketHandlers } from './sockets/index.js'
 
 // Configuration files
-import { appConfig, routeConfig } from './config/index'
+import { appConfig, routeConfig } from './config/index.js'
 
 //=====================================
 //  INITIALIZE

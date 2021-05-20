@@ -1,3 +1,3 @@
-export { generalUtils } from './general'
-export { messageUtils } from './message'
-export { socketUtils } from './socket'
+export { generalUtils } from './general.js'
+export { messageUtils } from './message.js'
+export { socketUtils } from './socket.js'

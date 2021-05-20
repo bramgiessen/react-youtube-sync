@@ -1,9 +1,9 @@
 // Libs & utils
-import { cache, user } from './'
-import { generalUtils, socketUtils, messageUtils } from '../utils'
+import { cache, user } from './index.js'
+import { generalUtils, socketUtils, messageUtils } from '../utils/index.js'
 
 // Constants
-import { ACTION_TYPES, serverUserName } from '../core/constants'
+import { ACTION_TYPES, serverUserName } from '../core/constants.js'
 
 export const party = {
 

@@ -1,5 +1,5 @@
 // Libs & utils
-import { generalUtils } from "./index"
+import { generalUtils } from "./index.js"
 
 export const messageUtils = {
 

@@ -2,7 +2,7 @@
 import compression from 'compression'
 import express from 'express'
 import helmet from 'helmet'
-import { pathConfig } from './'
+import { pathConfig } from './index.js'
 
 //=====================================
 //  GLOBAL APP CONFIGURATION

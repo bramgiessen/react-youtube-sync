@@ -1,11 +1,11 @@
-import { cache } from './index'
-import { party } from "./party"
+import { cache } from './index.js'
+import { party } from "./party.js"
 
 // Utils & libs
-import { socketUtils } from '../utils'
+import { socketUtils } from '../utils/index.js'
 
 // Constants
-import { ACTION_TYPES } from '../core/constants'
+import { ACTION_TYPES } from '../core/constants.js'
 
 export const user = {
 

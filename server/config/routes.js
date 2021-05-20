@@ -1,6 +1,6 @@
 // Libs & utils
 import express from 'express'
-import { pathConfig } from './'
+import { pathConfig } from './index.js'
 
 //=====================================
 //  ROUTE CONFIGURATION

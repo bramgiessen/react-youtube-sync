@@ -1,2 +1,2 @@
-export { partySocketHandlers } from './party'
-export { userSocketHandlers } from './user'
+export { partySocketHandlers } from './party.js'
+export { userSocketHandlers } from './user.js'
