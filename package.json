@@ -20,9 +20,9 @@
   "scripts": {
     "start": "concurrently -r \"npm run start:server\" \"npm run start:client\"",
     "start:client": "react-scripts start",
-    "start:server": "nodemon --require reify ./server/main.js",
+    "start:server": "nodemon ./server/main.js",
     "start-prod": "npm run start-prod:server",
-    "start-prod:server": "DEBUG=APP:MAIN cross-env NODE_ENV=production node --require reify ./server/main.js",
+    "start-prod:server": "DEBUG=APP:MAIN cross-env NODE_ENV=production node ./server/main.js",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
