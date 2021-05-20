@@ -1,5 +1,5 @@
 // Libs & utils
-import path from 'path'
+const path = require('path');
 
 //=====================================
 //  PATHS CONFIGURATION
