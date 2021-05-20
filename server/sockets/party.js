@@ -4,7 +4,7 @@ import { socketUtils, generalUtils } from "../utils/index.js"
 import { user } from "../core/user.js"
 
 // Constants
-import { ACTION_TYPES } from '../core/constants'
+import { ACTION_TYPES } from '../core/constants.js'
 
 // Bind incoming action types to handler functions
 export const partySocketHandlers = {
